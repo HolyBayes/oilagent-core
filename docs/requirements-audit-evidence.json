@@ -1,0 +1,39 @@
+{
+  "scope": "offline audit probes, patched external calls; no live model or web",
+  "llm_calls": 0,
+  "web_fallback": {
+    "input_sources": [
+      "R1"
+    ],
+    "output_sources": [
+      "W1"
+    ],
+    "report_evidence_preserved": false
+  },
+  "partially_rejected_draft": {
+    "input_claims": 2,
+    "accepted_claims": 1,
+    "status": "answered",
+    "warnings": [
+      "invalid_citation"
+    ]
+  },
+  "core_commit": "b1d2fa5",
+  "evolution_commit": "4b829d0",
+  "pytest_passed": 103,
+  "ruff_lint": "passed",
+  "ruff_format": "passed",
+  "docker_compose_config": "passed",
+  "docker_daemon": "unavailable",
+  "published_repository_url": "unconfirmed",
+  "new_llm_calls": 0,
+  "rerun_retrieval_holdout": {
+    "split": "holdout",
+    "split_sha256": "48d60df9f6360254862f4d03c90eff4620d5b8519a5578988e71a7d042fbb7ed",
+    "summary": {
+      "retrieved": 4,
+      "in_context": 4
+    },
+    "total": 9
+  }
+}
