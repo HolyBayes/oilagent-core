@@ -8,7 +8,7 @@
 
 Код находится в `OilAgent/core`, артефакты самоулучшений — в соседнем `OilAgent/evolution`. У каждого собственные `.git` и коммиты; core не содержит tracked nested evolution. Source instruction skill хранится в evolution. Подробнее: [docs/VERSIONING.md](docs/VERSIONING.md).
 
-Все команды ниже выполняются **из core/**. В текущем workspace уже есть окружение `../.venv` — его можно активировать через `source ../.venv/bin/activate`; создание нового окружения ниже нужно для чистой установки. Соседний evolution checkout со skill должен присутствовать перед smoke.
+Все команды ниже выполняются **из core/**. В текущем workspace уже есть окружение `../.venv` — его можно активировать через `source ../.venv/bin/activate`; создание нового окружения ниже нужно для чистой установки. Заранее заполненный evolution не требуется: bootstrap или первый запуск Evolution MCP создаёт стартовые артефакты из core.
 
 ## Локальный запуск
 
@@ -26,7 +26,20 @@ python scripts/smoke_ouroboros.py
 
 Bootstrap инициализирует отдельный соседний Evolution Git, если он отсутствует; существующую историю сохраняет. Upstream checkout по умолчанию находится в `../workspace/upstream/ouroboros`. Bootstrap скачивает **точный SHA** из `config/ouroboros-pin.json`, создаёт локальный `.env` с разными случайными MCP-токенами и сохраняет существующий `.env`. Не запускает LLM или полный runtime Ouroboros. `requirements.lock` — snapshot окружения прототипа, включая зависимости проверки upstream; не lock полного desktop-runtime Ouroboros.
 
+Отсутствующая/пустая папка или Git без коммитов получают один seed commit: `policies/retrieval.json` и `ouroboros_skills/oilgas_analyst/SKILL.md`. Skill seed поставляется внутри Python-пакета core, в том числе wheel; после инициализации рабочая версия принадлежит evolution. Это не automatic review/enable или production release. Повторный запуск не добавляет коммитов и не заменяет существующую policy. Незакоммиченные конфликтующие артефакты или существующая история без требуемых main/policy дают явную ошибку вместо перезаписи.
+
+Путь можно задать системной переменной:
+
+```bash
+export EVOLUTION_REPO_PATH=/absolute/path/to/evolution
+python scripts/bootstrap.py
+```
+
+Приоритет: **системный environment → core/.env → ../evolution**. Относительный путь разрешается от core, не от shell cwd. Docker Compose использует переменную как source bind mount на хосте, внутри контейнера Git находится в `/evolution`. Каталог хоста должен быть доступен контейнерному пользователю на запись.
+
 Smoke поднимает два процесса на свободных localhost-портах, проверяет 401 без токена, делает discovery и вызовы через **немодифицированный `ouroboros.mcp_client.MCPManager`**. Проверяется цепочка answer → propose → diff → checks → blocked review → status, идемпотентность proposal, отсутствие release. В конце процессы останавливаются, JSON evidence и логи остаются в `workspace/smoke/<run>/`. По умолчанию ключи LLM явно отключены в дочерних процессах, платных вызовов нет.
+
+Если canonical evolution пока пуст, smoke читает встроенный seed skill и создаёт Git только в изолированном runtime. Канонический путь при этом не заполняется: для его инициализации служат bootstrap или Evolution MCP.
 
 Загрузка instruction skill проверяется штатным upstream loader из external disk payload. Это **не** полный install/review/enable, не самостоятельный выбор tools моделью Ouroboros и не успешная работа аналитика на реальных отчётах.
 

@@ -32,7 +32,7 @@ services:
     ports: ["127.0.0.1:8012:8012"]
     volumes:
       - "evolution-state:/app/workspace/runtime"
-      - "../evolution:/evolution"
+      - "${EVOLUTION_REPO_PATH:-../evolution}:/evolution"
     read_only: true
     tmpfs: ["/tmp"]
     cap_drop: ["ALL"]

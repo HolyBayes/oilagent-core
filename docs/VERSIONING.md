@@ -20,6 +20,8 @@ Core и evolution — отдельные repository roots, не submodules и н
 
 `EVOLUTION_REPO_PATH=../evolution` задаёт canonical repository; `WORKSPACE_PATH=workspace/runtime` задаёт невeрсионируемое состояние сервиса. Относительные пути разрешаются от core, независимо от текущей shell directory. Git внутри runtime workspace допустим только для изолированных тестовых прогонов. Source instruction skill находится в evolution, trusted backend и schema — в core.
 
+Системный `EVOLUTION_REPO_PATH` имеет приоритет над `.env`; значение по умолчанию — `../evolution`. Пустой старт поддержан и для отсутствующей папки, и для уже созданного Git без коммитов: создаются main и один seed commit с policy/skill из core. Шаблон skill включён в Python-пакет core; это factory seed, а не вторая активная версия skill. Существующая история не переписывается; baseline читается из её Git main. Повторный старт не добавляет seed commits. Незакоммиченные seed artifacts автоматически не присваиваются/перезаписываются.
+
 Из корня workspace:
 
 ```bash

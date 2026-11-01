@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-CORE_ROOT = Path(__file__).resolve().parents[2]
+CORE_ROOT = Path(os.getenv("OILAGENT_CORE_ROOT", Path(__file__).resolve().parents[2])).resolve()
 
 
 def configured_path(name: str, default: str) -> Path:

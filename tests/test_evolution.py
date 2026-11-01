@@ -1,8 +1,10 @@
+import subprocess
+
 import pytest
 from pydantic import ValidationError
 
 from analyst.contracts import RetrievalPolicy
-from analyst.evolution import ARTIFACT, Evolution
+from analyst.evolution import ARTIFACT, SEED, SKILL_ARTIFACT, Evolution
 from analyst.graph import answer_question
 
 
@@ -48,6 +50,59 @@ def test_explicit_sibling_repo_keeps_runtime_state_outside_git(tmp_path):
     assert (core / "workspace/candidates" / f"{state['candidate_id']}.json").exists()
     assert not (repo / "candidates").exists()
     assert sentinel.read_text() == "# developer owned\n"
+
+
+@pytest.mark.parametrize("initial", ["missing", "directory", "unborn_main", "unborn_master"])
+def test_first_start_seeds_empty_evolution_and_is_repeatable(tmp_path, initial):
+    repo = tmp_path / "evolution"
+    if initial != "missing":
+        repo.mkdir()
+    if initial.startswith("unborn_"):
+        branch = initial.removeprefix("unborn_")
+        subprocess.run(
+            ["git", "-C", str(repo), "init", f"--initial-branch={branch}"],
+            check=True,
+            capture_output=True,
+        )
+    first = Evolution(tmp_path / "runtime", repo=repo)
+    baseline = first.baseline()
+    assert baseline["policy"] == SEED
+    assert first.git("show", f"{baseline['base_sha']}:{SKILL_ARTIFACT}")
+    assert not first.git("status", "--porcelain")
+    assert not baseline["release_available"]
+    assert Evolution(tmp_path / "runtime", repo=repo).baseline() == baseline
+    assert first.git("rev-list", "--count", "main") == "1"
+
+
+def test_existing_baseline_policy_is_read_from_git_not_reset(backend):
+    policy = RetrievalPolicy(comparison_strategy="per_publisher", top_k_per_publisher=3)
+    (backend.repo / ARTIFACT).write_text(policy.model_dump_json())
+    backend.git("add", ARTIFACT)
+    backend.git("commit", "-m", "Existing operator policy")
+    sha = backend.git("rev-parse", "main")
+    restarted = Evolution(backend.root, repo=backend.repo)
+    assert restarted.baseline()["base_sha"] == sha
+    assert restarted.baseline()["policy"] == policy.model_dump()
+    assert not backend.git("status", "--porcelain")
+
+
+def test_existing_history_without_required_policy_is_not_overwritten(backend):
+    backend.git("rm", ARTIFACT)
+    backend.git("commit", "-m", "Existing history without policy")
+    sha = backend.git("rev-parse", "main")
+    with pytest.raises(ValueError, match="must contain main"):
+        Evolution(backend.root, repo=backend.repo)
+    assert backend.git("rev-parse", "main") == sha
+    assert not (backend.repo / ARTIFACT).exists()
+
+
+def test_uncommitted_policy_is_not_overwritten(tmp_path):
+    repo = tmp_path / "evolution"
+    (repo / ARTIFACT).parent.mkdir(parents=True)
+    (repo / ARTIFACT).write_text("operator-owned unfinished policy")
+    with pytest.raises(ValueError, match="Uncommitted"):
+        Evolution(tmp_path / "runtime", repo=repo)
+    assert (repo / ARTIFACT).read_text() == "operator-owned unfinished policy"
 
 
 def test_idempotency_and_conflict_survive_restart(backend):

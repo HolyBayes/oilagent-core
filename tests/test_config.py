@@ -65,6 +65,18 @@ def test_evolution_cannot_target_developer_core(monkeypatch):
         evolution_repo()
 
 
+def test_system_env_repo_path_has_priority_over_dotenv(tmp_path, monkeypatch):
+    import analyst.config as config
+
+    core = tmp_path / "core"
+    core.mkdir()
+    (core / ".env").write_text("EVOLUTION_REPO_PATH=../from-dotenv\n")
+    external = tmp_path / "from-system-env"
+    monkeypatch.setattr(config, "CORE_ROOT", core)
+    monkeypatch.setenv("EVOLUTION_REPO_PATH", str(external))
+    assert config.evolution_repo() == external
+
+
 def test_provider_error_does_not_leak_secret(monkeypatch):
     import analyst.graph as module
 

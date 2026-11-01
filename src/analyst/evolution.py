@@ -15,6 +15,8 @@ from analyst.graph import select_evidence
 
 ARTIFACT = "policies/retrieval.json"
 SEED = RetrievalPolicy().model_dump()
+SKILL_ARTIFACT = "ouroboros_skills/oilgas_analyst/SKILL.md"
+SEED_SKILL = Path(__file__).parent / "seeds/oilgas_analyst/SKILL.md"
 
 
 def fingerprint(value) -> str:
@@ -37,10 +39,28 @@ class Evolution:
             if not (self.repo / ".git").exists():
                 self.repo.mkdir(parents=True, exist_ok=True)
                 self.git("init", "--initial-branch=main")
-                (self.repo / "policies").mkdir()
-                atomic_json(self.repo / ARTIFACT, SEED)
-                self.git("add", ARTIFACT)
-                self.git("commit", "-m", "Seed retrieval policy")
+            if Path(self.git("rev-parse", "--show-toplevel")).resolve() != self.repo.resolve():
+                raise ValueError("Evolution must be an independent repository root")
+            try:
+                self.git("rev-parse", "--verify", "HEAD")
+            except subprocess.CalledProcessError:
+                self.seed_empty_repo()
+            # Existing histories are validated, never reset or silently seeded over.
+            self.baseline()
+
+    def seed_empty_repo(self):
+        if self.git("ls-files") or any(
+            (self.repo / name).exists() for name in [ARTIFACT, SKILL_ARTIFACT]
+        ):
+            raise ValueError("Uncommitted Evolution artifacts exist; commit or inspect them first")
+        self.git("symbolic-ref", "HEAD", "refs/heads/main")
+        (self.repo / ARTIFACT).parent.mkdir(parents=True, exist_ok=True)
+        atomic_json(self.repo / ARTIFACT, SEED)
+        skill = self.repo / SKILL_ARTIFACT
+        skill.parent.mkdir(parents=True, exist_ok=True)
+        skill.write_text(SEED_SKILL.read_text())
+        self.git("add", "--", ARTIFACT, SKILL_ARTIFACT)
+        self.git("commit", "-m", "Seed retrieval policy and Ouroboros instruction skill")
 
     @contextmanager
     def lock(self):
@@ -72,10 +92,17 @@ class Evolution:
         ).stdout.strip()
 
     def baseline(self):
+        try:
+            base_sha = self.git("rev-parse", "--verify", "refs/heads/main")
+            policy = RetrievalPolicy.model_validate_json(self.git("show", f"{base_sha}:{ARTIFACT}"))
+        except subprocess.CalledProcessError as exc:
+            raise ValueError(
+                "Existing Evolution history must contain main and its retrieval policy"
+            ) from exc
         return {
-            "base_sha": self.git("rev-parse", "main"),
+            "base_sha": base_sha,
             "artifact": ARTIFACT,
-            "policy": SEED,
+            "policy": policy.model_dump(),
             "release_available": False,
         }
 

@@ -21,6 +21,9 @@ dev = ["pytest==9.2.0", "ruff==0.17.3"]
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+analyst = ["seeds/oilgas_analyst/SKILL.md"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]

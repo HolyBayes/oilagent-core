@@ -13,7 +13,7 @@
 - Fixed check исполняет реальную ветвь retrieval-policy на синтетической ranked-list fixture: publisher coverage 0.5 → 1.0. Это только интеграционный пример, не метрика на реальном корпусе.
 - Без LLM critic возвращает `REVIEW_BLOCKED`, approval не создаётся. Во всём прототипе `release_available=false`; merge/release tools отсутствуют.
 - Upstream skill loader разобрал подготовленный external instruction skill и вычислил content hash. Skill остался выключенным и без executable review. Plain disk loading не выдан за полный lifecycle install/review/enable.
-- После выделения соседних core/evolution — 26 offline-тестов проходят. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
+- После проверки пустого evolution — 34 offline-теста проходят. Покрыты отсутствующая/пустая папка, unborn Git main/master, повторный запуск, сохранение существующей policy и приоритет system env над .env. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
 - В коде поддержаны GigaChat, внешний OpenAI-compatible API и локальный OpenAI-compatible endpoint без обязательного ключа. Конструкторы/конфигурация проверены offline, inference не выполнялся.
 
 Сохранённый результат HTTP-прогона: [integration-evidence.json](integration-evidence.json). Генератор: [smoke_ouroboros.py](../scripts/smoke_ouroboros.py). Сырые логи и полный runtime state — в ignored workspace, без публикации tokens.

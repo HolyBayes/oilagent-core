@@ -16,6 +16,7 @@ import httpx
 from dotenv import load_dotenv
 
 from analyst.config import configured_path, evolution_repo
+from analyst.evolution import SEED_SKILL
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,7 +40,8 @@ def main():
     upstream = configured_path("OUROBOROS_PATH", "../workspace/upstream/ouroboros")
     skill_source = evolution_repo() / "ouroboros_skills/oilgas_analyst"
     if not skill_source.is_dir():
-        raise RuntimeError("Clone the sibling evolution repository with its instruction skill")
+        # A first run needs no pre-populated evolution checkout; smoke uses an isolated Git.
+        skill_source = SEED_SKILL.parent
     pin = json.loads((ROOT / "config/ouroboros-pin.json").read_text())
     actual = subprocess.check_output(
         ["git", "-C", str(upstream), "rev-parse", "HEAD"], text=True
