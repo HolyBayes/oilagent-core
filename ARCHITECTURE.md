@@ -262,7 +262,7 @@ OilAgent/                         # workspace, без общей .git
   core/                           # Developer Git
     .git/
     ARCHITECTURE.md, README.md, Dockerfile, compose.yaml, pyproject.toml
-    src/analyst/, tests/, scripts/, config/, docs/, default_policies/
+    src/analyst/, tests/, scripts/, config/, docs/
     .env                          # ignored secrets
     workspace/                    # ignored runtime statuses/traces/sandbox copies
   evolution/                      # независимый Evolution Git

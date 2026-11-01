@@ -3,10 +3,60 @@
 import argparse
 import json
 import subprocess
+from pathlib import Path
 
 import httpx
 
 from analyst.runtime import isolated_env, prepare, runtime_paths
+
+
+def submit_task(client, prompt_file):
+    root, python = runtime_paths()
+    repo = root / "repo"
+    skills = client.get("/api/extensions").json()["skills"]
+    target = next((s for s in skills if s["name"] == "oilgas_analyst"), {})
+    if not (target.get("enabled") and target.get("executable_review")):
+        raise ValueError("Enable the current reviewed oilgas_analyst skill first")
+    # Bundled extensions bypass the static tool list unless disabled here.
+    for skill in skills:
+        if skill.get("enabled") and skill["name"] != "oilgas_analyst":
+            off = client.post(
+                f"/api/skills/{skill['name']}/toggle",
+                json={"enabled": False, "expected_content_hash": skill["content_hash"]},
+            )
+            off.raise_for_status()
+            if off.json().get("enabled"):
+                raise ValueError("Could not disable unrelated runtime skill")
+    prompt = Path(prompt_file).read_text()
+    # Registry discovery must use the upstream interpreter.
+    registry_code = (
+        "import json,os; from pathlib import Path; "
+        "from ouroboros.tools.registry import ToolRegistry; "
+        "r=ToolRegistry(Path(os.environ['OUROBOROS_REPO_DIR']),"
+        "Path(os.environ['OUROBOROS_DATA_DIR'])); print(json.dumps(list(r._entries)))"
+    )
+    names = json.loads(
+        subprocess.check_output(
+            [str(python), "-c", registry_code],
+            env=isolated_env(root, repo),
+            cwd=repo,
+            text=True,
+            timeout=30,
+        )
+    )
+    allowed = {"finish_task", "list_available_tools", "enable_tools", "list_skills"}
+    disabled = sorted(set(names) - allowed)
+    return client.post(
+        "/api/tasks",
+        json={
+            "description": prompt,
+            "title": "OilAgent bounded integration",
+            "execution_timeout_sec": 300,
+            "disabled_tools": disabled,
+            "actor_id": "cli",
+            "source": "cli",
+        },
+    )
 
 
 def main():
@@ -49,7 +99,7 @@ def main():
         if args.action == "catalog":
             result = client.get("/api/skill-catalog/search", params={"source": "oilagent"})
         elif args.action == "install":
-            # A local source is registered in place by the official loader.
+            # Local sources are read in place; the installer returns 409 for them.
             result = client.post(
                 "/api/skill-catalog/install",
                 json={"id": "oilagent/oilgas_analyst", "turn_on_when_ready": True},
@@ -79,55 +129,13 @@ def main():
         else:
             if not args.prompt_file:
                 parser.error("run requires --prompt-file")
-            skills = client.get("/api/extensions").json()["skills"]
-            target = next((s for s in skills if s["name"] == "oilgas_analyst"), {})
-            if not (target.get("enabled") and target.get("executable_review")):
-                parser.error("Enable the current reviewed oilgas_analyst skill first")
-            # Bundled computer-use/search extensions must not broaden this experiment.
-            for skill in skills:
-                if skill.get("enabled") and skill["name"] != "oilgas_analyst":
-                    off = client.post(
-                        f"/api/skills/{skill['name']}/toggle",
-                        json={"enabled": False, "expected_content_hash": skill["content_hash"]},
-                    )
-                    off.raise_for_status()
-                    if off.json().get("enabled"):
-                        parser.error("Could not disable unrelated runtime skill")
-            from pathlib import Path
+            try:
+                result = submit_task(client, args.prompt_file)
+            except ValueError as exc:
+                parser.error(str(exc))
 
-            prompt = Path(args.prompt_file).read_text()
-            # MCP and instruction reading only; the host will enforce withheld tools per task.
-            registry_code = (
-                "import json,os; from pathlib import Path; "
-                "from ouroboros.tools.registry import ToolRegistry; "
-                "r=ToolRegistry(Path(os.environ['OUROBOROS_REPO_DIR']),"
-                "Path(os.environ['OUROBOROS_DATA_DIR'])); print(json.dumps(list(r._entries)))"
-            )
-            names = json.loads(
-                subprocess.check_output(
-                    [str(python), "-c", registry_code],
-                    env=isolated_env(root, repo),
-                    cwd=repo,
-                    text=True,
-                    timeout=30,
-                )
-            )
-            allowed = {"finish_task", "list_available_tools", "enable_tools", "list_skills"}
-            disabled = sorted(set(names) - allowed)
-            result = client.post(
-                "/api/tasks",
-                json={
-                    "description": prompt,
-                    "title": "OilAgent bounded integration",
-                    "execution_timeout_sec": 300,
-                    "disabled_tools": disabled,
-                    "actor_id": "cli",
-                    "source": "cli",
-                },
-            )
         result.raise_for_status()
         data = result.json()
-        # Print only lifecycle fields, never settings or request headers.
         if args.action == "skill":
             rows = data.get("skills", data.get("extensions", []))
             data = [

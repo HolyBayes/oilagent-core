@@ -40,7 +40,7 @@ def main():
     upstream = configured_path("OUROBOROS_PATH", "../workspace/upstream/ouroboros")
     skill_source = evolution_repo() / "ouroboros_skills/oilgas_analyst"
     if not skill_source.is_dir():
-        # A first run needs no pre-populated evolution checkout; smoke uses an isolated Git.
+        # Smoke must also work before the evolution checkout has been seeded.
         skill_source = SEED_SKILL.parent
     pin = json.loads((ROOT / "config/ouroboros-pin.json").read_text())
     actual = subprocess.check_output(
@@ -70,7 +70,7 @@ def main():
         "EVOLUTION_REPO_PATH": str(run / "runtime/evolution"),
     }
     if not args.live:
-        # Explicit empty values prevent .env loading paid credentials in child processes.
+        # Empty env values keep load_dotenv from restoring live credentials.
         child_env.update(
             GIGACHAT_CREDENTIALS="", LLM_API_KEY="", LLM_MODEL="", LLM_PROVIDER="gigachat"
         )

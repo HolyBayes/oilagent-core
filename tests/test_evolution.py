@@ -24,7 +24,7 @@ def propose(backend, policy=None, key="test-1", artifact=ARTIFACT):
     )
 
 
-def test_candidate_is_separate_git_history_and_does_not_change_baseline(backend):
+def test_candidate_commit_does_not_change_baseline(backend):
     base = backend.baseline()["base_sha"]
     candidate = propose(backend)
     assert candidate["candidate_sha"] != base

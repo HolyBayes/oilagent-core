@@ -11,7 +11,7 @@ from pathlib import Path
 
 from analyst.config import invoke_structured
 from analyst.contracts import CriticVerdict, RetrievalPolicy
-from analyst.graph import select_evidence
+from analyst.retrieval import select_evidence
 
 ARTIFACT = "policies/retrieval.json"
 SEED = RetrievalPolicy().model_dump()
@@ -45,7 +45,6 @@ class Evolution:
                 self.git("rev-parse", "--verify", "HEAD")
             except subprocess.CalledProcessError:
                 self.seed_empty_repo()
-            # Existing histories are validated, never reset or silently seeded over.
             self.baseline()
 
     def seed_empty_repo(self):

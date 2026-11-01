@@ -116,7 +116,7 @@ def runtime_paths():
 
 
 def isolated_env(root, repo):
-    # Explicit allowlist: do not forward other provider, GitHub, shell or MCP credentials.
+    # Credentials come from this runtime's settings, not the parent environment.
     env = {
         key: os.environ[key]
         for key in ["PATH", "LANG", "LC_ALL", "TMPDIR", "SYSTEMROOT"]

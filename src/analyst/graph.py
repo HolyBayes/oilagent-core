@@ -6,20 +6,7 @@ from uuid import uuid4
 from langgraph.graph import END, START, StateGraph
 
 from analyst.config import invoke_structured, model_ready
-from analyst.contracts import RetrievalPolicy, Route
-
-
-def select_evidence(rows: list[dict], publishers: list[str], policy: RetrievalPolicy):
-    """Policy-controlled selection over an already ranked list; not vector retrieval."""
-    if policy.comparison_strategy == "pooled":
-        selected = rows[: policy.top_k_per_publisher]
-    else:
-        selected = []
-        for publisher in publishers[:3]:
-            selected.extend(
-                [row for row in rows if row["publisher"] == publisher][: policy.top_k_per_publisher]
-            )
-    return selected[:12]
+from analyst.contracts import Route
 
 
 class State(TypedDict, total=False):
@@ -75,7 +62,7 @@ def answer_question(question: str) -> dict:
     try:
         return graph.invoke(state)
     except Exception as exc:
-        # Provider errors may contain credentials/headers. Keep only a safe error type.
+        # Provider exception messages can contain credentials or headers.
         return {
             **state,
             "status": "failed",

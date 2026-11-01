@@ -60,4 +60,4 @@ python scripts/ouroboros_runtime.py run --prompt-file /path/to/experiment.txt
 
 Default native profile задаёт 3 раунда, 300 секунд и 1 review wave. Это параметры upstream, не доказанный общий token cap: в неуспешном task были дополнительные host failure/finalization действия. USD-параметры профиля не являются подтверждённым ограничением токенов GigaChat. Один исправленный review после старого неверного alias потребовал штатно применить исходный предел двух waves через owner settings API; дальнейших review не планируется. Успешный verdict сохраняется и переиспользуется.
 
-53 offline tests проходят; live-результаты сохраняются отдельно. Работа RAG/web/forecast/UI и production release по-прежнему не реализована. Core и canonical Evolution Git независимы; этот experiment не изменял canonical evolution.
+56 offline tests проходят; live-результаты сохраняются отдельно. Работа RAG/web/forecast/UI и production release по-прежнему не реализована. Core и canonical Evolution Git независимы; этот experiment не изменял canonical evolution.
