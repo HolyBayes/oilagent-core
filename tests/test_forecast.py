@@ -7,7 +7,7 @@ import pytest
 from analyst import graph as pipeline
 from analyst.config import CORE_ROOT
 from analyst.contracts import Route
-from analyst.forecast import forecast_brent, monthly_data
+from analyst.forecast import forecast_brent, monthly_data, render_forecast
 from analyst.rag import digest
 
 SNAPSHOT = CORE_ROOT / "data/brent_daily.csv"
@@ -26,6 +26,10 @@ def test_both_models_intervals_and_separate_backtest():
     result = forecast_brent(3, "2025-10-01", path=SNAPSHOT)
     assert result["data_end"] == "2025-09"
     assert result["selected_model"] in {"ARIMA", "ETS"}
+    answer = render_forecast(result)
+    assert "ARIMA [F1]" in answer and "ETS [F1]" in answer
+    assert "Исторический дневной ряд" in answer and "USD/bbl" in answer and "80%" in answer
+    assert result["data_source"]["source_url"] in answer
     assert set(result["forecasts"]) == {"ARIMA", "ETS", "naive"}
     protocol = result["backtest_protocol"]
     assert protocol["calibration_last_target"] <= protocol["first_test_training_end"]
@@ -80,7 +84,12 @@ def test_graph_selects_calculation_without_web_or_synthesis(monkeypatch):
     def route_only(schema, messages):
         assert schema is Route
         return Route(
-            intent="forecast", freshness_required=False, horizon_months=2, as_of="2025-10-01"
+            intent="forecast",
+            freshness_required=False,
+            horizon_months=2,
+            as_of="2025-10-01",
+            start_date="2010-01-01",
+            end_date="2025-09-30",
         ), {"total_tokens": 10}
 
     monkeypatch.setattr(pipeline, "invoke_structured", route_only)
@@ -88,4 +97,6 @@ def test_graph_selects_calculation_without_web_or_synthesis(monkeypatch):
     result = pipeline.answer_question("Рассчитай новый прогноз Brent на два месяца")
     assert result["status"] == "forecasted"
     assert len(result["forecast"]["forecasts"]["ARIMA"]["points"]) == 2
+    assert result["forecast"]["data_coverage"]["effective_start_month"] == "2010-01"
+    assert result["forecast"]["data_cache"]["requested"] == ["2010-01-01", "2025-09-30"]
     assert result["usage"] == {"route": {"total_tokens": 10}}

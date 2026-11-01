@@ -66,3 +66,8 @@ Default native profile задаёт 3 раунда, 300 секунд и 1 review
 ## Дополнение: компактная проверка без полного runtime
 
 После описанного выше Main worker failure выполнен отдельный native GigaChat probe: все пять Evolution schemas отправлены без изменения; модель выдала proposal arguments, in-process MCP создал Git-кандидат, synthetic checks прошли. Расход 715 токенов, critic/release не вызывались. [Сохранённый результат](schema-probe-evidence.json), [скрипт](../scripts/check_tool_schema.py). Полный Main worker не повторялся; его предыдущий неуспех остаётся открытым gate. Probe доказывает совместимость schemas и авторство bounded candidate в коротком контексте, а не успешность всего runtime.
+
+
+## Последующая проверка штатного UI
+
+Аналитический Main worker теперь проверен через браузер: report и forecast вызывают реальный Analyst MCP. Для запуска добавлен узкий schema/Nano adapter, upstream-файлы не изменены. Проверка частичная: Main неверно пересказывает происхождение forecast. Это не повтор полного author/check/critic цикла. Актуальные ограничения и дополнительный расход — в [UI.md](UI.md); прежние расходы и неуспехи выше относятся к ранним прогонам.

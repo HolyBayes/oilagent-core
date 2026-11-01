@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-01",
+  "upstream_commit": "add0ce3296c722ef99a536c52f8dcddf36494b36",
+  "transport": "native browser UI → Ouroboros Main → real HTTP Analyst MCP",
+  "acceptance": "partial",
+  "report": {
+    "task_id": "b86a6028",
+    "mcp_called": true,
+    "eia_pdf_page": 5,
+    "answer_supported": true
+  },
+  "forecast": {
+    "task_id": "66d0de14",
+    "mcp_called": true,
+    "methods": [
+      "ARIMA",
+      "ETS"
+    ],
+    "numerical_tables_match": true,
+    "unit": "USD/bbl",
+    "interval_level": 0.8,
+    "source_attribution_correct": false,
+    "limitation": "Main calls the historical daily series a monthly EIA report; core labels it correctly."
+  },
+  "runtime_adapters": [
+    "narrow object|string union to existing string alternative for native GigaChat",
+    "keep explicitly startup-enabled permitted MCP schema in Nano tools"
+  ],
+  "usage": {
+    "native_ui_task_totals": {
+      "prompt_tokens": 227043,
+      "completion_tokens": 2812
+    },
+    "cached_prompt_tokens_in_llm_rounds": 264128,
+    "skill_review": {
+      "prompt_tokens": 44124,
+      "completion_tokens": 6
+    },
+    "schema_diagnostics_reported_total": 1433,
+    "unknown_usage": "Initial HTTP 422 attempts have no provider usage. Core calls inside MCP are not included in native task totals. Cached tokens are recorded separately; this is not account quota accounting."
+  },
+  "tasks": [
+    {
+      "id": "fba18a9d",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null
+    },
+    {
+      "id": "92f5e394",
+      "status": "completed",
+      "prompt_tokens": 77123,
+      "completion_tokens": 96
+    },
+    {
+      "id": "b86a6028",
+      "status": "completed",
+      "prompt_tokens": 60538,
+      "completion_tokens": 275
+    },
+    {
+      "id": "e52ccc20",
+      "status": "completed",
+      "prompt_tokens": 9521,
+      "completion_tokens": 417
+    },
+    {
+      "id": "43936b73",
+      "status": "completed",
+      "prompt_tokens": 13788,
+      "completion_tokens": 341
+    },
+    {
+      "id": "1f839df9",
+      "status": "completed",
+      "prompt_tokens": 10992,
+      "completion_tokens": 395
+    },
+    {
+      "id": "2ebf5d1a",
+      "status": "completed",
+      "prompt_tokens": 25006,
+      "completion_tokens": 633
+    },
+    {
+      "id": "66d0de14",
+      "status": "completed",
+      "prompt_tokens": 30075,
+      "completion_tokens": 655
+    }
+  ]
+}

@@ -72,7 +72,11 @@ def main():
     if not args.live:
         # Empty env values keep load_dotenv from restoring live credentials.
         child_env.update(
-            GIGACHAT_CREDENTIALS="", LLM_API_KEY="", LLM_MODEL="", LLM_PROVIDER="gigachat"
+            GIGACHAT_CREDENTIALS="",
+            LLM_API_KEY="",
+            LLM_MODEL="",
+            LLM_PROVIDER="gigachat",
+            BRENT_DATA_PATH=str(ROOT / "data/brent_daily.csv"),
         )
     processes, handles, settings_rows, events = [], [], [], []
     try:
@@ -145,9 +149,11 @@ def main():
 
         assert call("analyst", "health", {})["langgraph"]
         answer = call("analyst", "answer_question", {"question": "Спрогнозируй Brent на 3 месяца"})
-        assert answer["request_id"] and answer["status"] == (
-            "forecasted" if args.live else "insufficient_evidence"
-        )
+        assert answer["request_id"]
+        if args.live:
+            assert answer["status"] in {"forecasted", "partial"} and answer.get("forecast")
+        else:
+            assert answer["status"] == "insufficient_evidence"
         forecast = call("analyst", "forecast_brent", {"horizon_months": 3, "as_of": "2025-10-01"})
         assert {"ARIMA", "ETS"} <= forecast["forecasts"].keys()
         assert all(len(forecast["forecasts"][m]["points"]) == 3 for m in ["ARIMA", "ETS"])

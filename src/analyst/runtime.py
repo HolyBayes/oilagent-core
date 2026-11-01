@@ -85,6 +85,8 @@ def settings_profile(env, model_keys, skill_source):
                     "id": kind,
                     "name": f"OilAgent {kind}",
                     "enabled": True,
+                    "schemas_at_start": kind == "analyst",
+                    "allowed_tools": ["answer_question"] if kind == "analyst" else [],
                     "transport": "streamable_http",
                     "url": f"http://127.0.0.1:{port}/mcp",
                     "auth_header": "Authorization",

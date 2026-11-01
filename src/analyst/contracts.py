@@ -20,6 +20,8 @@ class Route(BaseModel):
     horizon_months: int = 3
     as_of: str = ""
     instrument: str = "Brent"
+    start_date: str = ""
+    end_date: str = ""
 
 
 class CriticVerdict(BaseModel):

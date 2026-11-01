@@ -47,7 +47,9 @@ def route(state: State) -> dict:
                 "Example: EIA October 2025 forecast for 2026 is domain_qa, "
                 "freshness_required=false. For forecast extract the exact requested horizon_months "
                 "(default 3), instrument (default Brent), and explicit as_of YYYY-MM-DD "
-                "(empty if absent). Do not clamp unsupported horizons or replace WTI with Brent.",
+                "(empty if absent). Extract explicit historical start_date/end_date as ISO dates, "
+                "empty if unspecified. "
+                "Do not clamp unsupported horizons or replace WTI with Brent.",
             ),
             ("human", state["question"]),
         ],
@@ -90,7 +92,12 @@ def respond(state: State) -> dict:
                 "answer": "Поддерживается только Europe Brent spot, USD/bbl.",
             }
         try:
-            result = forecast_brent(request.get("horizon_months", 3), request.get("as_of", ""))
+            result = forecast_brent(
+                request.get("horizon_months", 3),
+                request.get("as_of", ""),
+                request.get("start_date", ""),
+                request.get("end_date", ""),
+            )
         except Exception as exc:
             return {
                 "status": "forecast_unavailable",
@@ -99,7 +106,7 @@ def respond(state: State) -> dict:
                 "warnings": [f"forecast_error:{type(exc).__name__}"],
             }
         return {
-            "status": "forecasted",
+            "status": "forecasted" if result["data_cache"]["complete"] else "partial",
             "forecast": result,
             "answer": render_forecast(result),
             "warnings": result["warnings"],

@@ -80,8 +80,7 @@ def main():
         subprocess.run(
             [
                 str(python),
-                "-m",
-                "ouroboros.cli",
+                str(Path(__file__).with_name("native_ouroboros.py")),
                 "server",
                 "--host",
                 "127.0.0.1",

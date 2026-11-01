@@ -196,6 +196,11 @@ def test_graph_answer_and_numeric_gate(index, monkeypatch):
 )
 def test_unavailable_routes_skip_retrieval(intent, freshness, monkeypatch):
     monkeypatch.setattr(pipeline, "ReportIndex", lambda: pytest.fail("Unexpected retrieval"))
+
+    def unavailable_forecast(*args, **kwargs):
+        raise ValueError("Test history unavailable")
+
+    monkeypatch.setattr(pipeline, "forecast_brent", unavailable_forecast)
     state = {"route": {"intent": intent, "freshness_required": freshness}, "question": "test"}
     assert pipeline.retrieve(state) == {"evidence": []}
     assert pipeline.respond(state)["status"] != "answered"

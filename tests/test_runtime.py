@@ -30,6 +30,9 @@ def test_native_json_string_settings_and_review_gate(tmp_path):
     assert profile["OUROBOROS_AUTO_GRANT_REVIEWED_SKILLS"] == "false"
     assert profile["OUROBOROS_MODEL_FALLBACKS"] == ""
     assert profile["OUROBOROS_MAX_ROUNDS"] == 3
+    analyst, evolution = profile["MCP_SERVERS"]
+    assert analyst["schemas_at_start"] and analyst["allowed_tools"] == ["answer_question"]
+    assert not evolution["schemas_at_start"]
 
 
 def test_runtime_env_does_not_inherit_unrelated_credentials(tmp_path, monkeypatch):

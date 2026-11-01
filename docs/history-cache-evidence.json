@@ -1,0 +1,56 @@
+{
+  "transport": "real HTTP MCP",
+  "llm_calls": 0,
+  "arguments": {
+    "horizon_months": 3,
+    "as_of": "2026-10-01",
+    "start_date": "2016-01-01",
+    "end_date": "2026-09-30"
+  },
+  "first": {
+    "state": "extended",
+    "network_used": true,
+    "requested": [
+      "2016-01-01",
+      "2026-09-30"
+    ],
+    "missing": [],
+    "requested_from_provider": [
+      [
+        "2025-10-01",
+        "2026-09-30"
+      ]
+    ],
+    "errors": [],
+    "snapshot": "6647205acd1e0e564f48e03d0134234f1258e1b526487540a15743c751744e58",
+    "complete": true
+  },
+  "second": {
+    "state": "hit",
+    "network_used": false,
+    "requested": [
+      "2016-01-01",
+      "2026-09-30"
+    ],
+    "missing": [],
+    "requested_from_provider": [],
+    "errors": [],
+    "snapshot": "6647205acd1e0e564f48e03d0134234f1258e1b526487540a15743c751744e58",
+    "complete": true
+  },
+  "data_coverage": {
+    "last_observation": "2026-09-30",
+    "last_month_observations": 22,
+    "last_month_weekday_coverage": 1.0,
+    "minimum_weekday_coverage": 0.8095238095238095,
+    "requested_start_date": "2016-01-01",
+    "requested_end_date": "2026-09-30",
+    "effective_start_month": "2016-01",
+    "expected_end_month": "2026-09"
+  },
+  "model_names": [
+    "ARIMA",
+    "ETS",
+    "naive"
+  ]
+}

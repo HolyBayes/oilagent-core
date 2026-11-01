@@ -39,16 +39,28 @@ def create_server(kind: str, host: str, port: int):
 
         @server.tool(name="answer_question")
         def answer(question: Annotated[str, Field(min_length=1, max_length=4000)]) -> dict:
-            """Call the shared LangGraph core. Missing data is reported explicitly."""
+            """Answer oil/gas questions using loaded OPEC/EIA reports and web sources.
+
+            Calculate new Brent forecasts with ARIMA and ETS from prepared EIA history.
+            Reports and price data are already loaded; no user upload is required.
+            Returns the answer with sources, prediction intervals and limitations.
+            """
             return answer_question(question)
 
         @server.tool(name="forecast_brent")
         def forecast_brent_prices(
             horizon_months: Annotated[int, Field(ge=1, le=6)] = 3,
             as_of: str = "",
+            start_date: str = "",
+            end_date: str = "",
         ) -> dict:
-            """Calculate ARIMA/ETS Brent forecasts, 80% prediction intervals and backtest."""
-            return forecast_brent(horizon_months, as_of)
+            """Calculate ARIMA/ETS Brent forecasts, 80% prediction intervals and backtest.
+
+            start_date/end_date: inclusive ISO dates of daily history, default last 120
+            completed months. Reuse cached history; download only uncovered intervals.
+            as_of: calculation cutoff, no later than today. Horizon is in months.
+            """
+            return forecast_brent(horizon_months, as_of, start_date, end_date)
 
         @server.tool()
         def search_web_sources(
