@@ -172,7 +172,7 @@ def test_graph_without_model_does_not_fabricate_answer(monkeypatch):
     monkeypatch.setenv("LLM_API_KEY", "")
     monkeypatch.setenv("LLM_MODEL", "")
     result = answer_question("Каков прогноз Brent?")
-    assert result["status"] == "integration_only"
+    assert result["status"] == "insufficient_evidence"
     assert result["route"] is None
     assert result["warnings"] == ["llm_not_configured"]
     assert result["request_id"]

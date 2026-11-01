@@ -8,6 +8,7 @@ x-model-environment: &model-environment
   LLM_BASE_URL: ${LLM_BASE_URL:-}
   LLM_API_KEY: ${LLM_API_KEY:-}
   LLM_TIMEOUT_SEC: ${LLM_TIMEOUT_SEC:-20}
+  LLM_MAX_OUTPUT_TOKENS: ${LLM_MAX_OUTPUT_TOKENS:-None}
   LLM_STRUCTURED_METHOD: ${LLM_STRUCTURED_METHOD:-function_calling}
 services:
   analyst:
@@ -17,6 +18,9 @@ services:
       ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
     command: ["analyst", "--host", "0.0.0.0", "--port", "8011"]
     ports: ["127.0.0.1:8011:8011"]
+    volumes:
+      - "./workspace/rag:/app/workspace/rag"
+      - "./workspace/models:/app/workspace/models:ro"
     read_only: true
     tmpfs: ["/tmp"]
     cap_drop: ["ALL"]

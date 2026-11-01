@@ -25,3 +25,18 @@ class CriticVerdict(BaseModel):
     model_config = ConfigDict(extra="forbid")
     verdict: Literal["APPROVE", "REQUEST_CHANGES", "REJECT"]
     findings: list[str]
+
+
+class ReportClaim(BaseModel):
+    """A report fact with its source ID and a verbatim supporting passage."""
+
+    text: str
+    source_id: str
+    quote: str
+
+
+class ReportDraft(BaseModel):
+    """Answer only with supported report claims; abstain when evidence is missing."""
+
+    claims: list[ReportClaim] = Field(max_length=5)
+    abstain: bool

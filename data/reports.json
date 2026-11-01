@@ -1,0 +1,24 @@
+{
+  "reports": [
+    {
+      "doc_id": "opec_2025_10",
+      "title": "OPEC Monthly Oil Market Report — October 2025",
+      "publisher": "OPEC",
+      "published_at": "2025-10-13",
+      "url": "https://www.opec.org/assets/assetdb/momr-october-2025-1.pdf",
+      "sha256": "e7bc2359f83c345854faa2e96ff5346fc690eedbbcab1e516e1c335530703e8f",
+      "verified_numeric_pages": [5, 7],
+      "rights": "OPEC Secretariat; downloaded locally for non-commercial educational evaluation; do not redistribute full PDF"
+    },
+    {
+      "doc_id": "eia_2025_10",
+      "title": "EIA Short-Term Energy Outlook — October 2025",
+      "publisher": "EIA",
+      "published_at": "2025-10-07",
+      "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+      "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+      "verified_numeric_pages": [5, 6, 7],
+      "rights": "U.S. Energy Information Administration; public report with source attribution"
+    }
+  ]
+}

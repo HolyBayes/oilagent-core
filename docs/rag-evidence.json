@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-01",
+  "provider": "gigachat",
+  "model": "GigaChat-2-Max",
+  "corpus": {
+    "collection": "reports_05f766f8eba656d0eacb",
+    "corpus_hash": "05f766f8eba656d0eacb017e4f0dfe7c604f606d495d11a8a4f5b4d9c0922ea6",
+    "embedding": {
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+    },
+    "chunks": 475,
+    "warnings": [],
+    "indexed_at": "2026-11-01T15:34:07.215913+00:00"
+  },
+  "runs": [
+    {
+      "request_id": "e32aeb00-8ca4-41d6-80be-ef47804229b0",
+      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+      "status": "insufficient_evidence",
+      "route": {
+        "intent": "domain_qa",
+        "freshness_required": false
+      },
+      "answer": "В выбранных фрагментах недостаточно подтверждённых данных для ответа.",
+      "warnings": [
+        "insufficient_evidence"
+      ],
+      "usage": {
+        "route": {
+          "output_tokens": 44,
+          "input_tokens": 204,
+          "total_tokens": 248,
+          "input_token_details": {
+            "cache_read": 3
+          }
+        },
+        "synthesis": {
+          "output_tokens": 139,
+          "input_tokens": 2698,
+          "total_tokens": 2837,
+          "input_token_details": {
+            "cache_read": 4
+          }
+        }
+      },
+      "claims": []
+    },
+    {
+      "request_id": "443eaed9-a936-4de7-b863-442f5627324b",
+      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+      "status": "needs_web",
+      "route": {
+        "intent": "domain_qa",
+        "freshness_required": true
+      },
+      "answer": "Для текущих данных нужен web-поиск, который пока не подключён. Доступный корпус содержит исторические отчёты.",
+      "warnings": [
+        "web_not_configured"
+      ],
+      "usage": {
+        "output_tokens": 44,
+        "input_tokens": 204,
+        "total_tokens": 248,
+        "input_token_details": {
+          "cache_read": 3
+        }
+      },
+      "claims": null
+    },
+    {
+      "request_id": "9643a69e-3f87-4513-9d98-c927e470425a",
+      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+      "status": "answered",
+      "route": {
+        "intent": "domain_qa",
+        "freshness_required": false
+      },
+      "answer": "EIA прогнозирует, что цена Brent в первом полугодии 2026 года составит в среднем $52 за баррель. [R4]\n\n\nИсточники:\n\n[R4] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 5: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=5",
+      "warnings": [],
+      "usage": {
+        "route": {
+          "output_tokens": 44,
+          "input_tokens": 260,
+          "total_tokens": 304,
+          "input_token_details": {
+            "cache_read": 3
+          }
+        },
+        "synthesis": {
+          "output_tokens": 148,
+          "input_tokens": 2692,
+          "total_tokens": 2840,
+          "input_token_details": {
+            "cache_read": 4
+          }
+        }
+      },
+      "claims": [
+        {
+          "text": "EIA прогнозирует, что цена Brent в первом полугодии 2026 года составит в среднем $52 за баррель.",
+          "source_id": "R4",
+          "quote": "We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26)."
+        }
+      ]
+    }
+  ],
+  "rag_usage_total_tokens": 6477,
+  "compact_schema_usage_tokens": 715,
+  "phase_usage_total_tokens": 7192,
+  "full_ouroboros_runtime": false
+}

@@ -145,7 +145,10 @@ def main():
 
         assert call("analyst", "health", {})["langgraph"]
         answer = call("analyst", "answer_question", {"question": "Спрогнозируй Brent на 3 месяца"})
-        assert answer["request_id"] and answer["status"] == "integration_only"
+        assert answer["request_id"] and answer["status"] in {
+            "insufficient_evidence",
+            "tool_unavailable",
+        }
         baseline = call("evolution", "get_status", {})
         proposal = {
             "base_sha": baseline["base_sha"],

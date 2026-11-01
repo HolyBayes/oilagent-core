@@ -29,7 +29,7 @@ def test_http_bearer_gate_and_health():
         assert response.status_code == 200
         result = response.json()["result"]
         assert not result.get("isError")
-        assert json.loads(result["content"][0]["text"])["stage"] == "integration_prototype"
+        assert json.loads(result["content"][0]["text"])["stage"] == "report_rag"
 
 
 def test_evolution_tool_catalog_has_no_release_or_shell(tmp_path, monkeypatch):

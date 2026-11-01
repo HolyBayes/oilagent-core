@@ -1,8 +1,24 @@
-# OilAgent — интеграционный прототип
+# OilAgent — аналитик публичных отчётов
 
-Первый этап тестового задания «Нефтегазовый аналитик». Сейчас реализованы общий LangGraph core, два настоящих HTTP MCP-сервиса и узкий Git backend кандидатов. **RAG, web, прогнозирование, UI, полноценная оценка качества и выпуск релизов ещё не реализованы.** Аналитический вызов честно возвращает `integration_only`, без вымышленных рыночных ответов.
+Прототип тестового задания «Нефтегазовый аналитик»: LangGraph, локальный поиск по двум публичным PDF OPEC/EIA, ответы с цитатами, два HTTP MCP-сервиса и Git backend кандидатов самоулучшения. **Web, расчётные прогнозы, UI, blind eval и выпуск релизов ещё не реализованы.** Недостаток данных приводит к отказу от ответа. Текущий корпус — исторические отчёты за октябрь 2025, а не актуальная рыночная картина.
 
 Архитектура: [ARCHITECTURE.md](ARCHITECTURE.md). Фактические результаты: [docs/INTEGRATION_STATUS.md](docs/INTEGRATION_STATUS.md).
+
+## Поиск по PDF
+
+После установки зависимостей из core/:
+
+```bash
+python scripts/index_reports.py --download
+python scripts/index_reports.py --query 'Что EIA прогнозировало для Brent в отчёте за октябрь 2025?'
+python scripts/eval_reports.py
+```
+
+Первый запуск скачивает фиксированные PDF и модель `intfloat/multilingual-e5-small` на точной revision. Embeddings считаются локально на CPU; GigaChat для индексации и поиска не используется. Повторная индексация не пересчитывает неизменившийся корпус; после загрузки модели поиск работает без сети. PDF, веса и Chroma находятся в ignored `workspace/`. URL, SHA256 и метаданные закреплены в `data/reports.json`; веса — в `config/embedding.json`. Пути и `RAG_TOP_K` настраиваются через system env / `.env.example`.
+
+Analyst MCP предоставляет `search_reports` без LLM и `answer_question` через общий graph. Ответ требует настроенной модели и обычно выполняет два запроса: маршрутизация и синтез. Выход содержит источник, дату выпуска и номер **PDF-страницы**; это не всегда печатный номер. Неизвестные ID, отсутствующие дословные цитаты и неподтверждённые числа отклоняются. Числовые ответы допускаются только с пяти страниц, визуально сверенных с PDF; графики и таблицы автоматически не интерпретируются. Проверка цитаты/чисел не доказывает смысловое соответствие утверждения источнику.
+
+Живой ответ и расход: [docs/RAG.md](docs/RAG.md). Четыре development-проверки включают известный промах OPEC; они не являются blind eval. Изменения evolution пока проверяются на синтетической fixture и не активируются в реальном поиске автоматически.
 
 ## Два репозитория
 
@@ -24,7 +40,7 @@ pytest -q
 python scripts/smoke_ouroboros.py
 ```
 
-Bootstrap инициализирует отдельный соседний Evolution Git, если он отсутствует; существующую историю сохраняет. Upstream checkout по умолчанию находится в `../workspace/upstream/ouroboros`. Bootstrap скачивает **точный SHA** из `config/ouroboros-pin.json`, создаёт локальный `.env` с разными случайными MCP-токенами и сохраняет существующий `.env`. Не запускает LLM или полный runtime Ouroboros. `requirements.lock` — snapshot окружения прототипа, включая зависимости проверки upstream; не lock полного desktop-runtime Ouroboros.
+Bootstrap инициализирует отдельный соседний Evolution Git, если он отсутствует; существующую историю сохраняет. Upstream checkout по умолчанию находится в `../workspace/upstream/ouroboros`. Bootstrap скачивает **точный SHA** из `config/ouroboros-pin.json`, создаёт локальный `.env` с разными случайными MCP-токенами и сохраняет существующий `.env`. Не запускает LLM или полный runtime Ouroboros. `requirements.lock` — snapshot окружения прототипа для macOS ARM64, включая локальные embeddings и зависимости проверки upstream; не lock полного desktop-runtime Ouroboros или проверка Linux wheel compatibility.
 
 Отсутствующая/пустая папка или Git без коммитов получают один seed commit: `policies/retrieval.json` и `ouroboros_skills/oilgas_analyst/SKILL.md`. Skill seed поставляется внутри Python-пакета core, в том числе wheel; после инициализации рабочая версия принадлежит evolution. Это не automatic review/enable или production release. Повторный запуск не добавляет коммитов и не заменяет существующую policy. Незакоммиченные конфликтующие артефакты или существующая история без требуемых main/policy дают явную ошибку вместо перезаписи.
 
@@ -113,7 +129,7 @@ python -m analyst.mcp_server evolution --port 8012
 docker compose up --build
 ```
 
-Поднимает только два MCP-процесса. Токены берутся из `.env`; upstream Ouroboros и UI в compose не включены. Порты опубликованы только на localhost. Evolution service монтирует `../evolution` в `/evolution`; runtime statuses находятся в отдельном named volume. UID контейнера должен иметь write-доступ к этому checkout; не меняйте права всего core ради доступа. В профиле local endpoint относится к контейнеру; для модели на macOS host используйте `http://host.docker.internal:<port>/v1`. Docker build/run ещё не проверены: в текущем окружении daemon недоступен.
+Поднимает только два MCP-процесса. Токены берутся из `.env`; upstream Ouroboros и UI в compose не включены. Порты опубликованы только на localhost. Для RAG сначала выполните индексацию на хосте: Analyst монтирует `workspace/rag` с записью для Chroma и `workspace/models` только для чтения. Загрузка PDF и модели в контейнерном startup не выполняется. Evolution service монтирует `../evolution` в `/evolution`; runtime statuses находятся в отдельном named volume. UID контейнера должен иметь write-доступ к этому checkout; не меняйте права всего core ради доступа. В профиле local endpoint относится к контейнеру; для модели на macOS host используйте `http://host.docker.internal:<port>/v1`. Docker build/run ещё не проверены: в текущем окружении daemon недоступен.
 
 ## Проверки и объём
 

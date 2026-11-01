@@ -1,0 +1,146 @@
+[
+  {
+    "case_id": "brent_h1",
+    "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+    "expected_publisher": "EIA",
+    "expected_page": 5,
+    "supporting_text": "$52/b in the first half of 2026",
+    "check": "supporting_passage",
+    "passed": true,
+    "retrieved": [
+      {
+        "publisher": "EIA",
+        "page": 6,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 3,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 18,
+        "offset": 1281
+      },
+      {
+        "publisher": "EIA",
+        "page": 5,
+        "offset": 0
+      }
+    ]
+  },
+  {
+    "case_id": "inventory",
+    "question": "What global oil inventory build does EIA forecast for 2026 in its October 2025 outlook?",
+    "expected_publisher": "EIA",
+    "expected_page": 6,
+    "supporting_text": "2.1 million b/d in 2026",
+    "check": "supporting_passage",
+    "passed": true,
+    "retrieved": [
+      {
+        "publisher": "EIA",
+        "page": 6,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 7,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 5,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 35,
+        "offset": 5226
+      }
+    ]
+  },
+  {
+    "case_id": "opec_growth",
+    "question": "Какой рост мирового спроса на нефть в 2025 году прогнозирует ОПЕК в отчёте за октябрь 2025?",
+    "expected_publisher": "OPEC",
+    "expected_page": 7,
+    "supporting_text": "1.3 mb/d",
+    "check": "supporting_passage",
+    "passed": false,
+    "retrieved": [
+      {
+        "publisher": "OPEC",
+        "page": 4,
+        "offset": 0
+      },
+      {
+        "publisher": "OPEC",
+        "page": 7,
+        "offset": 3420
+      },
+      {
+        "publisher": "OPEC",
+        "page": 8,
+        "offset": 0
+      },
+      {
+        "publisher": "OPEC",
+        "page": 89,
+        "offset": 905
+      }
+    ]
+  },
+  {
+    "case_id": "compare",
+    "question": "Compare OPEC and EIA October 2025 forecasts for global oil demand growth in 2025.",
+    "expected_publisher": null,
+    "expected_page": null,
+    "supporting_text": null,
+    "check": "publisher_coverage",
+    "passed": true,
+    "retrieved": [
+      {
+        "publisher": "OPEC",
+        "page": 7,
+        "offset": 3420
+      },
+      {
+        "publisher": "EIA",
+        "page": 37,
+        "offset": 6245
+      },
+      {
+        "publisher": "OPEC",
+        "page": 44,
+        "offset": 2055
+      },
+      {
+        "publisher": "EIA",
+        "page": 35,
+        "offset": 3976
+      },
+      {
+        "publisher": "OPEC",
+        "page": 8,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 36,
+        "offset": 5752
+      },
+      {
+        "publisher": "OPEC",
+        "page": 4,
+        "offset": 0
+      },
+      {
+        "publisher": "EIA",
+        "page": 7,
+        "offset": 0
+      }
+    ]
+  }
+]

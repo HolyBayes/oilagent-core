@@ -14,6 +14,7 @@ from analyst.config import CORE_ROOT, evolution_repo, workspace
 from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
 from analyst.graph import answer_question
+from analyst.rag import ReportIndex
 
 
 def create_server(kind: str, host: str, port: int):
@@ -27,9 +28,9 @@ def create_server(kind: str, host: str, port: int):
             """Report actual prototype capabilities; no model calls or secrets."""
             return {
                 "service": "analyst",
-                "stage": "integration_prototype",
+                "stage": "report_rag",
                 "langgraph": True,
-                "rag": False,
+                "rag": (ReportIndex().directory / "index.json").exists(),
                 "web": False,
                 "forecast": False,
             }
@@ -38,6 +39,14 @@ def create_server(kind: str, host: str, port: int):
         def answer(question: Annotated[str, Field(min_length=1, max_length=4000)]) -> dict:
             """Call the shared LangGraph core. Missing data is reported explicitly."""
             return answer_question(question)
+
+        @server.tool()
+        def search_reports(
+            query: Annotated[str, Field(min_length=1, max_length=4000)],
+            top_k: Annotated[int, Field(ge=1, le=12)] = 4,
+        ) -> list[dict]:
+            """Search PDFs locally with source passages, publication dates and PDF pages."""
+            return ReportIndex().search(query, top_k=top_k)
     else:
         backend = Evolution(workspace(), repo=evolution_repo())
 

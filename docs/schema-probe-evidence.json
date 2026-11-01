@@ -1,0 +1,44 @@
+{
+  "functions": [
+    "mcp_evolution__propose_change",
+    "mcp_evolution__get_diff",
+    "mcp_evolution__run_checks",
+    "mcp_evolution__request_review",
+    "mcp_evolution__get_status"
+  ],
+  "live": true,
+  "full_ouroboros_runtime": false,
+  "transport": "in_process_mcp",
+  "usage": {
+    "prompt_tokens": 535,
+    "completion_tokens": 180,
+    "total_tokens": 715,
+    "precached_prompt_tokens": 3
+  },
+  "candidate": {
+    "base_sha": "37b7faca298e254008554a84f1cbe76be2d0f440",
+    "artifact": "policies/retrieval.json",
+    "policy": {
+      "comparison_strategy": "per_publisher",
+      "top_k_per_publisher": 2
+    },
+    "rationale": "Restoring publisher coverage after pooled search returned only A when comparing publishers A and B.",
+    "trace_id": "schema-probe",
+    "candidate_id": "aa2727b01a07e3fe262c0049cceae252",
+    "candidate_sha": "01fdb46096002c1fad699daff0a946b0b3e1025b",
+    "payload_hash": "ed74de2800d4abecb85c005cfc749eedc7dd40fc53e1a8f920f6211b208d0c98",
+    "status": "CHECKS_PASSED",
+    "release_available": false,
+    "checks": {
+      "passed": true,
+      "fixture_coverage_before": 0.5,
+      "fixture_coverage_after": 1.0,
+      "scope": "synthetic integration fixture; not a blind quality eval",
+      "candidate_sha": "01fdb46096002c1fad699daff0a946b0b3e1025b",
+      "candidate_id": "aa2727b01a07e3fe262c0049cceae252",
+      "base_sha": "37b7faca298e254008554a84f1cbe76be2d0f440",
+      "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex eca59c0..2e8f8bb 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,4 +1,4 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n+  \"comparison_strategy\": \"per_publisher\",\n   \"top_k_per_publisher\": 2\n }",
+      "diff_sha256": "7184906b1cabcab5788db18f646b3a4f2e3a3eb64675cb7d10c77a57a06fe7b6"
+    }
+  }
+}
