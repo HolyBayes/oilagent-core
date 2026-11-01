@@ -9,7 +9,7 @@ import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 
-from analyst.config import structured_model
+from analyst.config import invoke_structured
 from analyst.contracts import CriticVerdict, RetrievalPolicy
 from analyst.graph import select_evidence
 
@@ -228,7 +228,8 @@ class Evolution:
             if not state.get("checks", {}).get("passed"):
                 raise ValueError("Checks must pass before review")
             try:
-                critic = structured_model(CriticVerdict).invoke(
+                critic, usage = invoke_structured(
+                    CriticVerdict,
                     [
                         (
                             "system",
@@ -244,7 +245,7 @@ class Evolution:
                                 {"diff": self.diff(candidate_id), "checks": state["checks"]}
                             ),
                         ),
-                    ]
+                    ],
                 )
             except Exception as exc:
                 state["status"] = "REVIEW_BLOCKED"
@@ -254,5 +255,6 @@ class Evolution:
                 state["review_error_type"] = type(exc).__name__
                 return self.save(state)
             state["critic"] = {**critic.model_dump(), "candidate_sha": state["candidate_sha"]}
+            state["critic_usage"] = usage
             state["status"] = "REVIEWED_UNRELEASED"
             return self.save(state)

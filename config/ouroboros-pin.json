@@ -2,5 +2,5 @@
   "repository": "https://github.com/razzant/ouroboros.git",
   "commit": "add0ce3296c722ef99a536c52f8dcddf36494b36",
   "version": "7.9.0",
-  "integration": "MCPManager over streamable_http; full agent and skill review require separate live checks"
+  "integration": "Live core MCP and native skill review/enable verified; native author failed HTTP 422; see docs/LIVE_INTEGRATION.md"
 }

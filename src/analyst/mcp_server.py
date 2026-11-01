@@ -45,13 +45,20 @@ def create_server(kind: str, host: str, port: int):
         def propose_change(
             base_sha: str,
             artifact: str,
-            policy: RetrievalPolicy,
+            policy: Annotated[dict, Field(json_schema_extra=RetrievalPolicy.model_json_schema())],
             rationale: Annotated[str, Field(min_length=1, max_length=2000)],
             trace_id: Annotated[str, Field(max_length=128)],
             idempotency_key: str,
         ) -> dict:
             """Create a policy-only Git candidate. Cannot change code, tests or permissions."""
-            return backend.propose(base_sha, artifact, policy, rationale, trace_id, idempotency_key)
+            return backend.propose(
+                base_sha,
+                artifact,
+                RetrievalPolicy.model_validate(policy),
+                rationale,
+                trace_id,
+                idempotency_key,
+            )
 
         @server.tool()
         def get_diff(candidate_id: str) -> dict:
@@ -69,7 +76,7 @@ def create_server(kind: str, host: str, port: int):
             return backend.review(candidate_id)
 
         @server.tool()
-        def get_status(candidate_id: str | None = None) -> dict:
+        def get_status(candidate_id: str = "") -> dict:
             """Read candidate status, or trusted baseline when candidate_id is omitted."""
             return backend.load(candidate_id) if candidate_id else backend.baseline()
 

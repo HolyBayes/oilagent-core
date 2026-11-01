@@ -82,10 +82,70 @@ def test_provider_error_does_not_leak_secret(monkeypatch):
 
     monkeypatch.setattr(module, "model_ready", lambda: True)
 
-    def broken(schema):
+    def broken(schema, messages):
         raise RuntimeError("credential=DO-NOT-LEAK")
 
-    monkeypatch.setattr(module, "structured_model", broken)
+    monkeypatch.setattr(module, "invoke_structured", broken)
     result = module.answer_question("Спрос на нефть?")
     assert result["status"] == "failed"
     assert "DO-NOT-LEAK" not in str(result)
+
+
+@pytest.mark.parametrize("provider", ["gigachat", "openai"])
+@pytest.mark.parametrize("limit", [None, "", "None", "NOne", "1024"])
+def test_optional_output_limit(provider, limit, monkeypatch):
+    import analyst.config as config
+
+    monkeypatch.setattr(config, "load_dotenv", lambda *args, **kwargs: None)
+    monkeypatch.setenv("LLM_PROVIDER", provider)
+    monkeypatch.setenv("LLM_MODEL", "test")
+    monkeypatch.setenv("GIGACHAT_CREDENTIALS", "test-only")
+    monkeypatch.setenv("LLM_API_KEY", "test-only")
+    if limit is None:
+        monkeypatch.delenv("LLM_MAX_OUTPUT_TOKENS", raising=False)
+    else:
+        monkeypatch.setenv("LLM_MAX_OUTPUT_TOKENS", limit)
+    client = config.chat_model()
+    assert client.max_tokens == (1024 if limit == "1024" else None)
+    if limit != "1024":
+        from langchain_core.messages import HumanMessage
+
+        messages = [HumanMessage(content="test")]
+        payload = (
+            client._build_payload(messages).model_dump(exclude_none=True)
+            if provider == "gigachat"
+            else client._get_request_payload(messages)
+        )
+        assert "max_tokens" not in payload and "max_completion_tokens" not in payload
+
+
+def test_gigachat_structured_schemas_construct_without_network(monkeypatch):
+    from analyst.config import structured_model
+    from analyst.contracts import CriticVerdict, Route
+
+    monkeypatch.setenv("LLM_PROVIDER", "gigachat")
+    monkeypatch.setenv("GIGACHAT_CREDENTIALS", "test-only")
+    for schema in [Route, CriticVerdict]:
+        assert structured_model(schema) is not None
+
+
+def test_structured_call_preserves_token_usage(monkeypatch):
+    from types import SimpleNamespace
+
+    import analyst.config as config
+    from analyst.contracts import Route
+
+    parsed = Route(intent="forecast", freshness_required=False)
+    usage = {"input_tokens": 12, "output_tokens": 6, "total_tokens": 18}
+
+    class FakeModel:
+        def invoke(self, messages):
+            return {
+                "parsed": parsed,
+                "raw": SimpleNamespace(usage_metadata=usage),
+                "parsing_error": None,
+            }
+
+    monkeypatch.setattr(config, "structured_model", lambda *a, **kw: FakeModel())
+    result, measured = config.invoke_structured(Route, [("human", "Brent forecast")])
+    assert result == parsed and measured == usage

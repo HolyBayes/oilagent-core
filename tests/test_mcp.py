@@ -49,3 +49,27 @@ def test_evolution_tool_catalog_has_no_release_or_shell(tmp_path, monkeypatch):
         )
         names = {t["name"] for t in response.json()["result"]["tools"]}
         assert names == {"propose_change", "get_diff", "run_checks", "request_review", "get_status"}
+        wire = json.dumps(response.json()["result"]["tools"])
+        assert '"$ref"' not in wire and '"$defs"' not in wire and '"anyOf"' not in wire
+        args = {
+            "base_sha": "0" * 40,
+            "artifact": "policies/retrieval.json",
+            "policy": {"allow_unverified_sources": True},
+            "rationale": "bad policy",
+            "trace_id": "test",
+            "idempotency_key": "unsafe-schema",
+        }
+        rejected = client.post(
+            "/mcp",
+            headers={
+                "Authorization": "Bearer token",
+                "Accept": "application/json, text/event-stream",
+            },
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "propose_change", "arguments": args},
+            },
+        )
+        assert rejected.json()["result"]["isError"]

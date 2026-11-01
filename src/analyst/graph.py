@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from langgraph.graph import END, START, StateGraph
 
-from analyst.config import model_ready, structured_model
+from analyst.config import invoke_structured, model_ready
 from analyst.contracts import RetrievalPolicy, Route
 
 
@@ -29,12 +29,14 @@ class State(TypedDict, total=False):
     status: str
     answer: str
     warnings: list[str]
+    usage: dict
 
 
 def route(state: State) -> dict:
     if not model_ready():
         return {"route": None, "warnings": ["llm_not_configured"]}
-    result = structured_model(Route).invoke(
+    result, usage = invoke_structured(
+        Route,
         [
             (
                 "system",
@@ -44,9 +46,9 @@ def route(state: State) -> dict:
                 "Current news/prices require freshness.",
             ),
             ("human", state["question"]),
-        ]
+        ],
     )
-    return {"route": result.model_dump(), "warnings": []}
+    return {"route": result.model_dump(), "warnings": [], "usage": usage}
 
 
 def respond(state: State) -> dict:

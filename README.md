@@ -49,7 +49,7 @@ Smoke поднимает два процесса на свободных localho
 
 ```dotenv
 LLM_PROVIDER=gigachat
-GIGACHAT_MODEL=GigaChat
+GIGACHAT_MODEL=GigaChat-2-Max
 GIGACHAT_CREDENTIALS=<локальный секрет>
 GIGACHAT_SCOPE=GIGACHAT_API_PERS
 GIGACHAT_CA_BUNDLE_FILE=/absolute/path/to/ca-bundle.pem
@@ -86,7 +86,7 @@ LLM_STRUCTURED_METHOD=function_calling
 python scripts/smoke_ouroboros.py --live
 ```
 
-Будут выполнены routing и отдельный critic. Это ещё не авторство кандидата LLM: smoke отправляет заранее заданную policy, чтобы проверить интерфейс. Полный агентный прогон — следующий gate после настройки runtime Ouroboros.
+Будут выполнены routing и отдельный critic. Это ещё не авторство кандидата LLM: smoke отправляет заранее заданную policy, чтобы проверить интерфейс. Успешный живой прогон сохранён; полный author-прогон дошёл до загрузки схем и получил HTTP 422, подробности — в docs/LIVE_INTEGRATION.md.
 
 ## Два сервиса
 
@@ -105,7 +105,7 @@ python -m analyst.mcp_server evolution --port 8012
 
 `run_checks` использует фиксированную **синтетическую** ranked-list fixture: переход pooled → per_publisher повышает покрытие издателей с 0.5 до 1.0. Это проверка работающей ветви policy, не blind eval и не доказательство качества retrieval. Отсутствие улучшения отклоняется. Без модели critic получает `REVIEW_BLOCKED`. Даже при critic APPROVE остаётся `REVIEWED_UNRELEASED`: release/approval/merge endpoint отсутствует.
 
-Прототип не исполняет candidate Python и не предоставляет shell tools. OS-изоляция автора Ouroboros от trusted runner пока не продемонстрирована; разные bearer-токены сами по себе её не обеспечивают. Пока нет production security или денежных гарантий; доступны request timeouts, ограниченный output и отсутствие автоматических retries модели.
+Прототип не исполняет candidate Python и не предоставляет shell tools. OS-изоляция автора Ouroboros от trusted runner пока не продемонстрирована; разные bearer-токены сами по себе её не обеспечивают. Пока нет production security или денежных гарантий. Есть request timeouts, ограничение входа structured requests и отключённые retries модели. **Лимита output по умолчанию нет**: LLM_MAX_OUTPUT_TOKENS не задан / пуст / None означает, что max_tokens не передаётся. Положительное число включает явный лимит. Проверено для GigaChat и OpenAI-совместимого клиента на уровне сформированного payload; пределы самого провайдера сохраняются.
 
 ## Контейнеры
 
@@ -125,3 +125,9 @@ find src scripts tests -name '*.py' -type f -exec wc -l {} +
 ```
 
 Тесты проверяют защищённые пути/schema, Git isolation main/candidate, повторные proposal/conflicts после рестарта, no-improvement reject, fail-closed critic, отсутствие вымышленных ответов и конфигурацию трёх провайдеров. Успех этих тестов не заменяет eval на публичном корпусе и полноценный Ouroboros agent run.
+
+## Полный Ouroboros и экономия токенов
+
+Профиль провайдера: `LLM_PROVIDER=gigachat|openai|local`, как у core. Runtime использует отдельные checkout/data/venv, `blocking` review и отключённые auto-grants. Он не обновляет upstream и не выпускает domain candidate. Подробные команды, расход и неподтверждённые gates: [docs/LIVE_INTEGRATION.md](docs/LIVE_INTEGRATION.md).
+
+Новые live-запуски не входят в pytest. Успешное review того же content hash переиспользуется без повторного запроса. Core сохраняет provider usage в route/critic result; это не глобальная квота на API-аккаунт. Полный Ouroboros имеет большой постоянный контекст: подтверждённый расход review + первого неуспешного author task — 120556 токенов, плюс короткий core smoke и записи без usage. Не запускать этот тяжёлый цикл на каждый пользовательский вопрос.

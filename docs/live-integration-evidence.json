@@ -1,0 +1,79 @@
+{
+  "upstream_sha": "add0ce3296c722ef99a536c52f8dcddf36494b36",
+  "provider": "gigachat",
+  "model": "GigaChat-2-Max",
+  "tls_verification": true,
+  "live_core_mcp_passed": true,
+  "critic_verdict": "REQUEST_CHANGES",
+  "native_skill": {
+    "skill": "oilgas_analyst",
+    "enabled": true,
+    "review_status": "clean",
+    "review_stale": false,
+    "executable_review": true,
+    "content_hash": "e8b88bf266a40bb47d07b3dd8595ca41475a68b7ab389c7b3fbb84992fbd7423"
+  },
+  "native_author_task": {
+    "id": "5fd897b03fed48bf",
+    "status": "failed",
+    "http_status": 422,
+    "candidate_created": false,
+    "completed_tools": [
+      "list_available_tools",
+      "enable_tools"
+    ],
+    "schema_issue_hypothesis": "Pinned native GigaChat path forwarded $ref/$defs and nullable anyOf; provider rejected after schema enable",
+    "schema_fix": "MCP schema now inline and non-nullable; strict server validation retained",
+    "schema_fix_verified": "offline tests and keyless transport only; no paid native rerun"
+  },
+  "native_usage_ledger": [
+    {
+      "task_id": "api_skill_review",
+      "model": "gigachat/GigaChat",
+      "state": "unresolved",
+      "input_tokens": null,
+      "output_tokens": null
+    },
+    {
+      "task_id": "api_skill_review",
+      "model": "gigachat/GigaChat-2-Max",
+      "state": "settled",
+      "input_tokens": 43430,
+      "output_tokens": 6
+    },
+    {
+      "task_id": "5fd897b03fed48bf",
+      "model": "gigachat/GigaChat-2-Max",
+      "state": "settled",
+      "input_tokens": 38136,
+      "output_tokens": 27
+    },
+    {
+      "task_id": "5fd897b03fed48bf",
+      "model": "gigachat/GigaChat-2-Max",
+      "state": "settled",
+      "input_tokens": 38920,
+      "output_tokens": 37
+    },
+    {
+      "task_id": "5fd897b03fed48bf",
+      "model": "gigachat/GigaChat-2-Max",
+      "state": "settled",
+      "input_tokens": null,
+      "output_tokens": null
+    },
+    {
+      "task_id": "5fd897b03fed48bf",
+      "model": "gigachat/GigaChat-2-Max",
+      "state": "settled",
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  ],
+  "native_known_tokens": 120556,
+  "native_missing_usage_attempts": 3,
+  "core_smoke_usage": "not retained by old structured-output wrapper; subsequent calls record usage metadata",
+  "release_available": false,
+  "output_limit_default": null,
+  "schema_fix_keyless_report": "workspace/smoke/8999319351cd4a38b195415fcee2c26a/report.json"
+}
