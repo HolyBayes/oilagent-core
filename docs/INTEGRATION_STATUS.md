@@ -13,7 +13,7 @@
 - Fixed check исполняет реальную ветвь retrieval-policy на синтетической ranked-list fixture: publisher coverage 0.5 → 1.0. Это только интеграционный пример, не метрика на реальном корпусе.
 - Без LLM critic возвращает `REVIEW_BLOCKED`, approval не создаётся. Во всём прототипе `release_available=false`; merge/release tools отсутствуют.
 - Полный Ouroboros server запущен на pin. Local-source skill зарегистрирован штатно (для него copy/install не нужен), прошёл clean review exact hash и enable без owner-attestation. Подробности: [LIVE_INTEGRATION.md](LIVE_INTEGRATION.md).
-- 70 offline-тестов проходят. Покрыты отсутствующая/пустая папка, unborn Git main/master, повторный запуск, сохранение существующей policy и приоритет system env над .env. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
+- 72 offline-тестов проходят. Покрыты отсутствующая/пустая папка, unborn Git main/master, повторный запуск, сохранение существующей policy и приоритет system env над .env. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
 - В коде поддержаны GigaChat, внешний OpenAI-compatible API и локальный OpenAI-compatible endpoint без обязательного ключа. Живые structured routing и domain critic проверены на GigaChat-2-Max; другие провайдеры пока проверены offline.
 
 Сохранённый результат HTTP-прогона: [integration-evidence.json](integration-evidence.json). Генератор: [smoke_ouroboros.py](../scripts/smoke_ouroboros.py). Сырые логи и полный runtime state — в ignored workspace, без публикации tokens.
@@ -34,7 +34,7 @@
 
 ## Следующие gates
 
-1. Исправить известный промах OPEC и добавить независимый development/holdout eval; текущее присутствие издателей не доказывает фактическую полноту ответа.
+1. Промах OPEC исправлен; отложенные вопросы показывают 4/9 вместо 3/9 без регрессий. Разобрать пять оставшихся промахов и расширить оценку на другие выпуски. Текущее присутствие издателей не доказывает фактическую полноту ответа. [Результаты](RETRIEVAL_EVAL.md).
 2. Реализовать web и два forecast-метода с backtest, затем UI.
 3. Связать кандидат retrieval-policy с реальной оценкой на корпусе; добавить human release/rollback и подтвердить isolation.
 4. Повтор полного Main worker только после уменьшения его контекста; compact schema probe не заменяет этот gate. Сохранить текущее hash-bound skill review.

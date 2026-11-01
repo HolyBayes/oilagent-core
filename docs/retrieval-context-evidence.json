@@ -1,0 +1,423 @@
+{
+  "date": "2026-11-01",
+  "baseline_commit": "c1117e9",
+  "holdout_frozen_commit": "c1117e9",
+  "candidate_patch_sha256": "45365372b894c38a4053ffc835bd036411746d265bc031eda4a5c5311013e211",
+  "scope": "Fixed support spans in retrieved and budgeted evidence; not generated-answer quality. Same-corpus held-out questions, not blind external evaluation.",
+  "llm_calls": 0,
+  "gigachat_tokens": 0,
+  "top_k_per_publisher": 4,
+  "context_char_budget": 10000,
+  "page_intro_max_chars": 800,
+  "index": {
+    "collection": "reports_05f766f8eba656d0eacb",
+    "corpus_hash": "05f766f8eba656d0eacb017e4f0dfe7c604f606d495d11a8a4f5b4d9c0922ea6",
+    "embedding": {
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+    },
+    "chunks": 475,
+    "warnings": [],
+    "indexed_at": "2026-11-01T15:34:07.215913+00:00"
+  },
+  "baseline_reproduced_against_pre_change_run": true,
+  "splits": {
+    "development": {
+      "split_sha256": "311ccfb420f03e3b08ead120e2e773285199a30f8d6ff2a4c4b7e87dbdda38a5",
+      "total": 4,
+      "before": {
+        "retrieved": 3,
+        "in_context": 3
+      },
+      "after": {
+        "retrieved": 4,
+        "in_context": 4
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "case_id": "brent_h1",
+          "before_retrieved": true,
+          "after_retrieved": true,
+          "before_in_context": true,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "EIA",
+              "page": 6,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 3,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 18,
+              "offset": 1281
+            },
+            {
+              "publisher": "EIA",
+              "page": 5,
+              "offset": 0
+            }
+          ]
+        },
+        {
+          "case_id": "inventory",
+          "before_retrieved": true,
+          "after_retrieved": true,
+          "before_in_context": true,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "EIA",
+              "page": 6,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 7,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 5,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 35,
+              "offset": 5226
+            }
+          ]
+        },
+        {
+          "case_id": "opec_growth",
+          "before_retrieved": false,
+          "after_retrieved": true,
+          "before_in_context": false,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 4,
+              "offset": 0
+            },
+            {
+              "publisher": "OPEC",
+              "page": 7,
+              "offset": 3420
+            },
+            {
+              "publisher": "OPEC",
+              "page": 8,
+              "offset": 0
+            },
+            {
+              "publisher": "OPEC",
+              "page": 89,
+              "offset": 905
+            }
+          ]
+        },
+        {
+          "case_id": "compare",
+          "before_retrieved": true,
+          "after_retrieved": true,
+          "before_in_context": true,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 7,
+              "offset": 3420
+            },
+            {
+              "publisher": "EIA",
+              "page": 37,
+              "offset": 6245
+            },
+            {
+              "publisher": "OPEC",
+              "page": 44,
+              "offset": 2055
+            }
+          ]
+        }
+      ]
+    },
+    "holdout": {
+      "split_sha256": "48d60df9f6360254862f4d03c90eff4620d5b8519a5578988e71a7d042fbb7ed",
+      "total": 9,
+      "before": {
+        "retrieved": 3,
+        "in_context": 3
+      },
+      "after": {
+        "retrieved": 4,
+        "in_context": 4
+      },
+      "regressions": [],
+      "cases": [
+        {
+          "case_id": "eia_september",
+          "before_retrieved": true,
+          "after_retrieved": true,
+          "before_in_context": true,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "EIA",
+              "page": 59,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 58,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 3,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 5,
+              "offset": 0
+            }
+          ]
+        },
+        {
+          "case_id": "eia_q4_stock",
+          "before_retrieved": true,
+          "after_retrieved": true,
+          "before_in_context": true,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "EIA",
+              "page": 58,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 6,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 40,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 5,
+              "offset": 0
+            }
+          ]
+        },
+        {
+          "case_id": "eia_supply",
+          "before_retrieved": false,
+          "after_retrieved": false,
+          "before_in_context": false,
+          "after_in_context": false,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 27,
+              "offset": 3837
+            },
+            {
+              "publisher": "EIA",
+              "page": 36,
+              "offset": 5752
+            },
+            {
+              "publisher": "OPEC",
+              "page": 89,
+              "offset": 905
+            },
+            {
+              "publisher": "EIA",
+              "page": 35,
+              "offset": 5226
+            }
+          ]
+        },
+        {
+          "case_id": "eia_opec_2026",
+          "before_retrieved": false,
+          "after_retrieved": false,
+          "before_in_context": false,
+          "after_in_context": false,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 57,
+              "offset": 2200
+            },
+            {
+              "publisher": "EIA",
+              "page": 3,
+              "offset": 1230
+            },
+            {
+              "publisher": "OPEC",
+              "page": 52,
+              "offset": 1131
+            }
+          ]
+        },
+        {
+          "case_id": "opec_basket",
+          "before_retrieved": false,
+          "after_retrieved": false,
+          "before_in_context": false,
+          "after_in_context": false,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 16,
+              "offset": 1279
+            },
+            {
+              "publisher": "OPEC",
+              "page": 70,
+              "offset": 1930
+            },
+            {
+              "publisher": "OPEC",
+              "page": 11,
+              "offset": 2545
+            },
+            {
+              "publisher": "OPEC",
+              "page": 95,
+              "offset": 0
+            }
+          ]
+        },
+        {
+          "case_id": "opec_2026",
+          "before_retrieved": true,
+          "after_retrieved": true,
+          "before_in_context": true,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 8,
+              "offset": 0
+            },
+            {
+              "publisher": "OPEC",
+              "page": 85,
+              "offset": 1152
+            },
+            {
+              "publisher": "OPEC",
+              "page": 4,
+              "offset": 0
+            },
+            {
+              "publisher": "OPEC",
+              "page": 7,
+              "offset": 3420
+            }
+          ]
+        },
+        {
+          "case_id": "opec_2024",
+          "before_retrieved": false,
+          "after_retrieved": true,
+          "before_in_context": false,
+          "after_in_context": true,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 75,
+              "offset": 2288
+            },
+            {
+              "publisher": "OPEC",
+              "page": 7,
+              "offset": 3420
+            },
+            {
+              "publisher": "OPEC",
+              "page": 44,
+              "offset": 2055
+            },
+            {
+              "publisher": "OPEC",
+              "page": 72,
+              "offset": 2443
+            }
+          ]
+        },
+        {
+          "case_id": "opec_china",
+          "before_retrieved": false,
+          "after_retrieved": false,
+          "before_in_context": false,
+          "after_in_context": false,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 7,
+              "offset": 3420
+            },
+            {
+              "publisher": "OPEC",
+              "page": 61,
+              "offset": 2001
+            },
+            {
+              "publisher": "OPEC",
+              "page": 47,
+              "offset": 2186
+            },
+            {
+              "publisher": "OPEC",
+              "page": 44,
+              "offset": 2055
+            }
+          ]
+        },
+        {
+          "case_id": "compare_2026",
+          "before_retrieved": false,
+          "after_retrieved": false,
+          "before_in_context": false,
+          "after_in_context": false,
+          "selected_sources": [
+            {
+              "publisher": "OPEC",
+              "page": 7,
+              "offset": 0
+            },
+            {
+              "publisher": "EIA",
+              "page": 6,
+              "offset": 1604
+            },
+            {
+              "publisher": "OPEC",
+              "page": 85,
+              "offset": 1152
+            },
+            {
+              "publisher": "EIA",
+              "page": 7,
+              "offset": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

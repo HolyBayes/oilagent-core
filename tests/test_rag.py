@@ -8,7 +8,7 @@ import pytest
 
 from analyst import graph as pipeline
 from analyst.contracts import ReportClaim, ReportDraft, Route
-from analyst.evidence import render_answer, validate_claims
+from analyst.evidence import fit_context, render_answer, validate_claims
 from analyst.rag import ReportIndex, digest, page_chunks
 
 
@@ -86,15 +86,28 @@ def test_neighboring_chunks_do_not_crowd_out_other_pages(index):
     vector = index.model().encode(["query: " + query])[0]
     other = vector.copy()
     other[0] += 0.5
-    metadata = {"publisher": "EIA", "doc_id": "EIA", "page": 1}
+    metadata = {"publisher": "EIA", "doc_id": "EIA", "page": 1, "numeric_verified": True}
     collection.upsert(
         ids=["neighbor1", "neighbor2", "next_page"],
         documents=["neighbor one", "neighbor two", "different page"],
-        embeddings=[vector.tolist(), vector.tolist(), other.tolist()],
-        metadatas=[metadata, metadata, metadata | {"page": 2}],
+        embeddings=[vector.tolist(), other.tolist(), other.tolist()],
+        metadatas=[
+            metadata | {"offset": 100},
+            metadata | {"offset": 0},
+            metadata | {"page": 2, "offset": 0},
+        ],
     )
     rows = index.search(query, 2)
     assert {r["page"] for r in rows} == {1, 2}
+    assert rows[0]["page_intro"] == "neighbor two"
+    assert rows[0]["intro_chunk_id"] == "neighbor2"
+    draft = ReportDraft(
+        claims=[ReportClaim(text="Подтверждено", source_id="R1", quote="neighbor two")],
+        abstain=False,
+    )
+    assert len(validate_claims(draft, rows)[0]) == 1
+    draft.claims[0].quote = "neighbor two neighbor one"
+    assert validate_claims(draft, rows) == ([], ["invalid_citation"])
 
 
 def test_chunks_cover_text_with_token_overlap():
@@ -123,6 +136,30 @@ def test_invalid_claims_are_removed(changes, warning):
     source = {"source_id": "R1", "text": "Price 52 in 2026", "numeric_verified": True}
     draft = ReportDraft(claims=[ReportClaim(**(claim | changes))], abstain=False)
     assert validate_claims(draft, [source]) == ([], [warning])
+
+
+def test_intro_quotes_keep_numeric_gate_and_source_identity():
+    sources = [
+        {
+            "source_id": "R1",
+            "text": "Unrelated text",
+            "page_intro": "Growth 1.3 in 2025",
+            "numeric_verified": False,
+        },
+        {"source_id": "R2", "text": "Different source", "numeric_verified": True},
+    ]
+    claim = ReportClaim(text="Рост 1.3 в 2025 году", source_id="R1", quote="Growth 1.3 in 2025")
+    draft = ReportDraft(claims=[claim], abstain=False)
+    assert validate_claims(draft, sources) == ([], ["unverified_number"])
+    claim.source_id = "R2"
+    assert validate_claims(draft, sources) == ([], ["invalid_citation"])
+
+
+def test_intro_is_included_in_context_budget():
+    first = {"source_id": "R1", "text": "x" * 4000, "page_intro": "x" * 800}
+    second = {"source_id": "R2", "text": "x" * 4000, "page_intro": "x" * 800}
+    third = {"source_id": "R3", "text": "x" * 300}
+    assert fit_context([first, second, third], "x" * 100) == [first, second]
 
 
 def test_graph_answer_and_numeric_gate(index, monkeypatch):

@@ -1,6 +1,18 @@
+import json
 import re
 
 from analyst.contracts import ReportDraft
+
+
+def fit_context(rows, question):
+    selected, size = [], 0
+    for row in rows:
+        length = len(json.dumps(row, ensure_ascii=False))
+        if size + length > 10000 - len(question):
+            break
+        selected.append(row)
+        size += length
+    return selected
 
 
 def numbers(text):
@@ -17,7 +29,7 @@ def validate_claims(draft: ReportDraft, evidence):
         if (
             not source
             or not claim.quote.strip()
-            or claim.quote not in source["text"]
+            or not any(claim.quote in source.get(k, "") for k in ["text", "page_intro"])
             or re.search(r"https?://|\[(?:R|W)\d+\]", claim.text)
         ):
             warnings.append("invalid_citation")

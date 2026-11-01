@@ -157,7 +157,7 @@ class ReportIndex:
         temp.replace(pointer)
         return result
 
-    def search(self, query, top_k=4):
+    def search(self, query, top_k=4, *, include_context=True):
         if not 1 <= top_k <= 12:
             raise ValueError("top_k must be between 1 and 12")
         pointer = self.directory / "index.json"
@@ -199,4 +199,17 @@ class ReportIndex:
             ranked.append(rows[:top_k])
         # Interleave publishers before the shared context budget is applied.
         rows = [row for pair in zip_longest(*ranked) for row in pair if row is not None][:12]
+        if include_context:
+            for row in rows:
+                if not row.get("offset"):
+                    continue
+                intro = collection.get(
+                    where={
+                        "$and": [{"doc_id": row["doc_id"]}, {"page": row["page"]}, {"offset": 0}]
+                    }
+                )
+                if intro["ids"]:
+                    text = intro["documents"][0]
+                    row["page_intro"] = text[:800].rsplit(" ", 1)[0] if len(text) > 800 else text
+                    row["intro_chunk_id"] = intro["ids"][0]
         return [{**row, "source_id": f"R{i}"} for i, row in enumerate(rows, 1)]
