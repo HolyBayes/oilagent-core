@@ -1,0 +1,4 @@
+{
+  "comparison_strategy": "pooled",
+  "top_k_per_publisher": 2
+}

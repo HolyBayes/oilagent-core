@@ -1,0 +1,277 @@
+{
+  "ouroboros_sha": "add0ce3296c722ef99a536c52f8dcddf36494b36",
+  "live_model_requested": false,
+  "transport": "real streamable_http via unmodified Ouroboros MCPManager",
+  "autonomous_agent_run": false,
+  "release_available": false,
+  "events": [
+    {
+      "service": "analyst",
+      "unauthorized_status": 401
+    },
+    {
+      "service": "evolution",
+      "unauthorized_status": 401
+    },
+    {
+      "cross_service_token_status": 401
+    },
+    {
+      "listing": {
+        "ok": true,
+        "published": true,
+        "error": "",
+        "publication_error": "",
+        "server_id": "analyst",
+        "tool_count": 2,
+        "configuration_warnings": [],
+        "tool_name_collisions": [],
+        "tools": [
+          {
+            "name": "health",
+            "prefixed_name": "mcp_analyst__health",
+            "description": "Report actual prototype capabilities; no model calls or secrets."
+          },
+          {
+            "name": "answer_question",
+            "prefixed_name": "mcp_analyst__answer_question",
+            "description": "Call the shared LangGraph core. Missing data is reported explicitly."
+          }
+        ]
+      }
+    },
+    {
+      "listing": {
+        "ok": true,
+        "published": true,
+        "error": "",
+        "publication_error": "",
+        "server_id": "evolution",
+        "tool_count": 5,
+        "configuration_warnings": [],
+        "tool_name_collisions": [],
+        "tools": [
+          {
+            "name": "propose_change",
+            "prefixed_name": "mcp_evolution__propose_change",
+            "description": "Create a policy-only Git candidate. Cannot change code, tests or permissions."
+          },
+          {
+            "name": "get_diff",
+            "prefixed_name": "mcp_evolution__get_diff",
+            "description": "Read exact candidate diff and full SHA fingerprints."
+          },
+          {
+            "name": "run_checks",
+            "prefixed_name": "mcp_evolution__run_checks",
+            "description": "Run a fixed synthetic integration check, not a real market quality evaluation."
+          },
+          {
+            "name": "request_review",
+            "prefixed_name": "mcp_evolution__request_review",
+            "description": "Request a separate LLM critic. No configured LLM means REVIEW_BLOCKED."
+          },
+          {
+            "name": "get_status",
+            "prefixed_name": "mcp_evolution__get_status",
+            "description": "Read candidate status, or trusted baseline when candidate_id is omitted."
+          }
+        ]
+      }
+    },
+    {
+      "service": "analyst",
+      "tool": "health",
+      "result": {
+        "service": "analyst",
+        "stage": "integration_prototype",
+        "langgraph": true,
+        "rag": false,
+        "web": false,
+        "forecast": false
+      }
+    },
+    {
+      "service": "analyst",
+      "tool": "answer_question",
+      "result": {
+        "question": "Спрогнозируй Brent на 3 месяца",
+        "request_id": "bf656b9f-af71-4074-8097-599cc3599197",
+        "route": null,
+        "status": "integration_only",
+        "answer": "MCP → общий LangGraph core работает. Корпус, web и forecast ещё не подключены; подтверждённый аналитический ответ пока недоступен.",
+        "warnings": [
+          "llm_not_configured"
+        ]
+      }
+    },
+    {
+      "service": "evolution",
+      "tool": "get_status",
+      "result": {
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "artifact": "policies/retrieval.json",
+        "policy": {
+          "comparison_strategy": "pooled",
+          "top_k_per_publisher": 2
+        },
+        "release_available": false
+      }
+    },
+    {
+      "service": "evolution",
+      "tool": "propose_change",
+      "result": {
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "artifact": "policies/retrieval.json",
+        "policy": {
+          "comparison_strategy": "per_publisher",
+          "top_k_per_publisher": 2
+        },
+        "rationale": "Cover both publishers in the synthetic comparison fixture",
+        "trace_id": "bf656b9f-af71-4074-8097-599cc3599197",
+        "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+        "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+        "payload_hash": "f2265e95ca923d5f9d1a4d65fddfc717a723313b8d40691cca4a83f6984b081c",
+        "status": "PROPOSED",
+        "release_available": false
+      }
+    },
+    {
+      "service": "evolution",
+      "tool": "propose_change",
+      "result": {
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "artifact": "policies/retrieval.json",
+        "policy": {
+          "comparison_strategy": "per_publisher",
+          "top_k_per_publisher": 2
+        },
+        "rationale": "Cover both publishers in the synthetic comparison fixture",
+        "trace_id": "bf656b9f-af71-4074-8097-599cc3599197",
+        "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+        "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+        "payload_hash": "f2265e95ca923d5f9d1a4d65fddfc717a723313b8d40691cca4a83f6984b081c",
+        "status": "PROPOSED",
+        "release_available": false
+      }
+    },
+    {
+      "unsafe_path_rejected_over_mcp": true
+    },
+    {
+      "service": "evolution",
+      "tool": "get_diff",
+      "result": {
+        "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+        "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex eca59c0..2e8f8bb 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,4 +1,4 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n+  \"comparison_strategy\": \"per_publisher\",\n   \"top_k_per_publisher\": 2\n }",
+        "diff_sha256": "7184906b1cabcab5788db18f646b3a4f2e3a3eb64675cb7d10c77a57a06fe7b6"
+      }
+    },
+    {
+      "service": "evolution",
+      "tool": "run_checks",
+      "result": {
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "artifact": "policies/retrieval.json",
+        "policy": {
+          "comparison_strategy": "per_publisher",
+          "top_k_per_publisher": 2
+        },
+        "rationale": "Cover both publishers in the synthetic comparison fixture",
+        "trace_id": "bf656b9f-af71-4074-8097-599cc3599197",
+        "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+        "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+        "payload_hash": "f2265e95ca923d5f9d1a4d65fddfc717a723313b8d40691cca4a83f6984b081c",
+        "status": "CHECKS_PASSED",
+        "release_available": false,
+        "checks": {
+          "passed": true,
+          "fixture_coverage_before": 0.5,
+          "fixture_coverage_after": 1.0,
+          "scope": "synthetic integration fixture; not a blind quality eval",
+          "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+          "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex eca59c0..2e8f8bb 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,4 +1,4 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n+  \"comparison_strategy\": \"per_publisher\",\n   \"top_k_per_publisher\": 2\n }",
+          "diff_sha256": "7184906b1cabcab5788db18f646b3a4f2e3a3eb64675cb7d10c77a57a06fe7b6"
+        }
+      }
+    },
+    {
+      "service": "evolution",
+      "tool": "request_review",
+      "result": {
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "artifact": "policies/retrieval.json",
+        "policy": {
+          "comparison_strategy": "per_publisher",
+          "top_k_per_publisher": 2
+        },
+        "rationale": "Cover both publishers in the synthetic comparison fixture",
+        "trace_id": "bf656b9f-af71-4074-8097-599cc3599197",
+        "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+        "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+        "payload_hash": "f2265e95ca923d5f9d1a4d65fddfc717a723313b8d40691cca4a83f6984b081c",
+        "status": "REVIEW_BLOCKED",
+        "release_available": false,
+        "checks": {
+          "passed": true,
+          "fixture_coverage_before": 0.5,
+          "fixture_coverage_after": 1.0,
+          "scope": "synthetic integration fixture; not a blind quality eval",
+          "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+          "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex eca59c0..2e8f8bb 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,4 +1,4 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n+  \"comparison_strategy\": \"per_publisher\",\n   \"top_k_per_publisher\": 2\n }",
+          "diff_sha256": "7184906b1cabcab5788db18f646b3a4f2e3a3eb64675cb7d10c77a57a06fe7b6"
+        },
+        "review_error": "Critic unavailable or output invalid; no approval or release",
+        "review_error_type": "ValueError"
+      }
+    },
+    {
+      "service": "evolution",
+      "tool": "get_status",
+      "result": {
+        "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+        "artifact": "policies/retrieval.json",
+        "policy": {
+          "comparison_strategy": "per_publisher",
+          "top_k_per_publisher": 2
+        },
+        "rationale": "Cover both publishers in the synthetic comparison fixture",
+        "trace_id": "bf656b9f-af71-4074-8097-599cc3599197",
+        "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+        "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+        "payload_hash": "f2265e95ca923d5f9d1a4d65fddfc717a723313b8d40691cca4a83f6984b081c",
+        "status": "REVIEW_BLOCKED",
+        "release_available": false,
+        "checks": {
+          "passed": true,
+          "fixture_coverage_before": 0.5,
+          "fixture_coverage_after": 1.0,
+          "scope": "synthetic integration fixture; not a blind quality eval",
+          "candidate_sha": "21065e022e39a13abed79d86edf6a3cb40b741eb",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "base_sha": "0a84e7a322aef9d14de9a30253dc23847228168c",
+          "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex eca59c0..2e8f8bb 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,4 +1,4 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n+  \"comparison_strategy\": \"per_publisher\",\n   \"top_k_per_publisher\": 2\n }",
+          "diff_sha256": "7184906b1cabcab5788db18f646b3a4f2e3a3eb64675cb7d10c77a57a06fe7b6"
+        },
+        "review_error": "Critic unavailable or output invalid; no approval or release",
+        "review_error_type": "ValueError"
+      }
+    },
+    {
+      "skill": "oilgas_analyst",
+      "content_hash": "e8b88bf266a40bb47d07b3dd8595ca41475a68b7ab389c7b3fbb84992fbd7423",
+      "stage": "upstream loader recognizes external disk payload; review pending",
+      "enabled": false
+    }
+  ],
+  "generated_by": "scripts/smoke_ouroboros.py",
+  "scope": "Transport integration after sibling core/evolution migration; no autonomous agent or live model",
+  "canonical_evolution_untouched": true
+}

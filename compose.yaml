@@ -1,0 +1,41 @@
+x-model-environment: &model-environment
+  LLM_PROVIDER: ${LLM_PROVIDER:-gigachat}
+  GIGACHAT_MODEL: ${GIGACHAT_MODEL:-GigaChat}
+  GIGACHAT_CREDENTIALS: ${GIGACHAT_CREDENTIALS:-}
+  GIGACHAT_SCOPE: ${GIGACHAT_SCOPE:-GIGACHAT_API_PERS}
+  GIGACHAT_CA_BUNDLE_FILE: ${GIGACHAT_CA_BUNDLE_FILE:-}
+  LLM_MODEL: ${LLM_MODEL:-}
+  LLM_BASE_URL: ${LLM_BASE_URL:-}
+  LLM_API_KEY: ${LLM_API_KEY:-}
+  LLM_TIMEOUT_SEC: ${LLM_TIMEOUT_SEC:-20}
+  LLM_STRUCTURED_METHOD: ${LLM_STRUCTURED_METHOD:-function_calling}
+services:
+  analyst:
+    build: .
+    environment:
+      <<: *model-environment
+      ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
+    command: ["analyst", "--host", "0.0.0.0", "--port", "8011"]
+    ports: ["127.0.0.1:8011:8011"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+  evolution:
+    build: .
+    environment:
+      <<: *model-environment
+      EVOLUTION_MCP_TOKEN: ${EVOLUTION_MCP_TOKEN:?Set EVOLUTION_MCP_TOKEN in .env}
+      WORKSPACE_PATH: /app/workspace/runtime
+      EVOLUTION_REPO_PATH: /evolution
+    command: ["evolution", "--host", "0.0.0.0", "--port", "8012"]
+    ports: ["127.0.0.1:8012:8012"]
+    volumes:
+      - "evolution-state:/app/workspace/runtime"
+      - "../evolution:/evolution"
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  evolution-state:

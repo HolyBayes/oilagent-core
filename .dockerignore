@@ -1,0 +1,9 @@
+.git
+.env
+.venv
+workspace
+__pycache__
+.pytest_cache
+.ruff_cache
+*.docx
+docs
