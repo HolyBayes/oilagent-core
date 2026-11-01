@@ -1,0 +1,106 @@
+[
+  {
+    "case_id": "eia_september",
+    "question": "Какую среднюю спотовую цену Brent за сентябрь приводит EIA в выпуске за октябрь 2025?",
+    "requirements": [
+      {
+        "publisher": "EIA",
+        "page": 5,
+        "quote": "averaged $68 per barrel"
+      }
+    ]
+  },
+  {
+    "case_id": "eia_q4_stock",
+    "question": "According to EIA October 2025, how quickly will global inventories build in 4Q25?",
+    "requirements": [
+      {
+        "publisher": "EIA",
+        "page": 5,
+        "quote": "2.6 million barrels per day"
+      }
+    ]
+  },
+  {
+    "case_id": "eia_supply",
+    "question": "Which countries lead EIA October 2025 non-OPEC+ production growth?",
+    "requirements": [
+      {
+        "publisher": "EIA",
+        "page": 6,
+        "quote": "United States, Brazil, Canada, and Guyana"
+      }
+    ]
+  },
+  {
+    "case_id": "eia_opec_2026",
+    "question": "What increase in OPEC+ crude production does EIA October 2025 expect for 2026?",
+    "requirements": [
+      {
+        "publisher": "EIA",
+        "page": 7,
+        "quote": "0.6 million b/d in 2026"
+      }
+    ]
+  },
+  {
+    "case_id": "opec_basket",
+    "question": "Какой была средняя цена корзины ОПЕК в сентябре по отчёту за октябрь 2025?",
+    "requirements": [
+      {
+        "publisher": "OPEC",
+        "page": 5,
+        "quote": "$70.39/b"
+      }
+    ]
+  },
+  {
+    "case_id": "opec_2026",
+    "question": "Какого уровня достигнет мировой спрос на нефть в 2026 году по прогнозу OPEC от октября 2025?",
+    "requirements": [
+      {
+        "publisher": "OPEC",
+        "page": 7,
+        "quote": "to average 106.5 mb/d"
+      }
+    ]
+  },
+  {
+    "case_id": "opec_2024",
+    "question": "What global oil demand growth in 2024 does OPEC October 2025 describe?",
+    "requirements": [
+      {
+        "publisher": "OPEC",
+        "page": 7,
+        "quote": "a considerable 1.5 mb/d"
+      }
+    ]
+  },
+  {
+    "case_id": "opec_china",
+    "question": "What oil demand growth for China in 2025 does OPEC October 2025 expect?",
+    "requirements": [
+      {
+        "publisher": "OPEC",
+        "page": 7,
+        "quote": "increase of around 180 tb/d"
+      }
+    ]
+  },
+  {
+    "case_id": "compare_2026",
+    "question": "Compare OPEC and EIA October 2025 forecasts for global oil demand growth in 2026.",
+    "requirements": [
+      {
+        "publisher": "OPEC",
+        "page": 7,
+        "quote": "a healthy 1.4 mb/d"
+      },
+      {
+        "publisher": "EIA",
+        "page": 7,
+        "quote": "1.1 million b/d in both forecast years"
+      }
+    ]
+  }
+]
