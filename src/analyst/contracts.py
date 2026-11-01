@@ -28,7 +28,7 @@ class CriticVerdict(BaseModel):
 
 
 class ReportClaim(BaseModel):
-    """A report fact with its source ID and a verbatim supporting passage."""
+    """A sourced fact with its source ID and a verbatim supporting passage."""
 
     text: str
     source_id: str
@@ -36,7 +36,7 @@ class ReportClaim(BaseModel):
 
 
 class ReportDraft(BaseModel):
-    """Answer only with supported report claims; abstain when evidence is missing."""
+    """Answer only with supported PDF or web claims; abstain when evidence is missing."""
 
     claims: list[ReportClaim] = Field(max_length=5)
     abstain: bool

@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-01",
+  "provider": "DDGS 9.16.1 / duckduckgo",
+  "api_key_required": false,
+  "paid_search_calls": 0,
+  "llm_calls": 0,
+  "gigachat_tokens": 0,
+  "backend_probe": {
+    "query": "OPEC oil Reuters",
+    "raw_result_count": 10,
+    "received_at_from_probe_file_mtime": "2026-11-01T16:04:30.341546+00:00"
+  },
+  "replay_normalization": {
+    "scope": "Replayed real backend results using current committed policy; not a live adapter success",
+    "policy_revision": "eedd606a728400eabdacf2d145d3413defff46c3",
+    "accepted_sources": [
+      {
+        "publisher": "cnbc.com",
+        "url": "https://www.cnbc.com/2026/10/31/opec-oil-output-targets-december.html",
+        "published_at": "2026-10-31T22:44:00+00:00",
+        "retrieved_at": "2026-11-01T16:04:30.341546+00:00",
+        "date_origin": "search_provider",
+        "content_hash": "e7bc1df534814765e8cfd4599d91a282709c642c189137949481b075ef91913a"
+      }
+    ],
+    "warnings": [
+      "web_untrusted_source"
+    ]
+  },
+  "live_adapter_attempts": [
+    {
+      "query": "OPEC oil Reuters",
+      "sources": 0,
+      "warnings": [
+        "web_error:DDGSException"
+      ]
+    },
+    {
+      "query": "OPEC oil",
+      "sources": 0,
+      "warnings": [
+        "web_error:DDGSException"
+      ]
+    }
+  ],
+  "http_mcp_smoke": "passed; LLM disabled",
+  "live_generated_web_answer_verified": false
+}

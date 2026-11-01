@@ -37,6 +37,16 @@ def validate_claims(draft: ReportDraft, evidence):
             not source["numeric_verified"] or not numbers(claim.text) <= numbers(claim.quote)
         ):
             warnings.append("unverified_number")
+        elif (
+            source.get("kind") == "web"
+            and numbers(claim.text)
+            and re.search(
+                r"\b(?:сейчас|сегодня|актуальн\w*|текущ\w*|today|current\w*|now|live)\b",
+                claim.text,
+                re.I,
+            )
+        ):
+            warnings.append("unverified_live_fact")
         else:
             accepted.append(claim.model_dump())
     return accepted, sorted(set(warnings))
@@ -49,8 +59,14 @@ def render_answer(claims, evidence):
     lines = [f"{c['text']} [{c['source_id']}]" for c in claims]
     lines.append("\nИсточники:")
     lines.extend(
-        f"[{s['source_id']}] {s['title']}, выпуск {s['published_at']}, "
-        f"PDF стр. {s['page']}: {s['url']}#page={s['page']}"
+        (
+            f"[{s['source_id']}] web, {s['publisher']}: {s['title']}, "
+            f"публикация {s['published_at'] or 'дата неизвестна'}, "
+            f"получено {s['retrieved_at']}: {s['url']}"
+            if s.get("kind") == "web"
+            else f"[{s['source_id']}] {s['title']}, выпуск {s['published_at']}, "
+            f"PDF стр. {s['page']}: {s['url']}#page={s['page']}"
+        )
         for s in evidence
         if s["source_id"] in used
     )

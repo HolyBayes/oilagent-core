@@ -20,7 +20,7 @@ Core и evolution — отдельные repository roots, не submodules и н
 
 `EVOLUTION_REPO_PATH=../evolution` задаёт canonical repository; `WORKSPACE_PATH=workspace/runtime` задаёт невeрсионируемое состояние сервиса. Относительные пути разрешаются от core, независимо от текущей shell directory. Git внутри runtime workspace допустим только для изолированных тестовых прогонов. Source instruction skill находится в evolution, trusted backend и schema — в core.
 
-Системный `EVOLUTION_REPO_PATH` имеет приоритет над `.env`; значение по умолчанию — `../evolution`. Пустой старт поддержан и для отсутствующей папки, и для уже созданного Git без коммитов: создаются main и один seed commit с policy/skill из core. Шаблон skill включён в Python-пакет core; это factory seed, а не вторая активная версия skill. Существующая история не переписывается; baseline читается из её Git main. Повторный старт не добавляет seed commits. Незакоммиченные seed artifacts автоматически не присваиваются/перезаписываются.
+Системный `EVOLUTION_REPO_PATH` имеет приоритет над `.env`; значение по умолчанию — `../evolution`. Пустой старт поддержан и для отсутствующей папки, и для уже созданного Git без коммитов: создаются main и один seed commit с retrieval/web policy и skill из core. Шаблон skill включён в Python-пакет core; это factory seed, а не вторая активная версия skill. Существующая история не переписывается; baseline читается из её Git main. Повторный старт не добавляет seed commits. Незакоммиченные seed artifacts автоматически не присваиваются/перезаписываются.
 
 Из корня workspace:
 
@@ -34,3 +34,5 @@ git -C evolution log --all --oneline --decorate -5
 Секреты и runtime artifacts не включаются в коммиты. Исходный DOCX и первоначальный архитектурный набросок включены в core/docs для происхождения требований. Готовность контейнеров, review и выпуска по-прежнему отражается в INTEGRATION_STATUS.md.
 
 Раздельные Git-истории обеспечивают раздельное версионирование, но не OS-изоляцию. Удалённые remotes не настроены и публикации не было. Локальные коммиты не означают human-approved production release. Git hooks/branch protection и доверенный release manifest требуют последующей реализации.
+
+Рабочая web-policy: `evolution/policies/web_sources.json`. Analyst разрешает main в SHA и читает policy из этого commit, без записи в Git. Для отсутствующей/unborn evolution или старой истории без web-policy используется помеченный factory seed. Схема и правила допустимости URL/дат остаются в core; ручной commit доменной policy не является автоматическим release кандидата. Подробнее: [WEB.md](WEB.md).

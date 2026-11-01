@@ -5,7 +5,8 @@ from starlette.testclient import TestClient
 from analyst.mcp_server import BearerGate, create_server
 
 
-def test_http_bearer_gate_and_health():
+def test_http_bearer_gate_and_health(monkeypatch):
+    monkeypatch.setenv("WEB_ENABLED", "false")
     token = "test-analyst-token-with-more-than-24-chars"
     server = create_server("analyst", "127.0.0.1", 8011)
     with TestClient(
@@ -30,6 +31,22 @@ def test_http_bearer_gate_and_health():
         result = response.json()["result"]
         assert not result.get("isError")
         assert json.loads(result["content"][0]["text"])["stage"] == "report_rag"
+        response = client.post(
+            "/mcp",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json, text/event-stream",
+            },
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "search_web_sources", "arguments": {"query": "oil news"}},
+            },
+        )
+        result = response.json()["result"]
+        assert not result.get("isError")
+        assert json.loads(result["content"][0]["text"])["warnings"] == ["web_disabled"]
 
 
 def test_evolution_tool_catalog_has_no_release_or_shell(tmp_path, monkeypatch):

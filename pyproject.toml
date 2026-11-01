@@ -16,6 +16,7 @@ dependencies = [
   "pymupdf==1.28.2",
   "chromadb==1.5.9",
   "sentence-transformers==5.7.0",
+  "ddgs==9.16.1",
 ]
 
 [project.optional-dependencies]
@@ -25,7 +26,7 @@ dev = ["pytest==9.2.0", "ruff==0.17.3"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-analyst = ["seeds/oilgas_analyst/SKILL.md"]
+analyst = ["seeds/oilgas_analyst/SKILL.md", "seeds/web_sources.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

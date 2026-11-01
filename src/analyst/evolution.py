@@ -17,6 +17,8 @@ ARTIFACT = "policies/retrieval.json"
 SEED = RetrievalPolicy().model_dump()
 SKILL_ARTIFACT = "ouroboros_skills/oilgas_analyst/SKILL.md"
 SEED_SKILL = Path(__file__).parent / "seeds/oilgas_analyst/SKILL.md"
+WEB_ARTIFACT = "policies/web_sources.json"
+SEED_WEB = Path(__file__).parent / "seeds/web_sources.json"
 
 
 def fingerprint(value) -> str:
@@ -49,17 +51,18 @@ class Evolution:
 
     def seed_empty_repo(self):
         if self.git("ls-files") or any(
-            (self.repo / name).exists() for name in [ARTIFACT, SKILL_ARTIFACT]
+            (self.repo / name).exists() for name in [ARTIFACT, SKILL_ARTIFACT, WEB_ARTIFACT]
         ):
             raise ValueError("Uncommitted Evolution artifacts exist; commit or inspect them first")
         self.git("symbolic-ref", "HEAD", "refs/heads/main")
         (self.repo / ARTIFACT).parent.mkdir(parents=True, exist_ok=True)
         atomic_json(self.repo / ARTIFACT, SEED)
+        (self.repo / WEB_ARTIFACT).write_text(SEED_WEB.read_text())
         skill = self.repo / SKILL_ARTIFACT
         skill.parent.mkdir(parents=True, exist_ok=True)
         skill.write_text(SEED_SKILL.read_text())
-        self.git("add", "--", ARTIFACT, SKILL_ARTIFACT)
-        self.git("commit", "-m", "Seed retrieval policy and Ouroboros instruction skill")
+        self.git("add", "--", ARTIFACT, SKILL_ARTIFACT, WEB_ARTIFACT)
+        self.git("commit", "-m", "Seed domain policies and Ouroboros instruction skill")
 
     @contextmanager
     def lock(self):

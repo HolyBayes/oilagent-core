@@ -15,6 +15,7 @@ from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
 from analyst.graph import answer_question
 from analyst.rag import ReportIndex
+from analyst.web import search_web, web_enabled
 
 
 def create_server(kind: str, host: str, port: int):
@@ -31,7 +32,7 @@ def create_server(kind: str, host: str, port: int):
                 "stage": "report_rag",
                 "langgraph": True,
                 "rag": (ReportIndex().directory / "index.json").exists(),
-                "web": False,
+                "web": web_enabled(),
                 "forecast": False,
             }
 
@@ -39,6 +40,14 @@ def create_server(kind: str, host: str, port: int):
         def answer(question: Annotated[str, Field(min_length=1, max_length=4000)]) -> dict:
             """Call the shared LangGraph core. Missing data is reported explicitly."""
             return answer_question(question)
+
+        @server.tool()
+        def search_web_sources(
+            query: Annotated[str, Field(min_length=1, max_length=4000)],
+            freshness: bool = True,
+        ) -> dict:
+            """Search trusted web sources without an API key. Snippets are not live price feeds."""
+            return search_web(query, freshness=freshness)
 
         @server.tool()
         def search_reports(

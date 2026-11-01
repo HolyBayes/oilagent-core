@@ -13,19 +13,21 @@
 - Fixed check исполняет реальную ветвь retrieval-policy на синтетической ranked-list fixture: publisher coverage 0.5 → 1.0. Это только интеграционный пример, не метрика на реальном корпусе.
 - Без LLM critic возвращает `REVIEW_BLOCKED`, approval не создаётся. Во всём прототипе `release_available=false`; merge/release tools отсутствуют.
 - Полный Ouroboros server запущен на pin. Local-source skill зарегистрирован штатно (для него copy/install не нужен), прошёл clean review exact hash и enable без owner-attestation. Подробности: [LIVE_INTEGRATION.md](LIVE_INTEGRATION.md).
-- 72 offline-тестов проходят. Покрыты отсутствующая/пустая папка, unborn Git main/master, повторный запуск, сохранение существующей policy и приоритет system env над .env. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
+- 85 offline-тестов проходят. Покрыты отсутствующая/пустая папка, unborn Git main/master, повторный запуск, сохранение существующей policy и приоритет system env над .env. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
 - В коде поддержаны GigaChat, внешний OpenAI-compatible API и локальный OpenAI-compatible endpoint без обязательного ключа. Живые structured routing и domain critic проверены на GigaChat-2-Max; другие провайдеры пока проверены offline.
 
 Сохранённый результат HTTP-прогона: [integration-evidence.json](integration-evidence.json). Генератор: [smoke_ouroboros.py](../scripts/smoke_ouroboros.py). Сырые логи и полный runtime state — в ignored workspace, без публикации tokens.
 
 Реальный корпус: 154 PDF-страницы, 475 фрагментов. Успешный cited EIA answer и неудачные попытки, development diagnostics и расход 7192 токена (включая compact schema probe) сохранены в [RAG.md](RAG.md).
 
+Политика web-источников находится в committed main evolution (`eedd606`); core содержит валидатор и bootstrap seed. Прямой MCP web-tool и ограниченный web-fallback graph реализованы без API-ключа. На этом этапе GigaChat не вызывался.
+
 ## Не подтверждено / не реализовано
 
 - Полный autonomous run Ouroboros Main worker и выбор tools в его контексте. Компактный native GigaChat probe уже подтвердил авторство кандидата через in-process MCP; HTTP smoke отправляет заданный candidate для проверки протокола.
 - Полный author task получил HTTP 422 после enable MCP schemas; candidate не создан. Исправление inline schemas проверено offline и компактным native GigaChat probe (715 токенов); повтор полного Main worker не выполнен ради экономии.
 - OS-изоляция и полный успешный model-authored цикл proposal/check/critic/release ещё не подтверждены; native skill review/enable и settings blocking проверены.
-- Web, расчётный forecast, UI и blind eval. PDF corpus, локальные embeddings/Chroma и первый cited answer реализованы; ограничения и известный промах — в [RAG.md](RAG.md).
+- Стабильный живой web-ответ через LLM: бесплатный DDGS backend ответил, но два adapter-запроса дали ошибку; граф проверен offline. [Свидетельства и ограничения](WEB.md). Расчётный forecast, UI и blind eval. PDF corpus, локальные embeddings/Chroma и первый cited answer реализованы; ограничения и известный промах — в [RAG.md](RAG.md).
 - Ручной release/approval/rollback, trust manifest, Developer Git release SHA и межверсионная совместимость. Core и evolution теперь оформлены отдельными соседними Git-репозиториями с коммитами; утверждённого production release ещё нет. Подробности: [VERSIONING.md](VERSIONING.md).
 - OS/container sandbox автора Ouroboros и trusted runner. Раздельные токены/процессы сами по себе это не доказывают.
 - Полные request budgets/cost accounting. В прототипе — model timeout, необязательный max output (по умолчанию None) и отключённые автоматические retries модели.
@@ -35,7 +37,7 @@
 ## Следующие gates
 
 1. Промах OPEC исправлен; отложенные вопросы показывают 4/9 вместо 3/9 без регрессий. Разобрать пять оставшихся промахов и расширить оценку на другие выпуски. Текущее присутствие издателей не доказывает фактическую полноту ответа. [Результаты](RETRIEVAL_EVAL.md).
-2. Реализовать web и два forecast-метода с backtest, затем UI.
+2. Проверить живой web-answer при доступном бесплатном провайдере; реализовать два forecast-метода с backtest, затем UI.
 3. Связать кандидат retrieval-policy с реальной оценкой на корпусе; добавить human release/rollback и подтвердить isolation.
 4. Повтор полного Main worker только после уменьшения его контекста; compact schema probe не заменяет этот gate. Сохранить текущее hash-bound skill review.
 

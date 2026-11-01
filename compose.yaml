@@ -16,11 +16,14 @@ services:
     environment:
       <<: *model-environment
       ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
+      WEB_ENABLED: ${WEB_ENABLED:-true}
+      EVOLUTION_REPO_PATH: /evolution
     command: ["analyst", "--host", "0.0.0.0", "--port", "8011"]
     ports: ["127.0.0.1:8011:8011"]
     volumes:
       - "./workspace/rag:/app/workspace/rag"
       - "./workspace/models:/app/workspace/models:ro"
+      - "${EVOLUTION_REPO_PATH:-../evolution}:/evolution:ro"
     read_only: true
     tmpfs: ["/tmp"]
     cap_drop: ["ALL"]
