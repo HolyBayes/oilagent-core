@@ -1,0 +1,9 @@
+{
+  "instrument": "Brent",
+  "price_type": "Europe spot FOB",
+  "unit": "USD/bbl",
+  "source_url": "https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+  "retrieved_at": "2026-11-01T16:29:54.735446+00:00",
+  "raw_sha256": "c7c1e1eeb321fa5982f74747886963b35bd2df3c2f63960271c353421d5830ca",
+  "sha256": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473"
+}

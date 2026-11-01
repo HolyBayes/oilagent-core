@@ -9,6 +9,7 @@ from langgraph.graph import END, START, StateGraph
 from analyst.config import invoke_structured, model_ready
 from analyst.contracts import ReportDraft, Route
 from analyst.evidence import fit_context, render_answer, validate_claims
+from analyst.forecast import forecast_brent, render_forecast
 from analyst.rag import ReportIndex
 from analyst.web import FRESH, search_web
 
@@ -24,6 +25,7 @@ class State(TypedDict, total=False):
     evidence: list[dict]
     claims: list[dict]
     web_attempted: bool
+    forecast: dict
 
 
 def route(state: State) -> dict:
@@ -43,7 +45,9 @@ def route(state: State) -> dict:
                 "A question about a specific dated report has freshness_required=false, "
                 "even when its forecast horizon is in the future. "
                 "Example: EIA October 2025 forecast for 2026 is domain_qa, "
-                "freshness_required=false.",
+                "freshness_required=false. For forecast extract the exact requested horizon_months "
+                "(default 3), instrument (default Brent), and explicit as_of YYYY-MM-DD "
+                "(empty if absent). Do not clamp unsupported horizons or replace WTI with Brent.",
             ),
             ("human", state["question"]),
         ],
@@ -78,7 +82,29 @@ def respond(state: State) -> dict:
         return {"status": "out_of_scope", "answer": "Я отвечаю на вопросы нефтегазового рынка."}
     if (state.get("route") or {}).get("intent") == "clarify":
         return {"status": "clarify", "answer": "Уточните показатель, период и источник отчёта."}
-    if state.get("route") and state["route"]["intent"] in {"forecast", "scenario"}:
+    if (state.get("route") or {}).get("intent") == "forecast":
+        request = state["route"]
+        if request.get("instrument", "Brent").lower() != "brent":
+            return {
+                "status": "clarify",
+                "answer": "Поддерживается только Europe Brent spot, USD/bbl.",
+            }
+        try:
+            result = forecast_brent(request.get("horizon_months", 3), request.get("as_of", ""))
+        except Exception as exc:
+            return {
+                "status": "forecast_unavailable",
+                "answer": "Не удалось рассчитать прогноз. "
+                "Нужны 96 последовательных месяцев Brent, горизонт 1–6 и корректный срез.",
+                "warnings": [f"forecast_error:{type(exc).__name__}"],
+            }
+        return {
+            "status": "forecasted",
+            "forecast": result,
+            "answer": render_forecast(result),
+            "warnings": result["warnings"],
+        }
+    if (state.get("route") or {}).get("intent") == "scenario":
         return {
             "status": "tool_unavailable",
             "answer": "Расчётный модуль пока не подключён. "

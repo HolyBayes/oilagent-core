@@ -1,0 +1,92 @@
+{
+  "core_commit": "d6161ab63e625bfba844065f0d146214742b708a",
+  "evolution_commit": "eedd606a728400eabdacf2d145d3413defff46c3",
+  "provider_reported_total_tokens": 3849,
+  "quote_verified_against_original_pdf": true,
+  "runs": [
+    {
+      "checked_at": "2026-11-01T16:23:19.951780+00:00",
+      "provider": "gigachat",
+      "model": "GigaChat-2-Max",
+      "full_ouroboros_runtime": false,
+      "result": {
+        "request_id": "47df8e16-ee9a-454c-bb65-5278e0ef6fef",
+        "question": "Latest OPEC oil production news",
+        "status": "needs_web",
+        "route": {
+          "intent": "domain_qa",
+          "freshness_required": true
+        },
+        "answer": "Не удалось найти подходящие свежие источники. Исторические отчёты не подтверждают текущую ситуацию.",
+        "warnings": [
+          "web_error:DDGSException"
+        ],
+        "usage": {
+          "route": {
+            "output_tokens": 44,
+            "input_tokens": 230,
+            "total_tokens": 274,
+            "input_token_details": {
+              "cache_read": 3
+            }
+          }
+        },
+        "claims": null
+      },
+      "sources": []
+    },
+    {
+      "checked_at": "2026-11-01T16:24:01.819662+00:00",
+      "provider": "gigachat",
+      "model": "GigaChat-2-Max",
+      "full_ouroboros_runtime": false,
+      "result": {
+        "request_id": "e6dea7a3-1b5d-4e70-a0e1-a5bfd32a8c48",
+        "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+        "status": "answered",
+        "route": {
+          "intent": "domain_qa",
+          "freshness_required": false
+        },
+        "answer": "EIA прогнозирует, что цена нефти Brent в первом полугодии 2026 года составит в среднем $52 за баррель. [R4]\n\n\nИсточники:\n\n[R4] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 5: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=5",
+        "warnings": [],
+        "usage": {
+          "route": {
+            "output_tokens": 44,
+            "input_tokens": 260,
+            "total_tokens": 304,
+            "input_token_details": {
+              "cache_read": 3
+            }
+          },
+          "synthesis": {
+            "output_tokens": 149,
+            "input_tokens": 3122,
+            "total_tokens": 3271,
+            "input_token_details": {
+              "cache_read": 4
+            }
+          }
+        },
+        "claims": [
+          {
+            "text": "EIA прогнозирует, что цена нефти Brent в первом полугодии 2026 года составит в среднем $52 за баррель.",
+            "source_id": "R4",
+            "quote": "We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26)."
+          }
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "R4",
+          "title": "EIA Short-Term Energy Outlook — October 2025",
+          "publisher": "EIA",
+          "published_at": "2025-10-07",
+          "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+          "page": 5,
+          "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755"
+        }
+      ]
+    }
+  ]
+}

@@ -13,6 +13,7 @@ from starlette.responses import JSONResponse
 from analyst.config import CORE_ROOT, evolution_repo, workspace
 from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
+from analyst.forecast import forecast_brent
 from analyst.graph import answer_question
 from analyst.rag import ReportIndex
 from analyst.web import search_web, web_enabled
@@ -33,13 +34,21 @@ def create_server(kind: str, host: str, port: int):
                 "langgraph": True,
                 "rag": (ReportIndex().directory / "index.json").exists(),
                 "web": web_enabled(),
-                "forecast": False,
+                "forecast": True,
             }
 
         @server.tool(name="answer_question")
         def answer(question: Annotated[str, Field(min_length=1, max_length=4000)]) -> dict:
             """Call the shared LangGraph core. Missing data is reported explicitly."""
             return answer_question(question)
+
+        @server.tool(name="forecast_brent")
+        def forecast_brent_prices(
+            horizon_months: Annotated[int, Field(ge=1, le=6)] = 3,
+            as_of: str = "",
+        ) -> dict:
+            """Calculate ARIMA/ETS Brent forecasts, 80% prediction intervals and backtest."""
+            return forecast_brent(horizon_months, as_of)
 
         @server.tool()
         def search_web_sources(

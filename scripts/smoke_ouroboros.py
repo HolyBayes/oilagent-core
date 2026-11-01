@@ -145,10 +145,12 @@ def main():
 
         assert call("analyst", "health", {})["langgraph"]
         answer = call("analyst", "answer_question", {"question": "Спрогнозируй Brent на 3 месяца"})
-        assert answer["request_id"] and answer["status"] in {
-            "insufficient_evidence",
-            "tool_unavailable",
-        }
+        assert answer["request_id"] and answer["status"] == (
+            "forecasted" if args.live else "insufficient_evidence"
+        )
+        forecast = call("analyst", "forecast_brent", {"horizon_months": 3, "as_of": "2025-10-01"})
+        assert {"ARIMA", "ETS"} <= forecast["forecasts"].keys()
+        assert all(len(forecast["forecasts"][m]["points"]) == 3 for m in ["ARIMA", "ETS"])
         baseline = call("evolution", "get_status", {})
         proposal = {
             "base_sha": baseline["base_sha"],

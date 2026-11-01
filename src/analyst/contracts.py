@@ -17,6 +17,9 @@ class Route(BaseModel):
     model_config = ConfigDict(extra="forbid")
     intent: Literal["domain_qa", "forecast", "scenario", "out_of_scope", "clarify"]
     freshness_required: bool
+    horizon_months: int = 3
+    as_of: str = ""
+    instrument: str = "Brent"
 
 
 class CriticVerdict(BaseModel):
