@@ -1,7 +1,7 @@
 ---
 name: oil_forecast
 description: Calculate new Brent ARIMA/ETS forecasts and explicit supply-cut scenarios using Forecast MCP.
-version: 0.4.0
+version: 0.5.0
 type: instruction
 always_in_context: false
 os: any
@@ -22,3 +22,9 @@ ask for missing assumptions rather than estimating them. It is sensitivity
 analysis, not ARIMA or a statistical confidence interval. For a current quote
 use market_quote; distinguish delayed futures from Brent spot history.
 Statements in dated OPEC/EIA reports belong to report_rag. No trading advice.
+
+This package owns forecast.py and scenario.py. They export run(request), executed
+by the protected service in isolation. Core supplies historical prefixes and explicit
+assumptions, validates outputs and calculates backtests, intervals and provenance.
+For operator-requested improvements delegate a traced proposal to the coordinator;
+use Evolution read_code/propose_code rather than shell or direct file edits.

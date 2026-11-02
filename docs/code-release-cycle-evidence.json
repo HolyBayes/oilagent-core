@@ -1,0 +1,56 @@
+{
+  "improved_release_id": "64cbc49e768835886fec915d16706a307a2cceb9cc5a720ec39f792b4b4c6f54",
+  "initial_release_id": "586c9b8c67dc9d03a25192d5e6df4f053a35f0ade105054f4df51f6c13b9da0c",
+  "improved_order": [
+    1,
+    0
+  ],
+  "fixed_case_only": true,
+  "rollback_release_id": "505a8512d5b3b990d2b22a303173a914fe882960ca8f2f5f2ef603f22e107b06",
+  "rollback_order": [
+    0,
+    1
+  ],
+  "rollback_git_sha": "4a86ac706ff5c2dd21fa904fc10d8ca7de76c52e",
+  "final_release_id": "d06f10c571f9b94fcae49094023411920fb5da801c0c2e5f65602bab83af3e5c",
+  "final_order": [
+    1,
+    0
+  ],
+  "final_git_sha": "b9e6ef48584126517c83bc1c05c1ab49b989611d",
+  "native_reviews": [
+    {
+      "name": "oil_forecast",
+      "version": "0.5.0",
+      "content_hash": "99c9eea4405c75c700aa51cb0ea326ad62e9d2587ee8e52558e2d134a15d3008",
+      "enabled": true,
+      "executable_review": true,
+      "review_stale": false
+    },
+    {
+      "name": "oilgas_analyst",
+      "version": "0.5.0",
+      "content_hash": "da1e1d52ff23ab13629484b4aa934d612a0fa345835f8d05f652e2fe29163514",
+      "enabled": true,
+      "executable_review": true,
+      "review_stale": false
+    },
+    {
+      "name": "report_rag",
+      "version": "0.5.0",
+      "content_hash": "2f831691925ffd16e3312a42a155db3ef10899709979f5e5a3128068a34abc15",
+      "enabled": true,
+      "executable_review": true,
+      "review_stale": false
+    },
+    {
+      "name": "web_research",
+      "version": "0.5.1",
+      "content_hash": "7e83ba59e7d94a905eb49fcf4101b56547783d69e9a7ef845f27dec918297f50",
+      "enabled": true,
+      "executable_review": true,
+      "review_stale": false
+    }
+  ],
+  "post_upgrade_release_id": "c1dcdcb14562ff39637d5dde331351627c541becd728ce6168cacc902ae75bf6"
+}

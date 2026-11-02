@@ -11,7 +11,6 @@ from analyst.skill_evolution import (
     check_skill,
     decision,
     evaluation_identity,
-    native_instruction_hash,
     propose_skill,
     skill_path,
     validate_skill,
@@ -165,7 +164,10 @@ def test_stage_native_hash_review_enable_and_targeted_rollback(tmp_path):
 
     def handle(request):
         nonlocal enabled
-        content = (backend.repo / state["artifact"]).read_text()
+        from analyst.code_packages import repository_files
+        from analyst.code_releases import package_hash
+
+        files = repository_files(backend, backend.baseline()["base_sha"])
         if request.method == "GET":
             return httpx.Response(
                 200,
@@ -174,7 +176,7 @@ def test_stage_native_hash_review_enable_and_targeted_rollback(tmp_path):
                         {
                             "name": "oil_forecast",
                             "enabled": enabled,
-                            "content_hash": native_instruction_hash(content),
+                            "content_hash": package_hash(files, "oil_forecast"),
                             "executable_review": review_clean,
                         }
                     ]

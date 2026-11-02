@@ -153,6 +153,36 @@ def create_server(kind: str, host: str, port: int):
                 raise ValueError("Trace identity mismatch")
 
         @server.tool()
+        def read_code(slot: str) -> dict:
+            """Read a committed method and ABI. Slots: forecast, scenario, chunking,
+            reranking, search_strategy. Source exports run(request); execution is isolated.
+            """
+            from analyst.code_packages import snapshot
+
+            return snapshot(backend, backend.baseline()["base_sha"], slot)
+
+        @server.tool()
+        def propose_code(
+            base_sha: str,
+            slot: str,
+            source: Annotated[str, Field(min_length=1, max_length=64000)],
+            rationale: Annotated[str, Field(min_length=1, max_length=2000)],
+            trace_id: str,
+            idempotency_key: str,
+        ) -> dict:
+            """Propose isolated Python run(request) for one fixed method slot.
+
+            Versions the owning skill. No core/tests/permissions may change. run_checks
+            compares with serving code on fixed metrics, requiring improvement without
+            regressions; critic, operator staging and native whole-package review follow.
+            Never installs or enables code. Read the existing method with read_code first.
+            """
+            from analyst.code_packages import propose
+
+            require_trace(trace_id)
+            return propose(backend, base_sha, slot, source, rationale, trace_id, idempotency_key)
+
+        @server.tool()
         def read_skill(name: str) -> dict:
             """Read a committed instruction skill from trusted main, never from a candidate."""
             from analyst.skill_evolution import skill_path
@@ -221,7 +251,8 @@ def create_server(kind: str, host: str, port: int):
 
         @server.tool()
         def run_checks(candidate_id: str) -> dict:
-            """Policy: fixed PDF checks, no LLM. Skill: paid paired tool-selection evaluation.
+            """Policy: PDF checks. Python: paired sandbox metrics. Neither uses an LLM.
+            Skill instructions: paid paired tool-selection evaluation.
 
             Both require improvement and no regressions; no installation or release occurs.
             """
@@ -237,7 +268,15 @@ def create_server(kind: str, host: str, port: int):
             """Read candidate status, or trusted baseline when candidate_id is omitted."""
             if candidate_id:
                 return backend.load(candidate_id)
-            return {**backend.baseline(), "serving": active_release()}
+            from analyst.code_evaluation import active_id
+            from analyst.code_packages import SLOTS
+
+            return {
+                **backend.baseline(),
+                "serving": active_release(),
+                "methods": SLOTS,
+                "code_release_id": active_id(),
+            }
 
     return server
 

@@ -615,7 +615,7 @@ builder.add_conditional_edges(
 graph = builder.compile()
 
 
-def answer_question(question: str, session_id: str = "") -> dict:
+def _answer_question(question: str, session_id: str = "") -> dict:
     if not 1 <= len(question) <= 4000:
         raise ValueError("Question must contain 1..4000 characters")
     with Sessions().turn(session_id) as (sid, session):
@@ -684,3 +684,10 @@ def answer_question(question: str, session_id: str = "") -> dict:
         except OSError:
             state.setdefault("warnings", []).append("trace_write_failed")
         return state
+
+
+def answer_question(question, session_id=""):
+    from analyst.method_runtime import method_session
+
+    with method_session():
+        return _answer_question(question, session_id)

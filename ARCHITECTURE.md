@@ -56,7 +56,7 @@ flowchart TB
 | Ouroboros + instruction skill + MCP | Содержательное выполнение требования, автор улучшений | Отдельная настройка и живой smoke test |
 | Evolution MCP + trusted runner | Ouroboros самостоятельно предлагает и проверяет кандидата | Узкий MCP adapter над проверками; без generic Git API и отдельной БД |
 
-**Уточнение после обсуждения:** Evolution MCP сохраняется как отдельный интерфейс самоулучшения. Сокращаем универсальность backend, а не убираем агентный цикл: Ouroboros сам предлагает кандидата, запускает фиксированные checks, запрашивает critic и получает статус; человек требуется на выпуске. Первая исполняемая поверхность — декларативная retrieval-policy. Python-патчи могут оставаться предложениями для developer PR; автоматическое исполнение и выпуск произвольного candidate Python не входят в MVP. Две Git-истории, exact-hash review, manifest и rollback сохраняются.
+**Уточнение после обсуждения:** Evolution MCP сохраняется как отдельный интерфейс самоулучшения. Сокращаем универсальность backend, а не убираем агентный цикл: Ouroboros сам предлагает кандидата, запускает фиксированные checks, запрашивает critic и получает статус; человек требуется на выпуске. Исполняемые поверхности — retrieval-policy, инструкции навыков и Python в фиксированных method slots. Произвольные core-патчи не разрешены: методы работают через защищённый JSON ABI в отдельном executor; выпуск пакета требует оператора и native review. Две Git-истории, exact-hash review, manifest и rollback сохраняются.
 
 Ouroboros участвует и в аналитике через MCP, и в авторстве улучшений. По согласованию используется штатный UI Ouroboros: Main вызывает `answer_question` через Analyst MCP, а тот исполняет общий core. Финальный пересказ Main пока может ошибиться в происхождении данных; это открытый gate, подробнее [UI.md](docs/UI.md). Без реального вызова из Ouroboros задание не считается полностью выполненным, даже если UI работает. Свободный planning loop для каждого ответа не нужен: агентность проявляется в выборе маршрута/tools и самостоятельном создании кандидата.
 
@@ -169,7 +169,7 @@ Forecast output: instrument/price_type/unit, data_end/as_of, frequency/horizon, 
 
 Unsafe demo: неизвестное поле `allow_unverified_sources`, превышение k, изменение evals/runner/permissions отклоняются preflight независимо от APPROVE критика. «Checks прошли, метрика не выросла» также блокирует release.
 
-Developer Git: runtime, runner, schemas, prompts, tests/eval, security. Evolution Git: policies, instruction skill, rationale, ссылки на evidence; **нет импортируемого Python**. Python tool improvements — обычные developer PR за рамками автономного MVP. Штатная установка/review skill Ouroboros отдельно от выпуска LangGraph policy; собственного native skill registry нет.
+Developer Git: runtime, runner, schemas, prompts, tests/eval, security. Evolution Git: policies и пакеты навыков с SKILL.md/Python-методами, rationale и ссылками на evidence. Evolved Python не импортируется в core: отдельный executor исполняет run(request), core проверяет результат. Native review связывается с полным пакетом; единый release атомарно выбирает инструкции, методы и matching index. Выпуск retrieval-policy остаётся отдельным; собственного native skill registry нет.
 
 Manifest: полные core/evolution SHAs, bundle SHA256, schema version, model ID, corpus/data/eval versions, check/critic artifact IDs, approved_at. Hash проверяет целостность, не удостоверяет автора; доверие даёт операторская identity и read-only mount. Криптографическую supply-chain гарантию не заявляем. Первый запуск: явно обозначенный dev profile с проверенной seed policy из Developer Git.
 
@@ -269,11 +269,15 @@ OilAgent/                         # workspace, без общей .git
   evolution/                      # независимый Evolution Git
     .git/
     policies/retrieval.json
-    ouroboros_skills/oilgas_analyst/SKILL.md
+    ouroboros_skills/
+      oilgas_analyst/SKILL.md
+      oil_forecast/{SKILL.md,forecast.py,scenario.py}
+      report_rag/{SKILL.md,chunking.py,reranking.py}
+      web_research/{SKILL.md,search_strategy.py}
   workspace/upstream/ouroboros/    # pinned third-party checkout
 ```
 
-Это два соседних самостоятельных репозитория, не вложенный Git и не worktrees одной истории. Source skills/policies версионируются в evolution, доверенные code/tests/schema — в core. `EVOLUTION_REPO_PATH` задаёт отдельный checkout; `WORKSPACE_PATH` — ignored runtime state. Временные Git внутри workspace допустимы только для изолированных smoke/tests. Подробности миграции и команды: [docs/VERSIONING.md](docs/VERSIONING.md).
+Это два соседних самостоятельных репозитория, не вложенный Git и не worktrees одной истории. Source skills/policies версионируются в evolution, доверенные MCP/contracts/data/eval/release — в core; исполняемые методы — в evolution skills. `EVOLUTION_REPO_PATH` задаёт отдельный checkout; `WORKSPACE_PATH` — ignored runtime state. Временные Git внутри workspace допустимы только для изолированных smoke/tests. Подробности миграции и команды: [docs/VERSIONING.md](docs/VERSIONING.md).
 
 | Код | Физические строки, ориентир |
 |---|---:|
@@ -311,7 +315,7 @@ OilAgent/                         # workspace, без общей .git
 
 Владелец реализации проверяет runtime/model route в день 1, corpus и табличные факты в день 2, метрику/threshold до генерации кандидата. Допустимые расходы и новый платный аккаунт требуют решения пользователя; эта архитектура сама по себе не разрешает оплаты/публикации. Пока данные отсутствуют, соответствующие live gates остаются открытыми.
 
-Риски: таблицы PDF, смысловое соответствие citations, свежесть CSV, upstream compatibility, переобучение на малый eval. Механизмы дают проверяемые свидетельства; production readiness из чтения документов не следует. Следующие этапы: OCR, полноценный factual verifier, private data/SSO, causal oil model, durable persistence, code evolution и криптографическая аттестация релиза.
+Риски: таблицы PDF, смысловое соответствие citations, свежесть CSV, upstream compatibility, переобучение на малый eval. Механизмы дают проверяемые свидетельства; production readiness из чтения документов не следует. Следующие этапы: OCR, полноценный factual verifier, private data/SSO, causal oil model, расширенная persistence и криптографическая аттестация релиза. Ограниченное code evolution реализовано фиксированными method slots.
 
 ## 15. Первичные источники
 
@@ -387,3 +391,15 @@ OpenAI-compatible bridge к owned Ouroboros model operations. Это provider lo
 Включение требует штатного подключения Codex аккаунта в UI; bridge выключен,
 live Codex validation не выполнена. Endpoint не исполняет возвращённые tools,
 поддерживает function_calling и сохраняет неизвестные usage неизвестными.
+
+## Исполняемые пакеты: текущая граница
+
+Принятое разделение реализовано через фиксированные method slots и private executor
+без host mounts/socket: mandatory chroot, отдельный UID/GID, seccomp, лимиты ресурсов.
+Core не импортирует evolved Python. Данные и targets остаются снаружи; методы возвращают
+числа, source spans или перестановки индексов. Native review покрывает весь пакет.
+Stage закрывает admission, native restart выбирает frozen source, enable проверяет
+все хеши/reviews и атомарно меняет pointer. Chunking выбирает индекс своим хешем;
+request pinning не смешивает методы разных releases. Откат восстанавливает skill files
+в Git main отдельным коммитом. Фактические критерии и ограничения фиксированных
+оценок описаны в [CODE_EVOLUTION_STATUS](docs/CODE_EVOLUTION_STATUS.md).

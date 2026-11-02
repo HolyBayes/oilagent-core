@@ -1,0 +1,57 @@
+{
+  "trace_id": "0da9970a-8b6c-4b95-9d39-6212b0e17a8f",
+  "author": "compact GigaChat tool call, not native UI",
+  "fixture": true,
+  "live_author": true,
+  "activation": false,
+  "author_usage": {
+    "output_tokens": 251,
+    "input_tokens": 496,
+    "total_tokens": 747,
+    "input_token_details": {
+      "cache_read": 0
+    }
+  },
+  "candidate_id": "31159fed673da75ae1d29ad71d5b2415",
+  "checks": {
+    "passed": false,
+    "gain": 0.0,
+    "regressions": [],
+    "before": [
+      0,
+      1,
+      0
+    ],
+    "after": [
+      0,
+      1,
+      0
+    ],
+    "threshold": 0.01,
+    "candidate_sha": "e24a83e0bfe29557b91896197e946ef8c2e49ab4",
+    "identity": {
+      "core_source_sha256": "245d690e51f315714e5a4121b340e110db42145830ee7dd4deef6920b986beef",
+      "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+      "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955",
+      "runner": {
+        "image": "sha256:9994c1fea2c7cd3e0f7976667e90492691f57e949c43ab847274c2f52de00d35",
+        "abi": 2,
+        "confinement": "chroot+uid+seccomp"
+      },
+      "datasets": {
+        "code_eval.json": "5afc76b999112a5d168aa820d9605dcdceebefff20bcd26075d65acb25cb649c",
+        "evolution_eval.json": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+        "reports.json": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+        "brent_daily.csv": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473",
+        "brent_daily.json": "cce162bed4a4e28818fc6b4b206549bdca51a9e94cade6c01ea51aa036708c2d"
+      }
+    },
+    "active_release_id": "586c9b8c67dc9d03a25192d5e6df4f053a35f0ade105054f4df51f6c13b9da0c",
+    "package_sha256": "cb4812d190fa73c6d47404055ebf340ea41f5d3b7d7774e3bbccd09c400eacaa",
+    "scope": "Fixed paired method metrics; not unseen-data accuracy or proof of algorithm identity"
+  },
+  "status": "REJECTED",
+  "candidate_sha": "e24a83e0bfe29557b91896197e946ef8c2e49ab4",
+  "critic": null,
+  "critic_usage": null
+}

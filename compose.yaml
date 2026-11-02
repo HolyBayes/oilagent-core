@@ -24,6 +24,20 @@ x-model-environment: &model-environment
   LLM_MAX_OUTPUT_TOKENS: ${LLM_MAX_OUTPUT_TOKENS:-None}
   LLM_STRUCTURED_METHOD: ${LLM_STRUCTURED_METHOD:-function_calling}
 services:
+  executor:
+    image: ${RUNNER_IMAGE:?Run ./run.sh to prepare executor image}
+    environment:
+      RUNNER_TOKEN: ${RUNNER_TOKEN:?Set RUNNER_TOKEN in .env}
+      RUNNER_IMAGE: ${RUNNER_IMAGE:?Run ./run.sh}
+    ports: ["127.0.0.1:${RUNNER_PORT:-8813}:8013"]
+    read_only: true
+    tmpfs: ["/jail/tmp:rw,noexec,nosuid,mode=0711,size=64m,nr_inodes=8192"]
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "KILL", "DAC_OVERRIDE", "SYS_CHROOT", "CHOWN"]
+    pids_limit: 64
+    mem_limit: 1g
+    cpus: 1
+    security_opt: ["no-new-privileges:true"]
   init:
     build: .
     user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
@@ -31,8 +45,13 @@ services:
       EVOLUTION_REPO_PATH: /evolution
       USER_FILES_PATH: /files
       WORKSPACE_PATH: /app/workspace/runtime
+      RELEASE_PATH: /releases
+      RUNNER_URL: http://executor:8013
+      RUNNER_TOKEN: ${RUNNER_TOKEN:?Set RUNNER_TOKEN in .env}
+    depends_on: [executor]
     entrypoint: ["python", "scripts/container_init.py"]
     volumes:
+      - "${DEPLOY_WORKSPACE:-./workspace/container}/releases:/releases:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/rag:/app/workspace/rag"
       - type: bind
         source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Reports"
@@ -51,6 +70,8 @@ services:
       init: {condition: service_completed_successfully}
     environment:
       <<: *model-environment
+      RUNNER_URL: http://executor:8013
+      RUNNER_TOKEN: ${RUNNER_TOKEN:?Set RUNNER_TOKEN in .env}
       ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
       WEB_ENABLED: ${WEB_ENABLED:-true}
       RAG_TOP_K: ${RAG_TOP_K:-4}
@@ -97,6 +118,8 @@ services:
       init: {condition: service_completed_successfully}
     environment:
       <<: *model-environment
+      RUNNER_URL: http://executor:8013
+      RUNNER_TOKEN: ${RUNNER_TOKEN:?Set RUNNER_TOKEN in .env}
       EVOLUTION_MIN_GAIN: ${EVOLUTION_MIN_GAIN:-0.01}
       EVOLUTION_MAX_CANDIDATES: ${EVOLUTION_MAX_CANDIDATES:-2}
       EVOLUTION_EVAL_PATH: ${EVOLUTION_EVAL_PATH:-data/evolution_eval.json}
@@ -146,12 +169,14 @@ services:
       <<: *model-environment
       ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
       EVOLUTION_MCP_TOKEN: ${EVOLUTION_MCP_TOKEN:?Set EVOLUTION_MCP_TOKEN in .env}
+      RELEASE_PATH: /releases
       OUROBOROS_LLM_BRIDGE_ENABLED: ${OUROBOROS_LLM_BRIDGE_ENABLED:-false}
       LLM_BRIDGE_TOKEN: ${LLM_BRIDGE_TOKEN:-}
       ANALYST_MCP_URL: http://analyst:8011/mcp
       EVOLUTION_MCP_URL: http://evolution:8012/mcp
     ports: ["127.0.0.1:${UI_PORT:-8765}:8765"]
     volumes:
+      - "${DEPLOY_WORKSPACE:-./workspace/container}/releases:/releases:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/container-native:/runtime"
       - type: bind
         source: "${USER_FILES_PATH:-./workspace/files}"

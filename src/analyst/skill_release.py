@@ -5,10 +5,16 @@ import hashlib
 from analyst.evolution import fingerprint
 from analyst.skill_evolution import (
     evaluation_identity,
-    native_instruction_hash,
     validate_skill,
     validate_skill_tree,
 )
+
+
+def content_hash(backend, state):
+    from analyst.code_packages import repository_files
+    from analyst.code_releases import package_hash
+
+    return package_hash(repository_files(backend, state["candidate_sha"]), state["skill_name"])
 
 
 def native_skill(client, name):
@@ -52,6 +58,13 @@ def verified_candidate(backend, state, expected_sha, operator):
 
 
 def stage(backend, client, candidate_id, expected_sha, operator):
+    from analyst.method_runtime import code_root
+
+    if (code_root() / "active.json").exists():
+        from analyst.code_releases import stage as stage_package
+
+        stage_package(backend, candidate_id, expected_sha, operator)
+        return backend.load(candidate_id)
     with backend.lock():
         state = backend.load(candidate_id)
         content = verified_candidate(backend, state, expected_sha, operator)
@@ -70,7 +83,7 @@ def stage(backend, client, candidate_id, expected_sha, operator):
         installed = native_skill(client, state["skill_name"])
         if installed is None:
             raise ValueError("Native source has not discovered the staged skill; retry stage")
-        if installed["content_hash"] != native_instruction_hash(content):
+        if installed["content_hash"] != content_hash(backend, state):
             raise ValueError("UI belongs to a different skill payload/installation")
         # /api/extensions discovers the local source in place. The native content
         # hash covers its payload, distinct from SHA256 of SKILL.md alone.
@@ -87,6 +100,10 @@ def stage(backend, client, candidate_id, expected_sha, operator):
 
 def review_staged(backend, client, candidate_id):
     state = backend.load(candidate_id)
+    if state.get("code_release_id"):
+        from analyst.code_releases import review
+
+        return review(client, state["code_release_id"])
     installed = native_skill(client, state["skill_name"])
     if (
         not installed
@@ -102,6 +119,14 @@ def review_staged(backend, client, candidate_id):
 
 
 def enable(backend, client, candidate_id, expected_sha, operator):
+    state = backend.load(candidate_id)
+    if state.get("code_release_id"):
+        from analyst.code_releases import enable as enable_package
+
+        if expected_sha != state["candidate_sha"]:
+            raise ValueError("Exact candidate SHA required")
+        enable_package(backend, client, state["code_release_id"], operator)
+        return backend.load(candidate_id)
     with backend.lock():
         state = backend.load(candidate_id)
         content = verified_candidate(backend, state, expected_sha, operator)
@@ -126,6 +151,8 @@ def rollback(backend, client, candidate_id, operator):
         raise ValueError("Operator is required")
     with backend.lock():
         state = backend.load(candidate_id)
+        if state.get("code_release_id"):
+            raise ValueError("Use code_release rollback for atomic whole-package restoration")
         if state.get("status") == "SKILL_ROLLED_BACK":
             return state
         if (

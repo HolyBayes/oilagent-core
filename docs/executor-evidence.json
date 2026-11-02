@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-02T14:03:51.583118+00:00",
+  "identity": {
+    "image": "sha256:9e9a61d2f7d0817126ff6c5100b3e9ca314b17b381b07f5fdaa455f1df1ba010",
+    "abi": 2,
+    "confinement": "chroot+uid+seccomp"
+  },
+  "checks": {
+    "unprivileged": true,
+    "no_secret": true,
+    "network_denied": true,
+    "session_escape_denied": true,
+    "global_scratch_denied": true,
+    "private_filesystem": true,
+    "private_scratch": true,
+    "numerical_dependencies": true,
+    "timeout": true,
+    "output_limit": true,
+    "sequential_requests": true,
+    "bounded_diagnostics": true,
+    "concurrent_queue": true,
+    "authentication": true
+  }
+}

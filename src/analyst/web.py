@@ -71,7 +71,7 @@ def trusted_source(url, policy):
     return None
 
 
-def normalize_results(items, *, freshness, now, policy, today=False):
+def normalize_results(items, *, freshness, now, policy, today=False, query=""):
     evidence, warnings, seen = [], set(), set()
     for item in items:
         try:
@@ -122,7 +122,17 @@ def normalize_results(items, *, freshness, now, policy, today=False):
             )
         except (ValueError, TypeError, AttributeError):
             warnings.add("web_invalid_result")
-    evidence.sort(key=lambda e: e["priority"])
+    from analyst.method_contracts import validate
+    from analyst.method_runtime import run
+
+    request = {
+        "rows": [
+            {"priority": r["priority"], "text": r["text"], "title": r["title"]} for r in evidence
+        ],
+        "query": query,
+    }
+    order = validate("search_strategy", request, run("search_strategy", request))
+    evidence = [evidence[i] for i in order]
     return [{**e, "source_id": f"W{i}"} for i, e in enumerate(evidence[:5], 1)], sorted(warnings)
 
 
@@ -159,6 +169,7 @@ def search_web(query, freshness=True, publishers=None):
             backend_warnings.append("web_official_rss")
         evidence, warnings = normalize_results(
             items,
+            query=query,
             freshness=freshness,
             now=datetime.now(timezone.utc),
             policy=policy,
@@ -173,6 +184,7 @@ def search_web(query, freshness=True, publishers=None):
                 freshness=True,
                 now=datetime.now(timezone.utc),
                 policy=policy,
+                query=query,
                 today=bool(re.search(r"\b(?:сегодня|today)\b", query, re.I)),
             )
             warnings += feed_warnings

@@ -1,5 +1,11 @@
 # Фактический статус
 
+Обновление исполняемых пакетов (2 ноября): методы forecast/scenario/chunking/reranking/search_strategy перенесены в evolution skills. Core сохраняет контракты, данные, оценку и операторский выпуск. Private executor использует chroot + UID + seccomp без host mounts/socket. Четыре пакета прошли native whole-package review на GigaChat Lite; живые HTTP Forecast MCP и RAG работают через выпущенные методы.
+
+Проходят 180 тестов. Unit tests исполняют только байт-в-байт developer seeds; произвольные кандидаты запускаются отдельным executor. Живые runner/MCP проверки выполнены отдельно. Компактный GigaChat author сделал два кандидата: нулевой прирост отклонён, ошибка JSON ABI остановлена. После явной developer ABI repair фиксированные ranking cases выросли 1/3 → 3/3 без регрессий, critic APPROVE. Это небольшой фиксированный набор, не blind benchmark и не доказательство общего качества web.
+
+Текущая реализация: [CODE_EVOLUTION_STATUS](CODE_EVOLUTION_STATUS.md). Свидетельства: [executor](executor-evidence.json), [MCP](package-mcp-evidence.json), [методы](method-contracts-evidence.json), [candidate](code-workflow-repaired.json), [release/rollback](code-release-cycle-evidence.json). Повторная проверка после bounded queue: все пять методов без регрессий, native reviews переиспользованы. Fixed acceptance остаётся 25/30: пять известных retrieval-промахов сохранены. [Замеры runtime](runtime-qualification-evidence.json), [acceptance](package-acceptance-evidence.json), [отдельный candidate index](chunking-index-evidence.json). Предыдущие обновления ниже относятся к своим версиям; Python evolution теперь разрешён через фиксированные слоты и защищённый выпуск.
+
 
 Обновление native-интеграции: четыре skills 0.4.0 с независимыми clean review/enable; direct `forecast(asset="brent")`; три штатных specialist rows и реальный completed parent/child run. Его model был Max. Текущий запуск переведён на GigaChat 2 Lite; отдельный короткий Lite → HTTP MCP расчёт прошёл, диапазон взят из cache без сетевой загрузки. Files показывает единое хранилище PDF/CSV/model cache; старые пути — aliases. Optional Codex model bridge подготовлен и покрыт contract tests, но выключен и живьём без подключённого harness не проверен.
 

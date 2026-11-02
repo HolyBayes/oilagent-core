@@ -1,0 +1,38 @@
+{
+  "release_id": "586c9b8c67dc9d03a25192d5e6df4f053a35f0ade105054f4df51f6c13b9da0c",
+  "checks": {
+    "chunking": {
+      "contract_valid": true,
+      "output": [
+        [
+          0,
+          18
+        ]
+      ]
+    },
+    "reranking": {
+      "contract_valid": true,
+      "output": [
+        1,
+        0
+      ]
+    },
+    "scenario": {
+      "contract_valid": true,
+      "output": [
+        73.60749989693451,
+        71.78109077455856,
+        77.40091487253163,
+        72.38480209642492
+      ]
+    },
+    "search_strategy": {
+      "contract_valid": true,
+      "output": [
+        0,
+        1
+      ]
+    }
+  },
+  "llm_calls": 0
+}

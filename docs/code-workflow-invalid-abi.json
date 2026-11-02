@@ -1,0 +1,25 @@
+{
+  "trace_id": "0da9970a-8b6c-4b95-9d39-6212b0e17a8f",
+  "author": "compact GigaChat tool call, not native UI",
+  "fixture": true,
+  "live_author": true,
+  "activation": false,
+  "author_usage": {
+    "output_tokens": 585,
+    "input_tokens": 543,
+    "total_tokens": 1128,
+    "input_token_details": {
+      "cache_read": 0
+    }
+  },
+  "candidate_id": "05fb314c0fb4c7203f15c77f73fa9f0a",
+  "checks": {
+    "passed": false,
+    "candidate_sha": "b1757ea149690fd2d67c0e254418c163c1260112",
+    "error_type": "HTTPStatusError"
+  },
+  "status": "CODE_EVALUATION_UNAVAILABLE",
+  "candidate_sha": "b1757ea149690fd2d67c0e254418c163c1260112",
+  "critic": null,
+  "critic_usage": null
+}

@@ -35,6 +35,9 @@ def provider_settings(env):
 
 
 def settings_profile(env, model_keys, skill_source):
+    from analyst.method_runtime import native_source
+
+    skill_source = native_source(skill_source)
     route, credentials = provider_settings(env)
     profile = {key: route for key in model_keys}
     profile.update(credentials)

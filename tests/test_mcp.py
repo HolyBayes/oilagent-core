@@ -73,6 +73,8 @@ def test_evolution_tool_catalog_has_no_release_or_shell(tmp_path, monkeypatch):
             "get_status",
             "propose_skill",
             "read_skill",
+            "read_code",
+            "propose_code",
         }
         wire = json.dumps(response.json()["result"]["tools"])
         assert '"$ref"' not in wire and '"$defs"' not in wire and '"anyOf"' not in wire

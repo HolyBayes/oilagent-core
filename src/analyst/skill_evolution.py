@@ -88,10 +88,20 @@ def native_instruction_hash(content):
 
 
 def validate_skill_tree(backend, state):
+    from analyst.code_packages import SLOTS, artifact, validate_source
+
     directory = state["artifact"].rsplit("/", 1)[0]
     files = backend.git("ls-tree", "-r", "--name-only", state["candidate_sha"], "--", directory)
-    if files != state["artifact"]:
-        raise ValueError("Evolvable instruction payload must contain only SKILL.md")
+    allowed = {artifact(slot): slot for slot in SLOTS}
+    for path in files.splitlines():
+        if path == state["artifact"]:
+            continue
+        if path not in allowed:
+            raise ValueError("Unexpected skill payload")
+        source = backend.git("show", f"{state['candidate_sha']}:{path}", raw=True)
+        validate_source(allowed[path], source)
+        if source != backend.git("show", f"{state['base_sha']}:{path}", raw=True):
+            raise ValueError("Instruction candidates cannot change Python")
 
 
 def committed_content(backend, sha, artifact):
@@ -183,6 +193,7 @@ def decision(instructions, case, tools):
 
 
 def check_skill(backend, state, decide=None):
+    from analyst.code_evaluation import active_id
     from analyst.mcp_server import create_server
 
     content = backend.git("show", f"{state['candidate_sha']}:{state['artifact']}", raw=True)
@@ -227,6 +238,7 @@ def check_skill(backend, state, decide=None):
     )
     return {
         "passed": passed,
+        "active_release_id": active_id(),
         "scope": "paired model tool choice/arguments; no tool execution or answer-quality claim",
         "new_capability": not bool(before),
         "candidate_sha": state["candidate_sha"],

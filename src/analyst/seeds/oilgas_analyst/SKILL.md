@@ -1,7 +1,7 @@
 ---
 name: oilgas_analyst
 description: Coordinate oil/gas analysis, specialist delegation and explicitly requested skill/policy experiments.
-version: 0.4.0
+version: 0.5.0
 type: instruction
 always_in_context: true
 os: any
@@ -46,3 +46,14 @@ proof of universal answer quality. Check get_status after an ambiguous timeout.
 Candidates do not change installed skills. Native exact-byte review and operator
 stage/enable remain required. No approval, shell, core/test/evaluator/permission
 changes, publication or release authority is granted by this skill.
+
+Executable methods belong to the same versioned skill packages as their instructions.
+For a requested Python experiment use Evolution read_code(slot), then propose_code
+with the returned base_sha and source exporting run(request). Fixed slots are forecast,
+scenario, chunking, reranking and search_strategy. Never import or run candidate Python
+yourself. The protected runner owns data access, contracts, scoring and sandboxing.
+run_checks compares the candidate with the serving implementation on fixed cases;
+strict improvement without per-case regressions is required. These cases are not a
+blind holdout. Read the measured checks and exact diff before requesting a critic.
+The complete package, including instructions and methods, needs native review and
+operator activation. No candidate changes serving methods automatically.

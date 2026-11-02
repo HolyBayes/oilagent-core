@@ -1,6 +1,6 @@
 # OilAgent
 
-Нефтегазовый аналитик для публичных данных: native UI Ouroboros → Analyst MCP → LangGraph, локальный RAG OPEC/EIA, web, расчётные ARIMA/ETS и сценарии сокращения добычи. Отдельный Evolution MCP создаёт Git-кандидатов retrieval-policy и instruction skills; оценка, critic и операторский выпуск отделены от аналитики.
+Нефтегазовый аналитик для публичных данных: native UI Ouroboros → Analyst MCP → LangGraph, локальный RAG OPEC/EIA, web, расчётные ARIMA/ETS и сценарии сокращения добычи. Отдельный Evolution MCP создаёт Git-кандидатов retrieval-policy, инструкций и Python-методов skills; оценка, critic и операторский выпуск отделены от аналитики.
 
 Фактический статус и ограничения: [INTEGRATION_STATUS](docs/INTEGRATION_STATUS.md). Краткий отчёт: [ARCHITECTURE_SUMMARY](docs/ARCHITECTURE_SUMMARY.md). Архитектура: [ARCHITECTURE.md](ARCHITECTURE.md). Реальные примеры: [demo_dialogues](examples/demo_dialogues.md).
 
@@ -22,33 +22,33 @@
 
    ```bash
    ./run.sh -d
-   docker compose ps -a
-   docker compose logs --tail 50 init analyst evolution ouroboros
+   ./compose.sh ps -a
+   ./compose.sh logs --tail 50 init analyst evolution ouroboros
    ```
 
    `run.sh` заполнит пустые MCP-токены разными случайными значениями. Если `.env` отсутствует, скрипт создаст его сам; доступ к модели всё равно нужно настроить. Дождитесь успешного завершения `init`, healthy у `analyst`/`evolution` и запуска `ouroboros`. Первая сборка и индексация могут занять заметное время.
 
-3. Откройте **<http://127.0.0.1:8765>** в браузере на машине запуска. Это native UI Ouroboros. В **Skills** найдите четыре skills из раздела ниже, выполните штатный **Review** нужных skills, дождитесь результатов и включите их. Review вызывает модель; скрытого платного review при старте нет. Результат для тех же байтов в той же установке переиспользуется.
+3. Откройте **<http://127.0.0.1:8765>** в браузере на машине запуска. Это native UI Ouroboros. В **Skills** видны четыре пакета из раздела ниже. Для первоначальной фиксации пакета выполните seed → restart → review → enable по инструкции «Самоулучшение skills и Python». Review вызывает модель; скрытого платного review при старте нет. Результат для тех же байтов в той же установке переиспользуется.
 
 4. В чате **Main** отправьте, например: «Построй прогноз Brent на 3 месяца методами ARIMA и ETS, покажи интервалы и источник исторических данных». Для этого запроса Main может вызвать `forecast(asset="brent", ...)` напрямую. Ответ должен содержать обе модели, источник и request ID. Один лишь доступный UI ещё не подтверждает доступ к модели или успешное выполнение MCP.
 
 По умолчанию UI слушает только loopback хоста; MCP доступны на `http://127.0.0.1:8011/mcp` и `http://127.0.0.1:8012/mcp` с Bearer-токенами из `.env`. MCP URL не является адресом UI. Для удалённого сервера можно пробросить UI по SSH: `ssh -L 8765:127.0.0.1:8765 user@server`, затем открыть тот же адрес в локальном браузере.
 
-Команда собирает CPU-образы, готовит независимый evolution Git, проверяет/загружает PDF и индексирует их, затем поднимает два MCP и native UI. Данные контейнерной установки находятся в `workspace/container/`; публичные PDF/веса из имеющегося локального кеша переиспользуются. Загрузка с нуля зависит от доступности OPEC/EIA/Hugging Face. Первичная попытка download из Docker получила TLS timeout; запуск с проверенным кешем и новым Linux-индексом подтверждён. Повторный запуск сохраняет Git, индекс, диалоги, review и кеш цен.
+Команда собирает CPU-образы, готовит независимый evolution Git, проверяет/загружает PDF и индексирует их, затем поднимает private executor, два MCP и native UI. Данные контейнерной установки находятся в `workspace/container/`; публичные PDF/веса из имеющегося локального кеша переиспользуются. Загрузка с нуля зависит от доступности OPEC/EIA/Hugging Face. Первичная попытка download из Docker получила TLS timeout; запуск с проверенным кешем и новым Linux-индексом подтверждён. Повторный запуск сохраняет Git, индекс, диалоги, review и кеш цен.
 
 Если порты заняты, используйте `UI_PORT=8875 ANALYST_PORT=8811 EVOLUTION_PORT=8812 ./run.sh -d` и откройте **<http://127.0.0.1:8875>**. Для постоянной настройки запишите эти переменные в `.env`. `DEPLOY_WORKSPACE` задаёт каталог deployment state, `EVOLUTION_REPO_PATH` — путь к независимому evolution Git (по умолчанию `../evolution`). Текущая контейнерная установка использует UI 8765 и MCP 8811/8812 (host-порты 8011/8012 заняты); эти overrides сохранены в локальном `.env`. Ранее проверялись отдельные host/UI 8765 и Docker/UI 8875; их исторические диалоги/review относятся к тем установкам.
 
 ```bash
-docker compose ps
-docker compose logs --tail 30 analyst evolution ouroboros
-docker compose down
+./compose.sh ps
+./compose.sh logs --tail 30 analyst evolution ouroboros
+./compose.sh down
 # После изменения .env или обновления кода:
 ./run.sh -d
 ```
 
 `down` останавливает сервисы, сохранённые данные остаются. UI авторского контура имеет read-only core/evolution, не видит eval-набор и Docker socket. Выпуск разрешён только операторскому CLI на хосте. [Проверка контейнеров](docs/deployment-evidence.json).
 
-Если UI не открывается, проверьте `docker compose ps -a` и логи: ошибка `init` блокирует зависимые сервисы. Ошибки модели смотрите в логах `analyst`/`ouroboros`; после исправления `.env` повторите `./run.sh -d`. Первый запуск без готового кеша требует сетевого доступа к источникам PDF и моделей.
+Если UI не открывается, проверьте `./compose.sh ps -a` и логи: ошибка `init` блокирует зависимые сервисы. Ошибки модели смотрите в логах `analyst`/`ouroboros`; после исправления `.env` повторите `./run.sh -d`. Первый запуск без готового кеша требует сетевого доступа к источникам PDF и моделей.
 
 ## Files: исходные данные без копий для UI
 
@@ -72,34 +72,63 @@ docker compose down
 | `web_research` | Свежие публикации, даты и тип источника | `search_web_sources`, `market_quote` |
 | `oil_forecast` | Новые ARIMA/ETS и supply-cut сценарии | `forecast(asset="brent", ...)`, `supply_cut` |
 
-При первой установке выполните Review и включение **каждого** нужного skill в Skills. Python-расчёты остаются в core; инструкции живут и версионируются в evolution. Skills не дублируют код MCP. На существующем evolution обновление developer seed не перезаписывает инструкции автоматически.
+При первой установке выполните seed → native restart → review → enable из раздела ниже. Python-методы ARIMA/ETS, сценария, chunking, reranking и поиска живут в тех же пакетах evolution. Core сохраняет MCP, загрузку/кеш данных, контракты, метрики и выпуск. Методы выполняются отдельным изолированным сервисом, а не импортируются в MCP. На существующем evolution обновление developer seed не перезаписывает инструкции автоматически.
 
 Main имеет прямой доступ к Forecast MCP. Для простого прогноза делегирование не нужно. Для составной задачи настроены штатные API-model subagents `report-analyst`, `web-analyst`, `forecast-analyst`; отдельный `oilagent-reviewer` участвует в review. Ouroboros может отображать ID как `модель~row-id`, поскольку все используют один provider. В Settings → Agents доступны roster и настройки; выполненные дочерние задачи появляются после фактического `schedule_subagent`, а не при одном открытии UI.
 
 Делегирование работает через native `schedule_subagent`/`wait_tasks`/`get_task_result`: не более двух одновременных детей, один уровень вложенности, без file-write/shell и Evolution mutations у детей. Launcher устанавливает одинаковые guards/schema/delivery adapters и в Main, и в spawn/forkserver workers. Specialist — отдельная сессия; skill — инструкции, которые она использует. Для простых запросов дополнительные модельные вызовы не требуются.
 
-### Самоулучшение skills
+### Самоулучшение skills и Python
 
-Evolution MCP теперь принимает `propose_skill`: создание нового или изменение существующего **instruction-only** `SKILL.md` из typed `name/description/version/instructions`, с capability `forecast|rag|web|coordinator`. Запрос требует recorded request/failure trace и текущий SHA main. `read_skill` возвращает committed инструкции; `get_diff` — точный diff кандидата. Кандидат создаётся в отдельной Git-ветке и не меняет установленные skills.
+`read_skill`/`propose_skill` читают и меняют инструкции. `read_code`/`propose_code` работают с пятью фиксированными слотами `forecast`, `scenario`, `chunking`, `reranking`, `search_strategy`; Python экспортирует `run(request)`. Кандидат получает отдельный Git-коммит, версия owning skill повышается; main и serving не меняются. Нужен существующий trace.
 
-`run_checks` для policy по-прежнему использует PDF без LLM. Для skill он делает **платные** проверки выбора реальных MCP-инструментов и аргументов: новую capability проверяет на всех её фиксированных кейсах; изменение — парно до/после на всём наборе. Нужны рост и отсутствие регрессий. Для нового skill отсутствие capability считается нулевой исходной функциональностью, а не провалом модели без инструкций. Это узкая проверка routing/arguments, не benchmark качества ответов. Повтор тех же проверенных байтов при неизменном evaluator/model переиспользует результат. Далее — отдельный critic; install/release/enable агенту не предоставлены.
+Проверки Python выполняют реальные методы в изоляции, сравнивают с serving baseline на фиксированных метриках и требуют улучшения без индивидуальных регрессий. Для нового chunking строится отдельный индекс по хешу реализации. Это **не слепой holdout**. Проверки инструкций делают платные парные вызовы модели для выбора MCP/аргументов; policy использует PDF без LLM. Далее нужен отдельный critic. Агент не получает shell, merge, release или enable.
 
-Операторский путь после успешных checks/critic, из `core/` с активным Python-окружением:
+Пакет публикуется целиком: инструкции + методы одной immutable версии. На время stage приём аналитических вызовов закрывается. После native restart/review атомарный pointer выбирает пакет и соответствующий индекс; один запрос закрепляет одну версию методов. Подробности границы изоляции и критериев: [CODE_EVOLUTION_STATUS](docs/CODE_EVOLUTION_STATUS.md).
+
+Операторские команды выполняются с установленными Python-зависимостями core (см. раздел проверок). Для контейнерной установки:
 
 ```bash
-# Для кандидатов контейнерной установки укажите её runtime state:
 export WORKSPACE_PATH=workspace/container/evolution-runtime
-python scripts/skill_release.py stage CANDIDATE_ID --sha FULL_SHA --operator NAME --port 8765
-python scripts/skill_release.py review CANDIDATE_ID --port 8765
-# Дождитесь завершения native Review в UI, затем:
-python scripts/skill_release.py enable CANDIDATE_ID --sha FULL_SHA --operator NAME --port 8765
-# Откатить только этот skill, сохранив поздние несвязанные коммиты:
-python scripts/skill_release.py rollback CANDIDATE_ID --operator NAME --port 8765
+export RELEASE_PATH=workspace/container/releases
+# Один раз после первого ./run.sh: подготовить исходный пакет из evolution main.
+python -m scripts.code_release seed --operator NAME
+# Команда вернёт RELEASE_ID. После каждой подготовки нового пакета:
+./compose.sh restart ouroboros
+python -m scripts.code_release review RELEASE_ID
+python -m scripts.code_release enable RELEASE_ID --operator NAME
 ```
 
-`stage` выключает прежний skill и fast-forward обновляет чистый evolution main до точного кандидата. Новая версия остаётся выключенной до штатного native review; `enable` связывает SHA кандидата, evaluation, critic и native payload hash. Откат выключает skill и создаёт обратный Git-коммит; восстановленную версию оператор включает отдельно после проверки её review. Staging может временно сделать старую capability недоступной; атомарное переключение двух одновременно установленных версий не заявляется. Для host runtime используйте его `WORKSPACE_PATH` из `.env` вместо container override.
+`review` использует GigaChat Lite и переиспользует действующие clean reviews точных хешей. Можно выполнить Review в UI, затем CLI enable. Для кандидата с успешными checks/critic вместо `seed`:
 
-Компактная проверка каталога: `python scripts/check_skill_workflow.py`. Флаг `--live` вызывает модель для прямого forecast и создания/оценки skill-кандидата, но ничего не устанавливает. Это отдельно от сквозной native UI проверки. OpenAI/local живьём не проверяются по решению пользователя.
+```bash
+python -m scripts.code_release stage CANDIDATE_ID --sha FULL_SHA --operator NAME
+# Затем restart → review → enable с возвращённым RELEASE_ID.
+python -m scripts.code_release status
+# Откат: подготовить прежний пакет, затем тот же restart → review → enable.
+python -m scripts.code_release rollback PREVIOUS_RELEASE_ID --operator NAME
+# Отмена stage: вернуть активный source; приём останется закрыт до restart/enable.
+python -m scripts.code_release abort STAGED_RELEASE_ID --operator NAME
+```
+
+Первичный seed не требует искусственного прироста качества: это воспроизводимая исходная реализация, а не самоулучшение. Он тоже требует native whole-package review. `seed` не перезаписывает действующий release. При откате новый Git-коммит восстанавливает skill files, сохраняя несвязанные файлы/policies. Legacy `skill_release.py` оставлен для старых instruction-only установок; в пакетной установке stage/enable используют единый выпуск.
+
+### Обновление core или executor
+
+Release привязан к хешам core, данных и executor. Обычный рестарт сохраняет хеш образа; изменённый runtime требует повторной проверки. До изменения кода/образа сохраните замеры старой версии, затем обновите код и выполните:
+
+```bash
+# На старой версии, с теми же WORKSPACE_PATH/RELEASE_PATH и реальным индексом:
+export RAG_INDEX_PATH=workspace/container/rag
+python -m scripts.qualify_runtime capture --operator NAME
+# Сохраните RECEIPT_ID. После обновления кода:
+./run.sh -d executor
+python -m scripts.qualify_runtime qualify RECEIPT_ID --operator NAME
+./run.sh -d
+# Затем review → enable возвращённого RELEASE_ID, как выше.
+```
+
+Проверка сравнивает все пять методов с замерами до обновления. Она допускает только те же байты skills и те же данные, без регрессий; прирост не заявляется. Изменённый Python проходит обычный candidate/checks/critic. Между сменой runtime и активацией проверенного пакета вызовы закрыты проверкой identity. Не удаляйте active pointer для обхода проверки.
 
 ## Модель и конфигурация
 
@@ -180,11 +209,11 @@ Analyst MCP: `health`, `answer_question(question, session_id="")`, `forecast(ass
 
 ## Самоулучшение и два Git
 
-`core/` и соседний `evolution/` — самостоятельные репозитории. Путь evolution задаётся `EVOLUTION_REPO_PATH`; пустая папка/unborn Git подготавливается автоматически. Core, evaluator и schemas защищены; кандидат меняет либо `policies/retrieval.json`, либо один instruction-only `ouroboros_skills/<name>/SKILL.md`.
+`core/` и соседний `evolution/` — самостоятельные репозитории. Путь evolution задаётся `EVOLUTION_REPO_PATH`; пустая папка/unborn Git подготавливается автоматически. Core, evaluator и schemas защищены; кандидат меняет retrieval-policy, инструкции skill либо один разрешённый Python-метод с версией его пакета.
 
 Policy задаёт bounded strategy/top-k, reranker/вес и query-context той же PDF-страницы. Serving читает developer seed либо проверенный release bundle, **не незакоммиченные правки и не candidate branch**. Начальный serving сохраняет прежнее per-publisher поведение, baseline не ухудшался ради демонстрации.
 
-Evolution MCP: `propose_change`, `propose_skill`, `read_skill`, `get_diff`, `run_checks`, `request_review`, `get_status`. Нужен существующий request trace; число кандидатов ограничено. Для policy `run_checks` сравнивает настоящий PDF retrieval на замороженных development/validation случаях, требует роста и отсутствия регрессий. Critic доступен после PASS. Ни approval, ни merge/release, ни shell через MCP нет.
+Evolution MCP: `propose_change`, `propose_skill`, `read_skill`, `propose_code`, `read_code`, `get_diff`, `run_checks`, `request_review`, `get_status`. Нужен существующий request trace; число кандидатов ограничено. Для policy `run_checks` сравнивает настоящий PDF retrieval на замороженных development/validation случаях, требует роста и отсутствия регрессий. Critic доступен после PASS. Ни approval, ни merge/release, ни shell через MCP нет.
 
 ```bash
 python scripts/release.py status
@@ -205,11 +234,12 @@ python -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.lock
 pip install --no-deps -e .
+./run.sh -d executor  # Численные методы требуют изолированный broker и на host.
 python scripts/bootstrap.py
 python scripts/index_reports.py --download
 pytest -q
-ruff check src scripts tests
-ruff format --check src scripts tests
+ruff check src runner scripts tests
+ruff format --check src runner scripts tests
 python scripts/eval_acceptance.py
 python scripts/smoke_ouroboros.py
 ```
@@ -218,7 +248,7 @@ python scripts/smoke_ouroboros.py
 
 ## Известные ограничения
 
-Функциональные guards не делают аналитика безошибочным. В serving baseline фиксированный acceptance-набор даёт 25/30; пять retrieval-промахов сохраняются. Это не answer accuracy и не blind benchmark. ETS intervals имеют недостаточное фактическое coverage, naive на текущем backtest немного лучше. Web и provider могут быть недоступны; quote delayed, месячная EIA история имеет публикационный лаг. OCR, произвольный Python evolution, торговля, private banking data и enterprise SSO/RBAC в задачу не входят.
+Функциональные guards не делают аналитика безошибочным. В serving baseline фиксированный acceptance-набор даёт 25/30; пять retrieval-промахов сохраняются. Это не answer accuracy и не blind benchmark. ETS intervals имеют недостаточное фактическое coverage, naive на текущем backtest немного лучше. Web и provider могут быть недоступны; quote delayed, месячная EIA история имеет публикационный лаг. OCR, Python вне фиксированных method slots, торговля, private banking data и enterprise SSO/RBAC в задачу не входят.
 
 Глобальный остаток квоты не выводится из суммы локальных usage. Native context дорогой: отдельный author run израсходовал 145537 prompt + 839 completion токенов. Отдельно учитываются cached tokens, review и прямые core-пробы. Денежная admission reservation требует заданных цен и явного output bound; при default None строгая денежная гарантия не заявляется.
 

@@ -1,0 +1,61 @@
+{
+  "author": "GigaChat Lite with developer JSON-ABI repair",
+  "native_ui_author": false,
+  "candidate_id": "5e727f727d690198ec8c9e71e0e0329f",
+  "candidate_sha": "3e864aa784c0b73c6171ce6134f974fe3c172b4a",
+  "status": "REVIEWED_UNRELEASED",
+  "checks": {
+    "passed": true,
+    "gain": 0.6666666666666666,
+    "regressions": [],
+    "before": [
+      0,
+      1,
+      0
+    ],
+    "after": [
+      1,
+      1,
+      1
+    ],
+    "threshold": 0.01,
+    "candidate_sha": "3e864aa784c0b73c6171ce6134f974fe3c172b4a",
+    "identity": {
+      "core_source_sha256": "245d690e51f315714e5a4121b340e110db42145830ee7dd4deef6920b986beef",
+      "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+      "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955",
+      "runner": {
+        "image": "sha256:9994c1fea2c7cd3e0f7976667e90492691f57e949c43ab847274c2f52de00d35",
+        "abi": 2,
+        "confinement": "chroot+uid+seccomp"
+      },
+      "datasets": {
+        "code_eval.json": "5afc76b999112a5d168aa820d9605dcdceebefff20bcd26075d65acb25cb649c",
+        "evolution_eval.json": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+        "reports.json": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+        "brent_daily.csv": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473",
+        "brent_daily.json": "cce162bed4a4e28818fc6b4b206549bdca51a9e94cade6c01ea51aa036708c2d"
+      }
+    },
+    "active_release_id": "586c9b8c67dc9d03a25192d5e6df4f053a35f0ade105054f4df51f6c13b9da0c",
+    "package_sha256": "68ef0611637299314ef65d4b1bf3e8591e06001e5199103e2236bac87911d3fa",
+    "scope": "Fixed paired method metrics; not unseen-data accuracy or proof of algorithm identity"
+  },
+  "critic": {
+    "verdict": "APPROVE",
+    "findings": [
+      "The provided diff shows an improvement in the declared capability without introducing any regressions. The changes involve fixing JSON mapping access and removing generic explanatory comments, which aligns with the task description. The comparison of unchanged protected fixed cases suggests that the developer ABI repair is effective and no model-authorship claims are made for these edits. The synthetic fixture coverage is not considered as proof of general quality improvement, but the scope of the changes is within the defined boundaries. The metric gaming and resource abuse checks appear to be absent from the provided information, but based on the given details, there are no apparent issues in those areas."
+    ],
+    "candidate_sha": "3e864aa784c0b73c6171ce6134f974fe3c172b4a",
+    "checks_sha256": "970ca4d2165a1615ec33abdae1203434cc90e0ea47a0a7382fb7981f233aaaba"
+  },
+  "critic_usage": {
+    "output_tokens": 173,
+    "input_tokens": 1828,
+    "total_tokens": 2001,
+    "input_token_details": {
+      "cache_read": 0
+    }
+  },
+  "activation": false
+}

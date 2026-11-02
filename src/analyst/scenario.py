@@ -1,5 +1,4 @@
 import math
-from itertools import product
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -26,10 +25,11 @@ class SupplyScenario(BaseModel):
 
 def supply_cut_scenario(inputs: dict) -> dict:
     params = SupplyScenario.model_validate(inputs)
-    values = [
-        params.initial_price * math.exp(math.log1p(-params.cut_mbd / params.supply_mbd) / (d - s))
-        for d, s in product(params.demand_elasticity, params.supply_elasticity)
-    ]
+    from analyst.method_contracts import validate
+    from analyst.method_runtime import run
+
+    request = params.model_dump()
+    values = validate("scenario", request, run("scenario", request))
     if not all(math.isfinite(v) for v in values):
         raise ValueError("Scenario is numerically unstable")
     return {

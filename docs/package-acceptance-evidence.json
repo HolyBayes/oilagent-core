@@ -1,0 +1,159 @@
+{
+  "dataset_sha256": "cb76ddb19932780148eef668a85f8e970e6894050ca1652b6fd8004acf5d2971",
+  "scope": "Fixed regression/contract cases, not a blind benchmark. Retrieval is real local PDF search; workflow routes are fixtures, not real LLM decisions.",
+  "llm_calls": 0,
+  "passed": 25,
+  "total": 30,
+  "cases": [
+    {
+      "case_id": "brent_h1",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "inventory",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "opec_growth",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "compare",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "eia_september",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "eia_q4_stock",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "eia_supply",
+      "kind": "retrieval",
+      "passed": false
+    },
+    {
+      "case_id": "eia_opec_2026",
+      "kind": "retrieval",
+      "passed": false
+    },
+    {
+      "case_id": "opec_basket",
+      "kind": "retrieval",
+      "passed": false
+    },
+    {
+      "case_id": "opec_2026",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "opec_2024",
+      "kind": "retrieval",
+      "passed": true
+    },
+    {
+      "case_id": "opec_china",
+      "kind": "retrieval",
+      "passed": false
+    },
+    {
+      "case_id": "compare_2026",
+      "kind": "retrieval",
+      "passed": false
+    },
+    {
+      "case_id": "scenario_valid",
+      "kind": "scenario",
+      "passed": true
+    },
+    {
+      "case_id": "scenario_zero_cut",
+      "kind": "scenario",
+      "passed": true
+    },
+    {
+      "case_id": "scenario_cut_exceeds",
+      "kind": "scenario",
+      "passed": true
+    },
+    {
+      "case_id": "scenario_negative_price",
+      "kind": "scenario",
+      "passed": true
+    },
+    {
+      "case_id": "scenario_positive_demand",
+      "kind": "scenario",
+      "passed": true
+    },
+    {
+      "case_id": "scenario_negative_supply",
+      "kind": "scenario",
+      "passed": true
+    },
+    {
+      "case_id": "comparison_same",
+      "kind": "comparison",
+      "passed": true
+    },
+    {
+      "case_id": "comparison_unit",
+      "kind": "comparison",
+      "passed": true
+    },
+    {
+      "case_id": "comparison_period",
+      "kind": "comparison",
+      "passed": true
+    },
+    {
+      "case_id": "comparison_vintage",
+      "kind": "comparison",
+      "passed": true
+    },
+    {
+      "case_id": "claim_supported",
+      "kind": "claim",
+      "passed": true
+    },
+    {
+      "case_id": "claim_invented_number",
+      "kind": "claim",
+      "passed": true
+    },
+    {
+      "case_id": "claim_unknown_source",
+      "kind": "claim",
+      "passed": true
+    },
+    {
+      "case_id": "claim_invented_quote",
+      "kind": "claim",
+      "passed": true
+    },
+    {
+      "case_id": "out_of_scope",
+      "kind": "workflow",
+      "passed": true
+    },
+    {
+      "case_id": "clarify",
+      "kind": "workflow",
+      "passed": true
+    },
+    {
+      "case_id": "budget_before_tool",
+      "kind": "budget",
+      "passed": true
+    }
+  ]
+}

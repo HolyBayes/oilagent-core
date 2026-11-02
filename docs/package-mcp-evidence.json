@@ -1,0 +1,15 @@
+{
+  "release_id": "c1dcdcb14562ff39637d5dde331351627c541becd728ce6168cacc902ae75bf6",
+  "forecast": {
+    "status": "forecasted",
+    "request_id": "7c38c882-3df8-4489-b82d-565bec9429da",
+    "implementation_sha256": "5172b954919a01278a5701f28974313565da07a68ca8687cdfb6190afab83bef"
+  },
+  "rag_passages": 8,
+  "rag_publishers": [
+    "EIA",
+    "OPEC"
+  ],
+  "ui_status": 200,
+  "llm_calls": 0
+}

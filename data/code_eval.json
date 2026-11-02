@@ -1,0 +1,15 @@
+{
+  "forecast": [
+    {"as_of":"2025-10-01","start_date":"2015-01-01","end_date":"2025-09-30"},
+    {"as_of":"2026-10-01","start_date":"2016-01-01","end_date":"2026-09-30"}
+  ],
+  "scenario": [
+    {"initial_price":70,"supply_mbd":100,"cut_mbd":1,"demand_elasticity":[-0.2,-0.1],"supply_elasticity":[0,0.2],"assumptions":"Fixed explicit scenario for numerical equivalence"},
+    {"initial_price":100,"supply_mbd":100,"cut_mbd":5,"demand_elasticity":[-0.4,-0.2],"supply_elasticity":[0.1,0.4],"assumptions":"Fixed explicit scenario for numerical equivalence"}
+  ],
+  "search_strategy": [
+    {"query":"oil supply", "rows":[{"priority":0,"text":"Solar electricity installation statistics","title":"Electricity"},{"priority":1,"text":"Oil supply and OPEC production update","title":"Oil supply"}],"expected_first":1},
+    {"query":"natural gas inventories", "rows":[{"priority":0,"text":"Weekly natural gas inventories report","title":"Natural gas"},{"priority":1,"text":"Oil refinery margins report","title":"Refining"}],"expected_first":0},
+    {"query":"oil refinery margins", "rows":[{"priority":0,"text":"Natural gas inventories","title":"Gas"},{"priority":1,"text":"Oil refinery margins and throughput","title":"Refinery margins"}],"expected_first":1}
+  ]
+}

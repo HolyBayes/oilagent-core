@@ -3,8 +3,6 @@ from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
-from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 
 from analyst.config import configured_path
 from analyst.prices import history_snapshot
@@ -91,25 +89,14 @@ def monthly_data(as_of, path=None, *, start_date="", end_date=""):
 
 
 def predictions(values, horizon=6):
-    from analyst.budget import current_budget
+    from analyst.method_contracts import validate
+    from analyst.method_runtime import run
 
-    budget = current_budget.get()
-    if budget:
-        budget.check()
-    log = np.log(np.asarray(values, dtype=float))
-    arima = ARIMA(log, order=(1, 1, 0), trend="n").fit()
-    ets = ETSModel(log, error="add", trend="add", damped_trend=True).fit(disp=False, maxiter=1000)
-    if not arima.mle_retvals["converged"] or not ets.mle_retvals["converged"]:
-        raise ValueError("Forecast optimization did not converge")
-    distribution = arima.get_forecast(horizon)
-    return {
-        "ARIMA": np.asarray(distribution.predicted_mean),
-        "ETS": np.asarray(ets.forecast(horizon)),
-        "naive": np.repeat(log[-1], horizon),
-    }, np.asarray(distribution.conf_int(alpha=0.2))
+    request = {"values": np.asarray(values).tolist(), "horizon": horizon}
+    return validate("forecast", request, run("forecast", request))
 
 
-def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, path=None):
+def _forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, path=None):
     if (
         isinstance(horizon_months, bool)
         or not isinstance(horizon_months, int)
@@ -126,9 +113,22 @@ def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, pa
         cutoff, snapshot, start_date=start_date, end_date=end_date
     )
     values, n = monthly.to_numpy(), len(monthly)
+    from analyst.method_contracts import validate
+    from analyst.method_runtime import method_digest, run_many
+
+    origins = [*range(n - 35, n - 23), *range(n - 18, n - 5), n]
+    requests = [
+        {"values": values[:origin].tolist(), "horizon": horizon_months if origin == n else 6}
+        for origin in origins
+    ]
+    outputs = run_many("forecast", requests)
+    calculated = {
+        origin: validate("forecast", request, result)
+        for origin, request, result in zip(origins, requests, outputs)
+    }
     calibration = {name: [] for name in ["ARIMA", "ETS", "naive"]}
     for origin in range(n - 35, n - 23):
-        forecasts, _ = predictions(values[:origin])
+        forecasts, _ = calculated[origin]
         actual = np.log(values[origin : origin + 6])
         for name, point in forecasts.items():
             calibration[name].append(actual - point)
@@ -143,7 +143,7 @@ def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, pa
     selected = min(selection, key=selection.get)
     evaluation = {name: [] for name in calibration}
     for origin in range(n - 18, n - 5):
-        forecasts, arima_interval = predictions(values[:origin])
+        forecasts, arima_interval = calculated[origin]
         actual = values[origin : origin + 6]
         for name, point in forecasts.items():
             bounds = (
@@ -171,7 +171,7 @@ def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, pa
             }
             for h in range(6)
         ]
-    forecasts, arima_interval = predictions(values, horizon_months)
+    forecasts, arima_interval = calculated[n]
     result = {}
     for name, point in forecasts.items():
         bounds = (
@@ -231,10 +231,8 @@ def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, pa
         "horizon_months": horizon_months,
         "interval_level": 0.8,
         "selected_model": selected,
-        "model_spec": {
-            "ARIMA": "(1,1,0), no drift, log(price)",
-            "ETS": "additive error and damped additive trend, no seasonality, log(price)",
-        },
+        "implementation_sha256": method_digest("forecast"),
+        "model_spec": outputs[-1]["spec"],
         "forecasts": result,
         "backtest_by_horizon": metrics,
         "selection_relative_error": selection,
@@ -276,3 +274,10 @@ def render_forecast(result):
         + result["data_source"]["source_url"],
     ]
     return "\n\n".join(paragraphs)
+
+
+def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, path=None):
+    from analyst.method_runtime import method_session
+
+    with method_session():
+        return _forecast_brent(horizon_months, as_of, start_date, end_date, path=path)

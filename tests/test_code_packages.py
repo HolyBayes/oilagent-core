@@ -11,7 +11,9 @@ def test_code_candidate_is_immutable_and_cannot_activate_without_evaluation(tmp_
     state = propose(backend, base, "forecast", source, "experiment", "fixture", "code-1")
     assert backend.baseline()["base_sha"] == base
     assert snapshot(backend, state["candidate_sha"], "forecast")["source"] == source
-    assert not (backend.repo / state["artifact"]).exists()
+    assert (backend.repo / state["artifact"]).read_text() == snapshot(backend, base, "forecast")[
+        "source"
+    ]
     checked = backend.checks(state["candidate_id"], real=True)
     assert checked["status"] == "CODE_EVALUATION_UNAVAILABLE"
     with pytest.raises(ValueError, match="Checks"):
@@ -32,3 +34,30 @@ def test_candidate_cannot_name_a_protected_core_file(tmp_path):
             "fixture",
             "code-2",
         )
+
+
+def test_unavailable_rerun_clears_previous_pass_and_blocks_critic(tmp_path, monkeypatch):
+    import analyst.code_evaluation as evaluator
+
+    backend = Evolution(tmp_path)
+    state = propose(
+        backend,
+        backend.baseline()["base_sha"],
+        "forecast",
+        "def run(request): return {}\n",
+        "fixture",
+        "fixture",
+        "rerun-failure",
+    )
+    state["quality_checks"] = {"passed": True, "identity": {"old": True}}
+    backend.save(state)
+
+    def unavailable():
+        raise ConnectionError("Executor unavailable")
+
+    monkeypatch.setattr(evaluator, "evaluation_identity", unavailable)
+    state = backend.checks(state["candidate_id"], real=True)
+    assert state["status"] == "CODE_EVALUATION_UNAVAILABLE"
+    assert not state["quality_checks"]["passed"]
+    with pytest.raises(ValueError, match="Checks"):
+        backend.review(state["candidate_id"])

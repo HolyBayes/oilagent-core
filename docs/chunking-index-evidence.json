@@ -1,0 +1,87 @@
+{
+  "candidate_id": "ad1384ffa71e7065755ac30bba6e96a6",
+  "status": "REJECTED",
+  "quality_checks": {
+    "passed": false,
+    "gain": 0.0,
+    "regressions": [],
+    "before": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "after": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "threshold": 0.01,
+    "candidate_sha": "d9b9ee2b5e60673d2650b7bddbde13ffa15da476",
+    "identity": {
+      "core_source_sha256": "245d690e51f315714e5a4121b340e110db42145830ee7dd4deef6920b986beef",
+      "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+      "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955",
+      "runner": {
+        "image": "sha256:9994c1fea2c7cd3e0f7976667e90492691f57e949c43ab847274c2f52de00d35",
+        "abi": 2,
+        "confinement": "chroot+uid+seccomp"
+      },
+      "datasets": {
+        "code_eval.json": "5afc76b999112a5d168aa820d9605dcdceebefff20bcd26075d65acb25cb649c",
+        "evolution_eval.json": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+        "reports.json": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+        "brent_daily.csv": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473",
+        "brent_daily.json": "cce162bed4a4e28818fc6b4b206549bdca51a9e94cade6c01ea51aa036708c2d"
+      }
+    },
+    "active_release_id": "d06f10c571f9b94fcae49094023411920fb5da801c0c2e5f65602bab83af3e5c",
+    "package_sha256": "f37fab9f666ad6d2639f391f2244b7306ff3446c01310cd41d4d035bf7552e4c",
+    "scope": "Fixed paired method metrics; not unseen-data accuracy or proof of algorithm identity"
+  },
+  "candidate_index": {
+    "collection": "reports_e5bc9836b008e22c9262",
+    "chunk_implementation_sha256": "eb18117186b11ee112926882118c5600c6e56042bb028d30165a3bcd990041d8",
+    "corpus_hash": "e5bc9836b008e22c926251ead1c43efd3c32db0b38c50d339d2eb90906bac1af",
+    "embedding": {
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+    },
+    "chunks": 475,
+    "warnings": [],
+    "indexed_at": "2026-11-02T13:54:39.982410+00:00"
+  },
+  "serving_release_id": "d06f10c571f9b94fcae49094023411920fb5da801c0c2e5f65602bab83af3e5c",
+  "llm_calls": 0
+}

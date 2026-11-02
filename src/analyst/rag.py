@@ -6,22 +6,34 @@ from functools import lru_cache
 from itertools import zip_longest
 
 from analyst.config import CORE_ROOT, configured_path, user_files
-from analyst.ranking import query_passages, rerank
+from analyst.ranking import query_passages
 
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def chunk_pages(pages, tokenizer, source=None, size=400, overlap=60):
+    from analyst.method_contracts import validate
+    from analyst.method_runtime import run_many
+
+    for first in range(0, len(pages), 64):
+        requests = []
+        for text in pages[first : first + 64]:
+            offsets = tokenizer(
+                text,
+                add_special_tokens=False,
+                return_offsets_mapping=True,
+                truncation=False,
+                verbose=False,
+            )["offset_mapping"]
+            requests.append({"text": text, "offsets": offsets, "size": size, "overlap": overlap})
+        for request, result in zip(requests, run_many("chunking", requests, source)):
+            yield [(request["text"][a:b], a) for a, b in validate("chunking", request, result)]
+
+
 def page_chunks(text, tokenizer, size=400, overlap=60):
-    offsets = tokenizer(
-        text, add_special_tokens=False, return_offsets_mapping=True, truncation=False, verbose=False
-    )["offset_mapping"]
-    for start in range(0, len(offsets), size - overlap):
-        window = offsets[start : start + size]
-        yield text[window[0][0] : window[-1][1]], window[0][0]
-        if start + size >= len(offsets):
-            break
+    yield from next(chunk_pages([text], tokenizer, size=size, overlap=overlap))
 
 
 @lru_cache(maxsize=1)
@@ -41,7 +53,16 @@ def embedding_model(model, revision, cache):
 class ReportIndex:
     def __init__(self, manifest=None, directory=None, reports_dir=None, embedder=None):
         self.manifest = manifest or configured_path("REPORT_MANIFEST_PATH", "data/reports.json")
+        from analyst.code_packages import seed_source, validate_source
+        from analyst.method_runtime import method_session, source_for
+
+        with method_session():
+            self.chunk_source = source_for("chunking")
+            self.rank_source = source_for("reranking")
+        self.chunk_digest = validate_source("chunking", self.chunk_source)
         self.directory = directory or configured_path("RAG_INDEX_PATH", "workspace/rag")
+        if directory is None and self.chunk_source != seed_source("chunking"):
+            self.directory = self.directory / "implementations" / self.chunk_digest
         self.reports_dir = reports_dir or configured_path(
             "REPORTS_PATH", str(user_files() / "OilAgent/Reports")
         )
@@ -90,7 +111,12 @@ class ReportIndex:
         import pymupdf
 
         manifest = json.loads(self.manifest.read_text())
-        identity = digest(json.dumps([manifest, self.embedding, 400, 60], sort_keys=True).encode())
+        from analyst.code_packages import seed_source
+
+        version = [manifest, self.embedding, 400, 60]
+        if self.chunk_source != seed_source("chunking"):
+            version.append(self.chunk_digest)
+        identity = digest(json.dumps(version, sort_keys=True).encode())
         for report in manifest["reports"]:
             path = self.reports_dir / f"{report['doc_id']}.pdf"
             if digest(path.read_bytes()) != report["sha256"]:
@@ -103,37 +129,42 @@ class ReportIndex:
             if current["corpus_hash"] == identity and collection.count() == current["chunks"]:
                 return current
         model = self.model()
-        chunks, warnings = [], []
+        chunks, warnings, pages = [], [], []
         for report in manifest["reports"]:
             with pymupdf.open(self.reports_dir / f"{report['doc_id']}.pdf") as pdf:
                 for number, page in enumerate(pdf, 1):
                     text = " ".join(page.get_text("text", sort=True).split())
                     if len(text) < 30:
                         warnings.append(f"empty_page:{report['doc_id']}:{number}")
-                        continue
-                    for text_part, offset in page_chunks(text, model.tokenizer):
-                        chunks.append(
-                            {
-                                "id": f"{report['sha256']}:{number}:{offset}",
-                                "text": text_part,
-                                "metadata": {
-                                    **{
-                                        k: report[k]
-                                        for k in [
-                                            "doc_id",
-                                            "title",
-                                            "publisher",
-                                            "published_at",
-                                            "url",
-                                            "sha256",
-                                        ]
-                                    },
-                                    "page": number,
-                                    "offset": offset,
-                                    "numeric_verified": number in report["verified_numeric_pages"],
-                                },
-                            }
-                        )
+                    else:
+                        pages.append((report, number, text))
+        divided = chunk_pages([p[2] for p in pages], model.tokenizer, self.chunk_source)
+        for (report, number, _), parts in zip(pages, divided):
+            for text_part, offset in parts:
+                if len(chunks) >= 5000:
+                    raise ValueError("Corpus exceeds protected 5000-chunk budget")
+                chunks.append(
+                    {
+                        "id": f"{report['sha256']}:{number}:{offset}",
+                        "text": text_part,
+                        "metadata": {
+                            **{
+                                k: report[k]
+                                for k in [
+                                    "doc_id",
+                                    "title",
+                                    "publisher",
+                                    "published_at",
+                                    "url",
+                                    "sha256",
+                                ]
+                            },
+                            "page": number,
+                            "offset": offset,
+                            "numeric_verified": number in report["verified_numeric_pages"],
+                        },
+                    }
+                )
         for start in range(0, len(chunks), 64):
             batch = chunks[start : start + 64]
             vectors = model.encode(
@@ -149,6 +180,7 @@ class ReportIndex:
             )
         result = {
             "collection": name,
+            "chunk_implementation_sha256": self.chunk_digest,
             "corpus_hash": identity,
             "embedding": self.embedding,
             "chunks": len(chunks),
@@ -215,8 +247,17 @@ class ReportIndex:
                 result["distances"][0],
             ):
                 candidates.append({**meta, "chunk_id": cid, "text": text, "distance": distance})
-            if policy.reranker == "bm25":
-                candidates = rerank(candidates, query, weight=policy.lexical_weight)
+            from analyst.method_contracts import validate
+            from analyst.method_runtime import run
+
+            request = {
+                "rows": [{"text": r["text"]} for r in candidates],
+                "query": query,
+                "mode": policy.reranker,
+                "weight": policy.lexical_weight,
+            }
+            order = validate("reranking", request, run("reranking", request, self.rank_source))
+            candidates = [candidates[i] for i in order]
             for candidate in candidates:
                 meta = candidate
                 page = (meta["doc_id"], meta["page"])
