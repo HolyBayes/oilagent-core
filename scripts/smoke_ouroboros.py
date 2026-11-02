@@ -154,7 +154,11 @@ def main():
             assert answer["status"] in {"forecasted", "partial"} and answer.get("forecast")
         else:
             assert answer["status"] == "insufficient_evidence"
-        forecast = call("analyst", "forecast_brent", {"horizon_months": 3, "as_of": "2025-10-01"})
+        forecast = call(
+            "analyst",
+            "forecast",
+            {"asset": "brent", "horizon_months": 3, "as_of": "2025-10-01"},
+        )
         assert {"ARIMA", "ETS"} <= forecast["forecasts"].keys()
         assert all(len(forecast["forecasts"][m]["points"]) == 3 for m in ["ARIMA", "ETS"])
         baseline = call("evolution", "get_status", {})

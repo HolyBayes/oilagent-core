@@ -9,7 +9,7 @@ import httpx
 import numpy as np
 import pandas as pd
 
-from analyst.config import CORE_ROOT, configured_path
+from analyst.config import CORE_ROOT, configured_path, user_files
 from analyst.rag import digest
 
 FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv"
@@ -89,7 +89,7 @@ def store_snapshot(directory, frame, metadata):
 
 
 def history_snapshot(start, end, path=None):
-    directory = configured_path("BRENT_CACHE_PATH", "workspace/prices")
+    directory = configured_path("BRENT_CACHE_PATH", str(user_files() / "OilAgent/Prices"))
     if date.fromisoformat(start) > date.fromisoformat(end):
         raise ValueError("Invalid history range")
     local = (

@@ -2,20 +2,20 @@
 <rect width="740" height="340" fill="white"/>
 <g font-family="Arial,sans-serif" fill="#172033">
 <rect x="15" y="25" width="205" height="85" rx="8" fill="#eaf5ef" stroke="#2f7757"/>
-<text x="30" y="53" font-size="18">Native Ouroboros UI</text><text x="30" y="80" font-size="14">Main + reviewed skill</text><text x="30" y="99" font-size="14">Canonical core answer</text>
+<text x="30" y="53" font-size="18">Native Ouroboros UI</text><text x="30" y="80" font-size="14">Main + skills + subagents</text><text x="30" y="99" font-size="14">Direct forecast(asset=brent)</text>
 <rect x="267" y="25" width="205" height="85" rx="8" fill="#eaf5ef" stroke="#2f7757"/>
 <text x="282" y="53" font-size="18">Analyst MCP / graph</text><text x="282" y="80" font-size="14">Sessions, claims, budgets</text><text x="282" y="99" font-size="14">Traces and feedback</text>
 <rect x="519" y="25" width="205" height="85" rx="8" fill="#eaf5ef" stroke="#2f7757"/>
 <text x="534" y="53" font-size="18">PDF / web / models</text><text x="534" y="80" font-size="14">ARIMA, ETS, scenario</text><text x="534" y="99" font-size="14">Quotes + history cache</text>
 <rect x="15" y="205" width="205" height="85" rx="8" fill="#edf2fa" stroke="#426a95"/>
-<text x="30" y="233" font-size="18">Evolution MCP / Git</text><text x="30" y="260" font-size="14">Bounded policy candidate</text><text x="30" y="279" font-size="14">No shell or release tool</text>
+<text x="30" y="233" font-size="18">Evolution MCP / Git</text><text x="30" y="260" font-size="14">Policy / skill candidates</text><text x="30" y="279" font-size="14">No shell or release tool</text>
 <rect x="267" y="205" width="205" height="85" rx="8" fill="#fff5df" stroke="#a7731d"/>
 <text x="282" y="233" font-size="18">Fixed eval + critic</text><text x="282" y="260" font-size="14">Gain AND no regression</text><text x="282" y="279" font-size="14">Else reject, keep baseline</text>
 <rect x="519" y="205" width="205" height="85" rx="8" fill="#edf2fa" stroke="#426a95"/>
-<text x="534" y="233" font-size="18">Operator release</text><text x="534" y="260" font-size="14">Exact SHA / atomic bundle</text><text x="534" y="279" font-size="14">Read-only serving / rollback</text>
+<text x="534" y="233" font-size="18">Operator release</text><text x="534" y="260" font-size="14">SHA / bundle or native review</text><text x="534" y="279" font-size="14">Enable / rollback</text>
 <path d="M220 67 H260 M472 67 H512 M117 110 V198 M220 247 H260" fill="none" stroke="#445466" stroke-width="2"/>
 <path d="M472 247 H512" fill="none" stroke="#445466" stroke-width="2" stroke-dasharray="5 4"/>
 <path d="M621 205 V151 H370 V116" fill="none" stroke="#445466" stroke-width="2"/>
-<text x="448" y="143" font-size="13">approved policy only</text>
-<text x="15" y="325" font-size="14">Latest native candidate: REJECTED for a validation regression. Serving policy unchanged.</text>
+<text x="448" y="143" font-size="13">approved artifacts only</text>
+<text x="15" y="325" font-size="14">Policy candidate: REJECTED. New skill candidate: APPROVE, unreleased.</text>
 </g></svg>

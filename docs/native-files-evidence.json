@@ -1,0 +1,35 @@
+{
+  ".": {
+    "status_code": 200,
+    "entries": [
+      "OilAgent"
+    ]
+  },
+  "OilAgent/Reports": {
+    "status_code": 200,
+    "entries": [
+      "eia_2025_10.pdf",
+      "opec_2025_10.pdf"
+    ]
+  },
+  "OilAgent/Prices": {
+    "status_code": 200,
+    "entries": [
+      "a858eeaaaaa6d401054f71c73dcd4ea356030625a159dc40b10777d6f7460ac3.csv",
+      "a858eeaaaaa6d401054f71c73dcd4ea356030625a159dc40b10777d6f7460ac3.json",
+      "history.lock",
+      "index.json"
+    ]
+  },
+  "OilAgent/Models": {
+    "status_code": 200,
+    "entries": [
+      ".locks",
+      "blobs",
+      "models--intfloat--multilingual-e5-small",
+      "xet",
+      "CACHEDIR.TAG"
+    ]
+  },
+  "native_model": "gigachat::GigaChat-2"
+}

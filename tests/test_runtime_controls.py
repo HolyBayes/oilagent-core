@@ -173,3 +173,40 @@ def test_one_repair_per_request():
     b.repair()
     with pytest.raises(BudgetExceeded, match="repair_limit"):
         b.repair()
+
+
+def test_child_delivery_requires_parent_lineage_and_unchanged_native_result(tmp_path, monkeypatch):
+    helper = runpy.run_path(str(Path(__file__).parents[1] / "scripts/native_ouroboros.py"))
+    paths = ModuleType("ouroboros.tool_access_paths")
+    status = ModuleType("ouroboros.task_status")
+    paths.canonical_data_root = lambda ctx: tmp_path
+    child = {
+        "parent_task_id": "a" * 16,
+        "status": "completed",
+        "result": "exact core answer",
+        "delegation_role": "subagent",
+    }
+    status.load_effective_task_result = lambda *a, **kw: child
+    package = ModuleType("ouroboros")
+    package.__path__ = []
+    monkeypatch.setitem(sys.modules, "ouroboros", package)
+    monkeypatch.setitem(sys.modules, "ouroboros.tool_access_paths", paths)
+    monkeypatch.setitem(sys.modules, "ouroboros.task_status", status)
+    payload = {"request_id": str(uuid4()), "status": "partial", "answer": "exact core answer"}
+    helper["save_delivery"](SimpleNamespace(task_id="b" * 8), [payload], child["result"])
+    parent = SimpleNamespace(task_id="a" * 16, _oilagent_joined=set())
+    assert helper["joined_delivery"](parent, "b" * 8) == [payload]
+    store = ModuleType("ouroboros.task_store")
+    store.task_facts = lambda *a, **kw: {"b" * 8: {}}
+    monkeypatch.setitem(sys.modules, "ouroboros.task_store", store)
+    # Rehydration must work after the parent's process-local state was lost.
+    assert helper["final_delivery"](parent, [], "modified warning") == helper["canonical_delivery"](
+        [payload], ""
+    )
+    store.task_facts = lambda *a, **kw: {"b" * 8: {}, "d" * 8: {}}
+    combined = helper["final_delivery"](parent, [], "independent web analysis")
+    assert "independent web analysis" in combined and payload["answer"] in combined
+    child["result"] = "modified warning"
+    assert helper["joined_delivery"](parent, "b" * 8) == []
+    child.update(result="exact core answer", parent_task_id="c" * 16)
+    assert helper["joined_delivery"](parent, "b" * 8) == []

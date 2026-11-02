@@ -81,3 +81,23 @@ Skill 0.3.0 прошёл новый штатный exact-hash review/enable. П�
 Новый native task сообщил 145537 prompt + 839 completion tokens. Это отдельный расход поверх ранних таблиц; cached tokens и вызовы core/review не следует молча смешивать. Настройки временного author run восстановлены: обычные round limits и on-demand Evolution schemas. Сохранённое evidence: evolution-run-evidence.json.
 
 Браузерный forecast `f3f6f732` подтвердил canonical доставку core answer. Полная CPU Docker-поставка собрана и запущена с новым Linux-индексом и проверенным public asset cache. Docker-only network download ранее дал TLS timeout; этот факт не скрывается. Author write probes/read isolation проверены отдельно. OpenAI/local live пользователь попросил не выполнять.
+
+## Native интеграция 0.4 и переход на Lite
+
+Четыре instruction skills получили независимые clean native review/enable.
+Настроены три аналитических API-model rows; реальный root `ff9ee34c5b824909`
+создал child `9c537e46`, который вызвал `forecast(asset="brent")` и завершился.
+Предыдущий task остановлен на несовместимой nullable schema SDK; adapter исправлен.
+Live parent сохранил числа, но пересказал предупреждения: сохранён исходный результат,
+а исправление canonical child handoff проверено offline replay того же native store.
+[Свидетельство](native-subagents-evidence.json).
+
+Эти review и parent/child выполнялись на Max. Затем по запросу пользователя модель
+всей установки переключена на GigaChat 2 Lite (`GigaChat-2`). Компактный вызов с
+forecast skill → Lite → настоящий HTTP MCP прошёл, cache hit без network data fetch,
+1217 reported tokens; ответ содержит ARIMA/ETS и naive benchmark. Это не повтор
+всего native/analytical benchmark на Lite. [Результат](lite-evidence.json).
+
+Files теперь читает единое физическое дерево USER_FILES_PATH с PDF/CSV/model cache,
+не экспортную копию. Optional Codex LLM bridge реализован и выключен; model source
+не подключён, live Codex test не выполнен. Порядок подключения и ограничения — README.

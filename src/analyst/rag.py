@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from functools import lru_cache
 from itertools import zip_longest
 
-from analyst.config import CORE_ROOT, configured_path
+from analyst.config import CORE_ROOT, configured_path, user_files
 from analyst.ranking import query_passages, rerank
 
 
@@ -42,7 +42,9 @@ class ReportIndex:
     def __init__(self, manifest=None, directory=None, reports_dir=None, embedder=None):
         self.manifest = manifest or configured_path("REPORT_MANIFEST_PATH", "data/reports.json")
         self.directory = directory or configured_path("RAG_INDEX_PATH", "workspace/rag")
-        self.reports_dir = reports_dir or configured_path("REPORTS_PATH", "workspace/reports")
+        self.reports_dir = reports_dir or configured_path(
+            "REPORTS_PATH", str(user_files() / "OilAgent/Reports")
+        )
         self.embedding = json.loads((CORE_ROOT / "config/embedding.json").read_text())
         self.embedder = embedder
 
@@ -51,7 +53,7 @@ class ReportIndex:
             self.embedder = embedding_model(
                 self.embedding["model"],
                 self.embedding["revision"],
-                configured_path("EMBEDDING_CACHE_PATH", "workspace/models"),
+                configured_path("EMBEDDING_CACHE_PATH", str(user_files() / "OilAgent/Models")),
             )
         return self.embedder
 

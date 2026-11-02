@@ -9,13 +9,14 @@ RUN git init /opt/ouroboros \
 RUN pip install --no-cache-dir -r /opt/ouroboros/requirements-runtime.lock
 WORKDIR /opt/core
 COPY src ./src
-COPY scripts/native_ouroboros.py scripts/container_native.py ./scripts/
+COPY scripts/native_ouroboros.py scripts/native_worker.py scripts/native_bridge.py scripts/container_native.py ./scripts/
 ENV PYTHONPATH=/opt/core/src:/opt/ouroboros \
     OUROBOROS_APP_ROOT=/runtime \
     OUROBOROS_DATA_DIR=/runtime/data \
     OUROBOROS_REPO_DIR=/opt/ouroboros \
     OUROBOROS_SETTINGS_PATH=/runtime/data/settings.json \
     OUROBOROS_USER_FILES_ROOT=/runtime/user_files \
+    OUROBOROS_FILE_BROWSER_DEFAULT=/runtime/user_files \
     OUROBOROS_DELIVERABLES_ROOT=/runtime/user_files/Deliverables
 ENTRYPOINT ["python", "scripts/container_native.py"]
 CMD ["server", "--host", "0.0.0.0", "--port", "8765"]

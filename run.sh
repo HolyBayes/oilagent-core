@@ -9,30 +9,30 @@ import shutil
 p=Path('.env')
 if not p.exists():
     text=Path('.env.example').read_text()
-    for kind in ['ANALYST','EVOLUTION']:
-        text=text.replace(f'{kind}_MCP_TOKEN=\n', f'{kind}_MCP_TOKEN={secrets.token_urlsafe(32)}\n')
+    for key in ['ANALYST_MCP_TOKEN','EVOLUTION_MCP_TOKEN','LLM_BRIDGE_TOKEN']:
+        text=text.replace(f'{key}=\n', f'{key}={secrets.token_urlsafe(32)}\n')
     p.write_text(text)
     p.chmod(0o600)
 deploy=Path(os.getenv('DEPLOY_WORKSPACE','workspace/container'))
 text=p.read_text()
-for kind in ['ANALYST','EVOLUTION']:
-    text=text.replace(f'{kind}_MCP_TOKEN=\n', f'{kind}_MCP_TOKEN={secrets.token_urlsafe(32)}\n')
+for key in ['ANALYST_MCP_TOKEN','EVOLUTION_MCP_TOKEN','LLM_BRIDGE_TOKEN']:
+    if not any(line.startswith(key+'=') for line in text.splitlines()):
+        text+='\n'+key+'=\n'
+    text=text.replace(f'{key}=\n', f'{key}={secrets.token_urlsafe(32)}\n')
 p.write_text(text)
 p.chmod(0o600)
 for name in ['rag','reports','models','prices','traces','sessions','releases',
              'evolution-runtime','init','container-native','certificates','llm']:
     (deploy/name).mkdir(parents=True,exist_ok=True)
-# Reuse already downloaded public assets; init still verifies the PDF hashes.
-for name in ['reports','models']:
-    cached=Path('workspace')/name
-    target=deploy/name
-    if cached.is_dir() and cached.resolve()!=target.resolve():
-        def missing_only(source,names):
-            destination=target/Path(source).relative_to(cached)
-            return [n for n in names if n=='.locks' or n.endswith('.incomplete')
-                    or (destination/n).is_file() or (destination/n).is_symlink()]
-        shutil.copytree(cached,target,dirs_exist_ok=True,symlinks=True,ignore=missing_only)
 values=dict(line.split('=',1) for line in p.read_text().splitlines() if '=' in line and not line.startswith('#'))
+files=Path(os.getenv('USER_FILES_PATH') or values.get('USER_FILES_PATH','workspace/files').strip('"\''))
+from scripts.prepare_storage import prepare_storage
+# Old bind mounts must be quiescent before moving their contents.
+if any((deploy/name).is_dir() and not (deploy/name).is_symlink()
+       and any((deploy/name).iterdir()) for name in ['reports','prices','models']):
+    import subprocess
+    subprocess.run(['docker','compose','stop'],check=True)
+prepare_storage(Path.cwd(),deploy,files)
 ca=os.getenv('GIGACHAT_CA_BUNDLE_FILE') or values.get('GIGACHAT_CA_BUNDLE_FILE','').strip('"\'')
 container_ca=''
 if ca:

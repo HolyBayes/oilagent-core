@@ -8,7 +8,7 @@ from analyst.runtime import isolated_env, private_json, provider_settings, setti
 @pytest.mark.parametrize(
     "provider,endpoint,expected",
     [
-        ("gigachat", "", "gigachat::GigaChat-2-Max"),
+        ("gigachat", "", "gigachat::GigaChat-2"),
         ("local", "http://127.0.0.1:11434/v1", "openai-compatible::test"),
         ("openai", "https://example.invalid/v1", "openai-compatible::test"),
         ("openai", "", "openai::test"),
@@ -25,13 +25,22 @@ def test_native_json_string_settings_and_review_gate(tmp_path):
     profile = settings_profile({}, ["OUROBOROS_MODEL", "OUROBOROS_MODEL_SAFETY"], tmp_path)
     assert profile["OUROBOROS_MODEL"] == profile["OUROBOROS_MODEL_SAFETY"]
     assert json.loads(profile["OUROBOROS_SKILL_SOURCES"])[0]["trust"] == "review"
-    assert json.loads(profile["OUROBOROS_SUBAGENTS"])["items"][0]["review_eligible"]
+    rows = json.loads(profile["OUROBOROS_SUBAGENTS"])["items"]
+    assert sum(r["review_eligible"] for r in rows) == 1
+    assert len(rows) == 4
+    assert profile["OUROBOROS_SUBAGENTS_MODE"] == "auto"
+    assert profile["OUROBOROS_MAX_SUBAGENT_DEPTH"] == 1
     assert profile["OUROBOROS_REVIEW_ENFORCEMENT"] == "blocking"
     assert profile["OUROBOROS_AUTO_GRANT_REVIEWED_SKILLS"] == "false"
     assert profile["OUROBOROS_MODEL_FALLBACKS"] == ""
-    assert profile["OUROBOROS_MAX_ROUNDS"] == 3
+    assert profile["OUROBOROS_MAX_ROUNDS"] == 8
     analyst, evolution = profile["MCP_SERVERS"]
-    assert analyst["schemas_at_start"] and analyst["allowed_tools"] == ["answer_question"]
+    assert analyst["schemas_at_start"] and {
+        "answer_question",
+        "forecast",
+        "search_reports",
+        "search_web_sources",
+    } <= set(analyst["allowed_tools"])
     assert not evolution["schemas_at_start"]
 
 

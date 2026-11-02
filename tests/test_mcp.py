@@ -65,7 +65,15 @@ def test_evolution_tool_catalog_has_no_release_or_shell(tmp_path, monkeypatch):
             json={"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}},
         )
         names = {t["name"] for t in response.json()["result"]["tools"]}
-        assert names == {"propose_change", "get_diff", "run_checks", "request_review", "get_status"}
+        assert names == {
+            "propose_change",
+            "get_diff",
+            "run_checks",
+            "request_review",
+            "get_status",
+            "propose_skill",
+            "read_skill",
+        }
         wire = json.dumps(response.json()["result"]["tools"])
         assert '"$ref"' not in wire and '"$defs"' not in wire and '"anyOf"' not in wire
         args = {
@@ -90,3 +98,49 @@ def test_evolution_tool_catalog_has_no_release_or_shell(tmp_path, monkeypatch):
             },
         )
         assert rejected.json()["result"]["isError"]
+
+
+def test_forecast_asset_contract_and_recorded_direct_result(tmp_path, monkeypatch):
+    import analyst.mcp_server as module
+
+    monkeypatch.setenv("TRACE_PATH", str(tmp_path))
+    calls = []
+
+    def calculate(*args):
+        calls.append(args)
+        return {"data_cache": {"complete": True}}
+
+    monkeypatch.setattr(module, "forecast_brent", calculate)
+    monkeypatch.setattr(module, "render_forecast", lambda result: "Calculated ARIMA/ETS")
+    server = create_server("analyst", "127.0.0.1", 8011)
+    with TestClient(server.streamable_http_app(), base_url="http://127.0.0.1:8011") as client:
+        headers = {"Accept": "application/json, text/event-stream"}
+
+        def call(arguments):
+            return client.post(
+                "/mcp",
+                headers=headers,
+                json={
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {"name": "forecast", "arguments": arguments},
+                },
+            ).json()["result"]
+
+        assert call({"asset": "wti"})["isError"]
+        assert calls == []
+        result = call(
+            {
+                "asset": "brent",
+                "horizon_months": 2,
+                "start_date": "2015-01-01",
+                "end_date": "2025-12-31",
+            }
+        )
+        assert not result.get("isError")
+        payload = json.loads(result["content"][0]["text"])
+        assert payload["asset"] == "brent" and payload["answer"] == "Calculated ARIMA/ETS"
+        recorded = json.loads((tmp_path / (payload["request_id"] + ".json")).read_text())
+        assert recorded["arguments"]["asset"] == "brent"
+        assert calls == [(2, "", "2015-01-01", "2025-12-31")]

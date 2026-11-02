@@ -1,0 +1,798 @@
+{
+  "identity": {
+    "core_source_sha256": "61ad12ff3e853f6adf78bbb6851704771c55688e7ab98754831d5f98d7c3fc62",
+    "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+    "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+  },
+  "skill_evaluation_identity": {
+    "core_source_sha256": "61ad12ff3e853f6adf78bbb6851704771c55688e7ab98754831d5f98d7c3fc62",
+    "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+    "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955",
+    "skill_evaluator_sha256": "8d8b2788e44131ed8abcc597ee288028da7bd5091adfa4f0fe330f393879dfc6",
+    "eval_sha256": "ade2d9ebf34fee01d1a0ce407db522be29e158bdf38674cc740f7b621c9b5757",
+    "provider": "gigachat",
+    "model": "GigaChat-2",
+    "endpoint_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ouroboros_pin_sha256": "3068c7a8eb12433fcbed780592cf555905a5ff51e66f04abfd13799831189ad3"
+  },
+  "pytest": 161,
+  "lint": "passed",
+  "format": "passed",
+  "fixed_acceptance": {
+    "passed": 25,
+    "total": 30,
+    "llm_calls": 0
+  },
+  "offline_mcp_smoke": {
+    "ouroboros_sha": "add0ce3296c722ef99a536c52f8dcddf36494b36",
+    "live_model_requested": false,
+    "transport": "real streamable_http via unmodified Ouroboros MCPManager",
+    "autonomous_agent_run": false,
+    "release_available": false,
+    "events": [
+      {
+        "service": "analyst",
+        "unauthorized_status": 401
+      },
+      {
+        "service": "evolution",
+        "unauthorized_status": 401
+      },
+      {
+        "cross_service_token_status": 401
+      },
+      {
+        "listing": {
+          "ok": true,
+          "published": true,
+          "error": "",
+          "publication_error": "",
+          "server_id": "analyst",
+          "tool_count": 8,
+          "configuration_warnings": [],
+          "tool_name_collisions": [],
+          "tools": [
+            {
+              "name": "health",
+              "prefixed_name": "mcp_analyst__health",
+              "description": "Report actual prototype capabilities; no model calls or secrets."
+            },
+            {
+              "name": "answer_question",
+              "prefixed_name": "mcp_analyst__answer_question",
+              "description": "Answer oil/gas questions using loaded OPEC/EIA reports and web sources.\n\nCalculate new Brent forecasts with ARIMA and ETS from prepared EIA history.\nReports and price data are already loaded; no user upload is required.\nReturns the answer with sources, prediction intervals and limitations.\n"
+            },
+            {
+              "name": "forecast",
+              "prefixed_name": "mcp_analyst__forecast",
+              "description": "Calculate ARIMA/ETS forecasts, 80% prediction intervals and backtest.\n\nasset: brent (only supported asset; other names are rejected).\n\nstart_date/end_date: inclusive ISO dates of daily history, default last 120\ncompleted months. Reuse cached history; download only uncovered intervals.\nas_of: calculation cutoff, no later than today. Horizon is in months.\n"
+            },
+            {
+              "name": "supply_cut",
+              "prefixed_name": "mcp_analyst__supply_cut",
+              "description": "Conditional supply-cut sensitivity from explicit user assumptions, not ARIMA."
+            },
+            {
+              "name": "submit_feedback",
+              "prefixed_name": "mcp_analyst__submit_feedback",
+              "description": "Store user feedback about a request; never treat it as verified market evidence."
+            },
+            {
+              "name": "market_quote",
+              "prefixed_name": "mcp_analyst__market_quote",
+              "description": "Latest delayed Brent/WTI futures quote, timestamp and explicit price type."
+            },
+            {
+              "name": "search_web_sources",
+              "prefixed_name": "mcp_analyst__search_web_sources",
+              "description": "Search trusted web sources without an API key. Snippets are not live price feeds."
+            },
+            {
+              "name": "search_reports",
+              "prefixed_name": "mcp_analyst__search_reports",
+              "description": "Search PDFs locally with source passages, publication dates and PDF pages."
+            }
+          ]
+        }
+      },
+      {
+        "listing": {
+          "ok": true,
+          "published": true,
+          "error": "",
+          "publication_error": "",
+          "server_id": "evolution",
+          "tool_count": 7,
+          "configuration_warnings": [],
+          "tool_name_collisions": [],
+          "tools": [
+            {
+              "name": "read_skill",
+              "prefixed_name": "mcp_evolution__read_skill",
+              "description": "Read a committed instruction skill from trusted main, never from a candidate."
+            },
+            {
+              "name": "propose_skill",
+              "prefixed_name": "mcp_evolution__propose_skill",
+              "description": "Create/revise an instruction-only skill Git candidate; never install or enable it.\n\ncapability: forecast, rag, web or coordinator. version: semver string, e.g. 0.1.0.\ninstructions: Markdown body only. Backend writes validated YAML metadata.\nrun_checks for skills makes paid paired model tool-selection evaluations.\nNative review and operator stage/enable are separate, required actions.\n"
+            },
+            {
+              "name": "propose_change",
+              "prefixed_name": "mcp_evolution__propose_change",
+              "description": "Create a policy-only Git candidate. Cannot change code, tests or permissions."
+            },
+            {
+              "name": "get_diff",
+              "prefixed_name": "mcp_evolution__get_diff",
+              "description": "Read exact candidate diff and full SHA fingerprints."
+            },
+            {
+              "name": "run_checks",
+              "prefixed_name": "mcp_evolution__run_checks",
+              "description": "Policy: fixed PDF checks, no LLM. Skill: paid paired tool-selection evaluation.\n\nBoth require improvement and no regressions; no installation or release occurs.\n"
+            },
+            {
+              "name": "request_review",
+              "prefixed_name": "mcp_evolution__request_review",
+              "description": "Request a separate LLM critic. No configured LLM means REVIEW_BLOCKED."
+            },
+            {
+              "name": "get_status",
+              "prefixed_name": "mcp_evolution__get_status",
+              "description": "Read candidate status, or trusted baseline when candidate_id is omitted."
+            }
+          ]
+        }
+      },
+      {
+        "service": "analyst",
+        "tool": "health",
+        "result": {
+          "service": "analyst",
+          "stage": "report_rag",
+          "langgraph": true,
+          "rag": true,
+          "web": true,
+          "forecast": true
+        }
+      },
+      {
+        "service": "analyst",
+        "tool": "answer_question",
+        "result": {
+          "question": "Спрогнозируй Brent на 3 месяца",
+          "request_id": "71575310-5812-41b4-a4da-f18e5eda9206",
+          "route": null,
+          "status": "insufficient_evidence",
+          "answer": "Подтверждённых данных для ответа нет. Проверьте индекс отчётов и доступ к источникам.",
+          "warnings": [
+            "llm_not_configured"
+          ],
+          "evidence": [],
+          "session_id": "1ac01735-fd78-4dc7-8220-024249a4ea47",
+          "release": {
+            "release_id": "developer-seed",
+            "policy": {
+              "comparison_strategy": "per_publisher",
+              "top_k_per_publisher": 4
+            },
+            "identity": {
+              "core_source_sha256": "72d3033df31bd6ea282fcdbdd66a921d37a240499d64d66b1ed34f2e9914b373",
+              "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+              "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+            }
+          },
+          "recorded_at": "2026-11-02T08:24:23.389831+00:00",
+          "budget": {
+            "llm_calls": 0,
+            "tool_calls": 0,
+            "repairs": 0,
+            "unknown_cost_reservation": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "elapsed_sec": 0.003,
+            "estimated_cost": null,
+            "cost_currency": null,
+            "hard_money_guarantee": false,
+            "reservation_enabled": false,
+            "usage_complete": true,
+            "unknown_usage_calls": 0,
+            "events": []
+          },
+          "release_id": "developer-seed",
+          "versions": {
+            "provider": "gigachat",
+            "model": "GigaChat-2",
+            "core_source_sha256": "72d3033df31bd6ea282fcdbdd66a921d37a240499d64d66b1ed34f2e9914b373",
+            "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+            "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+          },
+          "trace_file": "71575310-5812-41b4-a4da-f18e5eda9206.json"
+        }
+      },
+      {
+        "service": "analyst",
+        "tool": "forecast",
+        "result": {
+          "instrument": "Brent",
+          "price_type": "Europe spot FOB",
+          "unit": "USD/bbl",
+          "frequency": "monthly",
+          "point_estimate": "conditional median of monthly average",
+          "as_of": "2025-10-01",
+          "data_end": "2025-09",
+          "generated_at": "2026-11-02T08:24:23.595606+00:00",
+          "horizon_months": 3,
+          "interval_level": 0.8,
+          "selected_model": "ETS",
+          "model_spec": {
+            "ARIMA": "(1,1,0), no drift, log(price)",
+            "ETS": "additive error and damped additive trend, no seasonality, log(price)"
+          },
+          "forecasts": {
+            "ARIMA": {
+              "interval_method": "model_based_log_gaussian",
+              "calibration_origins": 0,
+              "points": [
+                {
+                  "month": "2025-10",
+                  "value": 68.01541919604068,
+                  "lower": 58.738681854901934,
+                  "upper": 78.75725335206982
+                },
+                {
+                  "month": "2025-11",
+                  "value": 68.02318995029314,
+                  "lower": 53.73448326526065,
+                  "upper": 86.1114518989916
+                },
+                {
+                  "month": "2025-12",
+                  "value": 68.0252047314459,
+                  "lower": 50.10953213127418,
+                  "upper": 92.34627189558364
+                }
+              ]
+            },
+            "ETS": {
+              "interval_method": "absolute_log_error_quantile_by_horizon",
+              "calibration_origins": 12,
+              "points": [
+                {
+                  "month": "2025-10",
+                  "value": 67.98518765077122,
+                  "lower": 62.59231960038646,
+                  "upper": 73.84269778495378
+                },
+                {
+                  "month": "2025-11",
+                  "value": 67.98498338155058,
+                  "lower": 59.26911770153043,
+                  "upper": 77.98256739142181
+                },
+                {
+                  "month": "2025-12",
+                  "value": 67.98481996661596,
+                  "lower": 59.66234333905167,
+                  "upper": 77.4682234592673
+                }
+              ]
+            },
+            "naive": {
+              "interval_method": "absolute_log_error_quantile_by_horizon",
+              "calibration_origins": 12,
+              "points": [
+                {
+                  "month": "2025-10",
+                  "value": 67.98545454545456,
+                  "lower": 62.592781637374294,
+                  "upper": 73.84273248198714
+                },
+                {
+                  "month": "2025-11",
+                  "value": 67.98545454545456,
+                  "lower": 59.27015033031097,
+                  "upper": 77.98228963472611
+                },
+                {
+                  "month": "2025-12",
+                  "value": 67.98545454545456,
+                  "lower": 59.663438504868516,
+                  "upper": 77.46824765010672
+                }
+              ]
+            }
+          },
+          "backtest_by_horizon": {
+            "ARIMA": [
+              {
+                "horizon": 1,
+                "origins": 13,
+                "mae": 3.931188029988946,
+                "rmse": 4.539816039793128,
+                "coverage": 1.0,
+                "mean_interval_width": 24.274786127801335
+              },
+              {
+                "horizon": 2,
+                "origins": 13,
+                "mae": 5.441550069034521,
+                "rmse": 6.257648397420513,
+                "coverage": 1.0,
+                "mean_interval_width": 39.3923415268677
+              },
+              {
+                "horizon": 3,
+                "origins": 13,
+                "mae": 5.065698059888884,
+                "rmse": 6.470964017377532,
+                "coverage": 1.0,
+                "mean_interval_width": 51.51162716189215
+              },
+              {
+                "horizon": 4,
+                "origins": 13,
+                "mae": 5.843733623869037,
+                "rmse": 7.565326339222116,
+                "coverage": 1.0,
+                "mean_interval_width": 61.79286925379957
+              },
+              {
+                "horizon": 5,
+                "origins": 13,
+                "mae": 6.672681671389641,
+                "rmse": 8.043510125550386,
+                "coverage": 1.0,
+                "mean_interval_width": 70.88773648505914
+              },
+              {
+                "horizon": 6,
+                "origins": 13,
+                "mae": 7.119504609249701,
+                "rmse": 8.216499131014645,
+                "coverage": 1.0,
+                "mean_interval_width": 79.17086700372224
+              }
+            ],
+            "ETS": [
+              {
+                "horizon": 1,
+                "origins": 13,
+                "mae": 3.6307321589744173,
+                "rmse": 4.264845685025546,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 13.113123434924868
+              },
+              {
+                "horizon": 2,
+                "origins": 13,
+                "mae": 4.86441798137446,
+                "rmse": 5.742684703053293,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 21.811895385886046
+              },
+              {
+                "horizon": 3,
+                "origins": 13,
+                "mae": 4.809342059018375,
+                "rmse": 6.147993233549762,
+                "coverage": 0.8461538461538461,
+                "mean_interval_width": 20.754076671208303
+              },
+              {
+                "horizon": 4,
+                "origins": 13,
+                "mae": 5.751524346154288,
+                "rmse": 7.1023274425886305,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 24.83223747473912
+              },
+              {
+                "horizon": 5,
+                "origins": 13,
+                "mae": 6.491351989906354,
+                "rmse": 7.591628496379651,
+                "coverage": 0.7692307692307693,
+                "mean_interval_width": 17.976019306096234
+              },
+              {
+                "horizon": 6,
+                "origins": 13,
+                "mae": 7.223880779175673,
+                "rmse": 7.977615071358843,
+                "coverage": 0.46153846153846156,
+                "mean_interval_width": 15.412262580194449
+              }
+            ],
+            "naive": [
+              {
+                "horizon": 1,
+                "origins": 13,
+                "mae": 3.6308222791701117,
+                "rmse": 4.264838608813416,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 13.112591345756321
+              },
+              {
+                "horizon": 2,
+                "origins": 13,
+                "mae": 4.864413615370145,
+                "rmse": 5.742709119532485,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 21.810285155259667
+              },
+              {
+                "horizon": 3,
+                "origins": 13,
+                "mae": 4.809364562973259,
+                "rmse": 6.148011280445506,
+                "coverage": 0.8461538461538461,
+                "mean_interval_width": 20.7527294594795
+              },
+              {
+                "horizon": 4,
+                "origins": 13,
+                "mae": 5.751753478405656,
+                "rmse": 7.1023397013082,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 24.83005485513865
+              },
+              {
+                "horizon": 5,
+                "origins": 13,
+                "mae": 6.491609969740411,
+                "rmse": 7.591747438186937,
+                "coverage": 0.7692307692307693,
+                "mean_interval_width": 17.97190665298633
+              },
+              {
+                "horizon": 6,
+                "origins": 13,
+                "mae": 7.22446511459555,
+                "rmse": 7.977858191688041,
+                "coverage": 0.46153846153846156,
+                "mean_interval_width": 15.414023593442122
+              }
+            ]
+          },
+          "selection_relative_error": {
+            "ARIMA": 0.0942067526918371,
+            "ETS": 0.08644340157547586
+          },
+          "backtest_protocol": {
+            "calibration_origins": 12,
+            "test_origins": 13,
+            "calibration_last_target": "2024-03",
+            "first_test_training_end": "2024-03"
+          },
+          "data_source": {
+            "instrument": "Brent",
+            "price_type": "Europe spot FOB",
+            "unit": "USD/bbl",
+            "source_url": "https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+            "retrieved_at": "2026-11-01T16:29:54.735446+00:00",
+            "raw_sha256": "c7c1e1eeb321fa5982f74747886963b35bd2df3c2f63960271c353421d5830ca",
+            "sha256": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473",
+            "kind": "historical_time_series",
+            "title": "EIA Europe Brent Spot Price FOB — daily historical observations"
+          },
+          "data_cache": {
+            "state": "local_csv",
+            "network_used": false,
+            "complete": true,
+            "requested": [
+              "2015-10-01",
+              "2025-09-30"
+            ],
+            "missing": []
+          },
+          "data_coverage": {
+            "last_observation": "2025-09-30",
+            "last_month_observations": 22,
+            "last_month_weekday_coverage": 1.0,
+            "minimum_weekday_coverage": 0.8095238095238095,
+            "requested_start_date": "2015-10-01",
+            "requested_end_date": "2025-09-30",
+            "effective_start_month": "2015-10",
+            "expected_end_month": "2025-09"
+          },
+          "warnings": [
+            "Интервалы не охватывают все структурные и геополитические шоки.",
+            "Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются."
+          ],
+          "asset": "brent",
+          "answer": "Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2025-09. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.\n\nARIMA [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2025-10 | 68.02 | 58.74 | 78.76 |\n| 2025-11 | 68.02 | 53.73 | 86.11 |\n| 2025-12 | 68.03 | 50.11 | 92.35 |\n\nETS [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2025-10 | 67.99 | 62.59 | 73.84 |\n| 2025-11 | 67.98 | 59.27 | 77.98 |\n| 2025-12 | 67.98 | 59.66 | 77.47 |\n\nARIMA и ETS рассчитаны отдельно; выбор сделан на calibration, не на test.\n\nОграничения: Интервалы не охватывают все структурные и геополитические шоки. Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются.\n\n[F1] Исторический дневной ряд: EIA Europe Brent Spot Price FOB — daily historical observations, USD/bbl; средние по доступным наблюдениям месяца. Последнее дневное наблюдение: 2025-09-30. https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+          "request_id": "71d97b8b-8bdd-47a9-89c9-7d9f6c8fa6be",
+          "status": "forecasted"
+        }
+      },
+      {
+        "service": "evolution",
+        "tool": "get_status",
+        "result": {
+          "base_sha": "aa45910f205ce418feb232733f32d6840cb3be7b",
+          "artifact": "policies/retrieval.json",
+          "policy": {
+            "comparison_strategy": "pooled",
+            "top_k_per_publisher": 2,
+            "reranker": "vector",
+            "lexical_weight": 1.0,
+            "page_expansion": "intro"
+          },
+          "release_available": false,
+          "skills": [
+            "oil_forecast",
+            "oilgas_analyst",
+            "report_rag",
+            "web_research"
+          ],
+          "serving": {
+            "release_id": "developer-seed",
+            "policy": {
+              "comparison_strategy": "per_publisher",
+              "top_k_per_publisher": 4
+            },
+            "identity": {
+              "core_source_sha256": "72d3033df31bd6ea282fcdbdd66a921d37a240499d64d66b1ed34f2e9914b373",
+              "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+              "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+            }
+          }
+        }
+      },
+      {
+        "service": "evolution",
+        "tool": "propose_change",
+        "result": {
+          "base_sha": "aa45910f205ce418feb232733f32d6840cb3be7b",
+          "artifact": "policies/retrieval.json",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 2,
+            "reranker": "vector",
+            "lexical_weight": 1.0,
+            "page_expansion": "intro"
+          },
+          "rationale": "Compare publisher coverage on the fixed PDF dataset",
+          "trace_id": "71575310-5812-41b4-a4da-f18e5eda9206",
+          "content_sha256": "7948f1684e233712f6a94a5b705e9bbea8cb4742f2d4209b8b75cc95301cb132",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5",
+          "payload_hash": "f0563fb2a66555cc661fe74e06425f581f876d1ce85065fe6ac669fbbd182fce",
+          "status": "PROPOSED",
+          "release_available": false
+        }
+      },
+      {
+        "service": "evolution",
+        "tool": "propose_change",
+        "result": {
+          "base_sha": "aa45910f205ce418feb232733f32d6840cb3be7b",
+          "artifact": "policies/retrieval.json",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 2,
+            "reranker": "vector",
+            "lexical_weight": 1.0,
+            "page_expansion": "intro"
+          },
+          "rationale": "Compare publisher coverage on the fixed PDF dataset",
+          "trace_id": "71575310-5812-41b4-a4da-f18e5eda9206",
+          "content_sha256": "7948f1684e233712f6a94a5b705e9bbea8cb4742f2d4209b8b75cc95301cb132",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5",
+          "payload_hash": "f0563fb2a66555cc661fe74e06425f581f876d1ce85065fe6ac669fbbd182fce",
+          "status": "PROPOSED",
+          "release_available": false
+        }
+      },
+      {
+        "unsafe_path_rejected_over_mcp": true
+      },
+      {
+        "service": "evolution",
+        "tool": "get_diff",
+        "result": {
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "base_sha": "aa45910f205ce418feb232733f32d6840cb3be7b",
+          "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5",
+          "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex f0f02f7..f141110 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,7 +1,7 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n-  \"top_k_per_publisher\": 2,\n-  \"reranker\": \"vector\",\n+  \"comparison_strategy\": \"per_publisher\",\n   \"lexical_weight\": 1.0,\n-  \"page_expansion\": \"intro\"\n+  \"page_expansion\": \"intro\",\n+  \"reranker\": \"vector\",\n+  \"top_k_per_publisher\": 2\n }",
+          "diff_sha256": "aaee5c6f3827d69b78520e7ce6ac206ccbe077b608400a68dda5462a17103235"
+        }
+      },
+      {
+        "service": "evolution",
+        "tool": "run_checks",
+        "result": {
+          "base_sha": "aa45910f205ce418feb232733f32d6840cb3be7b",
+          "artifact": "policies/retrieval.json",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 2,
+            "reranker": "vector",
+            "lexical_weight": 1.0,
+            "page_expansion": "intro"
+          },
+          "rationale": "Compare publisher coverage on the fixed PDF dataset",
+          "trace_id": "71575310-5812-41b4-a4da-f18e5eda9206",
+          "content_sha256": "7948f1684e233712f6a94a5b705e9bbea8cb4742f2d4209b8b75cc95301cb132",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5",
+          "payload_hash": "f0563fb2a66555cc661fe74e06425f581f876d1ce85065fe6ac669fbbd182fce",
+          "status": "REJECTED",
+          "release_available": false,
+          "quality_checks": {
+            "passed": false,
+            "scope": "paired PDF retrieval support; not answer faithfulness or unseen-market accuracy",
+            "splits": {
+              "development": {
+                "before": 4,
+                "after": 1,
+                "total": 9
+              },
+              "holdout": {
+                "before": 1,
+                "after": 0,
+                "total": 10
+              }
+            },
+            "total": 19,
+            "before": 5,
+            "after": 1,
+            "regressions": [
+              "eia_september",
+              "eia_q4_stock",
+              "opec_2026",
+              "h_brent_q4"
+            ],
+            "gain": -0.21052631578947367,
+            "eval_sha256": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+            "identity": {
+              "core_source_sha256": "72d3033df31bd6ea282fcdbdd66a921d37a240499d64d66b1ed34f2e9914b373",
+              "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+              "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+            },
+            "active_release_id": "developer-seed",
+            "baseline_policy": {
+              "comparison_strategy": "per_publisher",
+              "top_k_per_publisher": 4
+            },
+            "candidate_policy": {
+              "comparison_strategy": "per_publisher",
+              "top_k_per_publisher": 2,
+              "reranker": "vector",
+              "lexical_weight": 1.0,
+              "page_expansion": "intro"
+            },
+            "model": {
+              "model": "intfloat/multilingual-e5-small",
+              "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+            },
+            "threshold": 0.01,
+            "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5"
+          }
+        }
+      },
+      {
+        "real_pdf_quality": {
+          "passed": false,
+          "before": 5,
+          "after": 1,
+          "total": 19,
+          "regressions": [
+            "eia_september",
+            "eia_q4_stock",
+            "opec_2026",
+            "h_brent_q4"
+          ]
+        }
+      },
+      {
+        "no_improvement_or_regression_rejected": true
+      },
+      {
+        "service": "evolution",
+        "tool": "get_status",
+        "result": {
+          "base_sha": "aa45910f205ce418feb232733f32d6840cb3be7b",
+          "artifact": "policies/retrieval.json",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 2,
+            "reranker": "vector",
+            "lexical_weight": 1.0,
+            "page_expansion": "intro"
+          },
+          "rationale": "Compare publisher coverage on the fixed PDF dataset",
+          "trace_id": "71575310-5812-41b4-a4da-f18e5eda9206",
+          "content_sha256": "7948f1684e233712f6a94a5b705e9bbea8cb4742f2d4209b8b75cc95301cb132",
+          "candidate_id": "0a37f1de03be4a5f14036014fb444fc4",
+          "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5",
+          "payload_hash": "f0563fb2a66555cc661fe74e06425f581f876d1ce85065fe6ac669fbbd182fce",
+          "status": "REJECTED",
+          "release_available": false,
+          "quality_checks": {
+            "passed": false,
+            "scope": "paired PDF retrieval support; not answer faithfulness or unseen-market accuracy",
+            "splits": {
+              "development": {
+                "before": 4,
+                "after": 1,
+                "total": 9
+              },
+              "holdout": {
+                "before": 1,
+                "after": 0,
+                "total": 10
+              }
+            },
+            "total": 19,
+            "before": 5,
+            "after": 1,
+            "regressions": [
+              "eia_september",
+              "eia_q4_stock",
+              "opec_2026",
+              "h_brent_q4"
+            ],
+            "gain": -0.21052631578947367,
+            "eval_sha256": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+            "identity": {
+              "core_source_sha256": "72d3033df31bd6ea282fcdbdd66a921d37a240499d64d66b1ed34f2e9914b373",
+              "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+              "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+            },
+            "active_release_id": "developer-seed",
+            "baseline_policy": {
+              "comparison_strategy": "per_publisher",
+              "top_k_per_publisher": 4
+            },
+            "candidate_policy": {
+              "comparison_strategy": "per_publisher",
+              "top_k_per_publisher": 2,
+              "reranker": "vector",
+              "lexical_weight": 1.0,
+              "page_expansion": "intro"
+            },
+            "model": {
+              "model": "intfloat/multilingual-e5-small",
+              "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+            },
+            "threshold": 0.01,
+            "candidate_sha": "2318fb328a22ec3b4f3332ead24f1b34b1349fb5"
+          }
+        }
+      },
+      {
+        "skill": "oilgas_analyst",
+        "content_hash": "0628304917089ad49568832dbb4956f07a926c0adc5094fb7ebf5ed7ea4793c2",
+        "stage": "upstream loader recognizes external disk payload; review pending",
+        "enabled": false
+      }
+    ]
+  },
+  "active_model": "GigaChat-2",
+  "native_parent_child_model": "GigaChat-2-Max",
+  "codex_backend": {
+    "implemented": true,
+    "enabled": false,
+    "live_tested": false,
+    "native_gateway_registration_tested": true,
+    "auth_and_model_gate_tested": true
+  },
+  "openai_local_live": "Skipped by user; Codex bridge contract tests only.",
+  "limits": [
+    "Native parent correction replayed on actual stored child without a new paid full run.",
+    "No production policy/skill release; new skill experiment is isolated and unreleased.",
+    "Model/code identity changed after skill experiment; checks must be refreshed before any release.",
+    "Fixed acceptance remains 25/30, not answer accuracy."
+  ],
+  "deployment": {
+    "ui_port": 8765,
+    "analyst_port": 8811,
+    "evolution_port": 8812,
+    "four_reviewed_enabled_skills": true,
+    "source_pdfs_visible_in_files": true,
+    "source_pdfs_mounted_readonly_for_mcp": true
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "live": true,
+  "model": "GigaChat-2",
+  "native_ui_delegation": false,
+  "transport": "compact skill context → model → HTTP MCP",
+  "catalog": [
+    "health",
+    "answer_question",
+    "forecast",
+    "supply_cut",
+    "submit_feedback",
+    "market_quote",
+    "search_web_sources",
+    "search_reports"
+  ],
+  "calls": [
+    {
+      "name": "mcp_analyst__forecast",
+      "args": {
+        "as_of": "2025-10-01",
+        "asset": "brent",
+        "end_date": "2025-09-30",
+        "horizon_months": 2,
+        "start_date": "2015-01-01"
+      },
+      "id": "ecc937d4-ddcb-48b7-a25d-708b2009d795",
+      "type": "tool_call"
+    }
+  ],
+  "usage": {
+    "output_tokens": 111,
+    "input_tokens": 1106,
+    "total_tokens": 1217,
+    "input_token_details": {
+      "cache_read": 0
+    }
+  },
+  "model_text": "",
+  "status": "forecasted",
+  "request_id": "6215df5a-f56f-4df7-b63b-f5aa019a2e2d",
+  "models": [
+    "ARIMA",
+    "ETS",
+    "naive"
+  ],
+  "data_cache": {
+    "state": "hit",
+    "network_used": false,
+    "requested": [
+      "2015-01-01",
+      "2025-09-30"
+    ],
+    "missing": [],
+    "requested_from_provider": [],
+    "errors": [],
+    "snapshot": "a858eeaaaaa6d401054f71c73dcd4ea356030625a159dc40b10777d6f7460ac3",
+    "complete": true
+  },
+  "validation": {
+    "required_models_present": true,
+    "cache_hit": true,
+    "note": "Initial smoke assertion required exactly two models; naive benchmark is intentionally also returned. Corrected against saved response without another model call."
+  }
+}

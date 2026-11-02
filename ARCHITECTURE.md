@@ -334,3 +334,56 @@ OilAgent/                         # workspace, без общей .git
 Quality gate выполнен настоящим Ouroboros: кандидат 5/19 → 7/19 отклонён за регрессию одного validation-case. Ни critic, ни release не обходились; активная policy прежняя. Positive release/rollback проверены на контролируемых fixtures, не заявлены как production release. Новые validation cases после просмотра считаются regression-набором; следующий эксперимент требует новых случаев.
 
 Фиксированный acceptance-набор: 25/30, пять retrieval-промахов остаются. Это не точность готовых ответов. OpenAI/local live пропущены пользователем; GitHub/GitLab публикация требует целевого remote. Подробности и evidence — в INTEGRATION_STATUS.md.
+
+## 17. Native skills/subagents: уточнение реализации 2 ноября
+
+Вместо единственного instruction skill выделены `oilgas_analyst`, `report_rag`,
+`web_research`, `oil_forecast`. Они хранятся в независимом evolution Git и проходят
+штатный native review по отдельности. Main имеет прямой `forecast(asset="brent",
+horizon_months, as_of, start_date, end_date)`; общая LangGraph аналитика остаётся
+доступной через answer_question. Метод поддерживает Brent; другие assets явно
+отклоняются. Численные модели не генерируются заново в skill.
+
+Штатное делегирование Ouroboros: три аналитических API-model rows, mode auto,
+не более двух активных детей, глубина один. Specialist sessions используют
+соответствующие skills/MCP; reviewer — отдельная роль. Main планирует и получает
+результаты через schedule_subagent/wait_tasks/get_task_result. Простой запрос
+не требует subagent. Adapter/guards устанавливаются также в spawn/forkserver
+workers через picklable entrypoint; upstream checkout не изменён.
+
+Evolution MCP расширен typed propose_skill (name/description/version/instructions/
+capability), где backend формирует YAML. Это instruction-only Git candidates,
+без scripts/permissions/dependencies/изменения core. Skill evaluation отдельно
+проверяет модельный выбор MCP и аргументы: для изменения — парно все фиксированные
+кейсы, для новой capability — все её кейсы. Рост без регрессий, затем critic;
+семантическое качество ответа и качество делегирования этими кейсами не доказаны.
+Новая capability имеет отсутствующий baseline, а не искусственно ухудшенную модель.
+
+Операторский skill_release.py stage выключает прежнюю версию и fast-forward
+обновляет main до проверенного SHA; затем native review точных байтов и явный
+enable. Hash identity связывает core, evaluator/cases, model, upstream pin,
+candidate и native payload. Rollback — обратный Git-коммит только этого skill,
+без потери более поздних несвязанных изменений. Между stage и enable возможна
+недоступность capability; бесшовный переключатель версий не заявляется.
+
+Прежние свидетельства версии 0.3 доказывают только соответствующие им пути.
+Проверки расширения: skill-workflow-evidence.json и актуальный INTEGRATION_STATUS.
+
+## 18. Files и модельный backend
+
+USER_FILES_PATH — одно физическое дерево native Files, из которого загрузчики
+сразу читают/пишут PDF, history CSV/provenance и model cache. При миграции старые
+пути становятся aliases, а конфликтующие старые указатели сохраняются в Imports.
+Пользовательские uploads/Deliverables доступны в том же Files; новые uploads не
+меняют фиксированный corpus manifest автоматически. Secrets, evaluator и traces
+не переносятся в Files.
+
+Текущий provider gigachat использует GigaChat 2 Lite (API ID GigaChat-2).
+Предыдущие native reviews/parent-child runs на Max не считаются проверкой Lite.
+Для общего Codex model backend подготовлен optional authenticated non-streaming
+OpenAI-compatible bridge к owned Ouroboros model operations. Это provider local,
+не четвёртый provider и не отдельный coding Agent Run. Native Main/subagents
+используют claudexor::codex=<model> напрямую; core — ту же модель через bridge.
+Включение требует штатного подключения Codex аккаунта в UI; bridge выключен,
+live Codex validation не выполнена. Endpoint не исполняет возвращённые tools,
+поддерживает function_calling и сохраняет неизвестные usage неизвестными.

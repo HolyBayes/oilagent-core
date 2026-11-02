@@ -1,0 +1,82 @@
+[
+  {
+    "id": "forecast_horizon",
+    "capability": "forecast",
+    "question": "Рассчитай новый прогноз Brent методами ARIMA и ETS на 4 месяца.",
+    "tools": [
+      "mcp_analyst__forecast"
+    ],
+    "arguments": {
+      "horizon_months": 4,
+      "asset": "brent"
+    }
+  },
+  {
+    "id": "forecast_range",
+    "capability": "forecast",
+    "question": "Рассчитай Brent на 2 месяца по истории с 2015-01-01 по 2025-12-31, as_of 2026-01-15.",
+    "tools": [
+      "mcp_analyst__forecast"
+    ],
+    "arguments": {
+      "horizon_months": 2,
+      "start_date": "2015-01-01",
+      "end_date": "2025-12-31",
+      "as_of": "2026-01-15",
+      "asset": "brent"
+    }
+  },
+  {
+    "id": "scenario_missing",
+    "capability": "forecast",
+    "question": "Оцени эффект снижения добычи на 1 млн баррелей в сутки. Исходных цен, добычи и эластичностей у меня нет.",
+    "clarification": true
+  },
+  {
+    "id": "report_forecast",
+    "capability": "rag",
+    "question": "Какой прогноз Brent на 2026 год опубликован в EIA STEO за октябрь 2025? Нужна цитата отчёта, новый расчёт не нужен.",
+    "tools": [
+      "mcp_analyst__search_reports",
+      "mcp_analyst__answer_question"
+    ]
+  },
+  {
+    "id": "report_comparison",
+    "capability": "rag",
+    "question": "Сравни прогноз спроса на нефть OPEC и EIA из загруженных октябрьских отчётов 2025. Приведи страницы.",
+    "tools": [
+      "mcp_analyst__answer_question",
+      "mcp_analyst__search_reports"
+    ]
+  },
+  {
+    "id": "web_fresh",
+    "capability": "web",
+    "question": "Найди свежие публикации EIA о природном газе за последнюю неделю, укажи даты и ссылки.",
+    "tools": [
+      "mcp_analyst__search_web_sources",
+      "mcp_analyst__answer_question"
+    ]
+  },
+  {
+    "id": "quote",
+    "capability": "web",
+    "question": "Какая последняя доступная котировка Brent? Укажи время и тип цены.",
+    "tools": [
+      "mcp_analyst__market_quote"
+    ]
+  },
+  {
+    "id": "coordinate_simple",
+    "capability": "coordinator",
+    "question": "Рассчитай новый ARIMA/ETS прогноз Brent на 3 месяца.",
+    "tools": [
+      "mcp_analyst__forecast"
+    ],
+    "arguments": {
+      "horizon_months": 3,
+      "asset": "brent"
+    }
+  }
+]

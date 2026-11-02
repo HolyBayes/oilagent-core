@@ -1,6 +1,6 @@
 # OilAgent
 
-Нефтегазовый аналитик для публичных данных: native UI Ouroboros → Analyst MCP → LangGraph, локальный RAG OPEC/EIA, web, расчётные ARIMA/ETS и сценарии сокращения добычи. Отдельный Evolution MCP создаёт Git-кандидатов ограниченной retrieval-policy; оценка, critic и операторский выпуск отделены от аналитики.
+Нефтегазовый аналитик для публичных данных: native UI Ouroboros → Analyst MCP → LangGraph, локальный RAG OPEC/EIA, web, расчётные ARIMA/ETS и сценарии сокращения добычи. Отдельный Evolution MCP создаёт Git-кандидатов retrieval-policy и instruction skills; оценка, critic и операторский выпуск отделены от аналитики.
 
 Фактический статус и ограничения: [INTEGRATION_STATUS](docs/INTEGRATION_STATUS.md). Краткий отчёт: [ARCHITECTURE_SUMMARY](docs/ARCHITECTURE_SUMMARY.md). Архитектура: [ARCHITECTURE.md](ARCHITECTURE.md). Реальные примеры: [demo_dialogues](examples/demo_dialogues.md).
 
@@ -16,7 +16,7 @@
    chmod 600 .env
    ```
 
-   В `.env` задайте `LLM_PROVIDER=gigachat`, `GIGACHAT_MODEL=GigaChat-2-Max`, `GIGACHAT_CREDENTIALS` (Authorization key) и соответствующий `GIGACHAT_SCOPE`. При необходимости укажите `GIGACHAT_CA_BUNDLE_FILE`. Профили OpenAI/local описаны ниже. Секреты остаются в локальном `.env`.
+   В `.env` задайте `LLM_PROVIDER=gigachat`, `GIGACHAT_MODEL=GigaChat-2`, `GIGACHAT_CREDENTIALS` (Authorization key) и соответствующий `GIGACHAT_SCOPE`. При необходимости укажите `GIGACHAT_CA_BUNDLE_FILE`. Профили OpenAI/local описаны ниже. Секреты остаются в локальном `.env`.
 
 2. Соберите и запустите сервисы:
 
@@ -28,15 +28,15 @@
 
    `run.sh` заполнит пустые MCP-токены разными случайными значениями. Если `.env` отсутствует, скрипт создаст его сам; доступ к модели всё равно нужно настроить. Дождитесь успешного завершения `init`, healthy у `analyst`/`evolution` и запуска `ouroboros`. Первая сборка и индексация могут занять заметное время.
 
-3. Откройте **<http://127.0.0.1:8765>** в браузере на машине запуска. Это native UI Ouroboros. В **Skills** найдите `oilgas_analyst`, выполните штатный **Review**, дождитесь результата и включите skill. Review вызывает модель; скрытого платного review при старте нет. Результат для тех же байтов в той же установке переиспользуется.
+3. Откройте **<http://127.0.0.1:8765>** в браузере на машине запуска. Это native UI Ouroboros. В **Skills** найдите четыре skills из раздела ниже, выполните штатный **Review** нужных skills, дождитесь результатов и включите их. Review вызывает модель; скрытого платного review при старте нет. Результат для тех же байтов в той же установке переиспользуется.
 
-4. В чате **Main** отправьте, например: «Построй прогноз Brent на 3 месяца методами ARIMA и ETS, покажи интервалы и источник исторических данных». Текущий путь: Main → `answer_question` → расчётный модуль. Ответ должен содержать обе модели, источник и request ID. Один лишь доступный UI ещё не подтверждает доступ к модели или успешное выполнение MCP.
+4. В чате **Main** отправьте, например: «Построй прогноз Brent на 3 месяца методами ARIMA и ETS, покажи интервалы и источник исторических данных». Для этого запроса Main может вызвать `forecast(asset="brent", ...)` напрямую. Ответ должен содержать обе модели, источник и request ID. Один лишь доступный UI ещё не подтверждает доступ к модели или успешное выполнение MCP.
 
 По умолчанию UI слушает только loopback хоста; MCP доступны на `http://127.0.0.1:8011/mcp` и `http://127.0.0.1:8012/mcp` с Bearer-токенами из `.env`. MCP URL не является адресом UI. Для удалённого сервера можно пробросить UI по SSH: `ssh -L 8765:127.0.0.1:8765 user@server`, затем открыть тот же адрес в локальном браузере.
 
 Команда собирает CPU-образы, готовит независимый evolution Git, проверяет/загружает PDF и индексирует их, затем поднимает два MCP и native UI. Данные контейнерной установки находятся в `workspace/container/`; публичные PDF/веса из имеющегося локального кеша переиспользуются. Загрузка с нуля зависит от доступности OPEC/EIA/Hugging Face. Первичная попытка download из Docker получила TLS timeout; запуск с проверенным кешем и новым Linux-индексом подтверждён. Повторный запуск сохраняет Git, индекс, диалоги, review и кеш цен.
 
-Если порты заняты, используйте `UI_PORT=8875 ANALYST_PORT=8811 EVOLUTION_PORT=8812 ./run.sh -d` и откройте **<http://127.0.0.1:8875>**. Для постоянной настройки запишите эти переменные в `.env`. `DEPLOY_WORKSPACE` задаёт каталог deployment state, `EVOLUTION_REPO_PATH` — путь к независимому evolution Git (по умолчанию `../evolution`). В данном рабочем каталоге ранее проверены две отдельные установки: контейнерная на 8875 и host UI на 8765; их диалоги и review хранятся отдельно.
+Если порты заняты, используйте `UI_PORT=8875 ANALYST_PORT=8811 EVOLUTION_PORT=8812 ./run.sh -d` и откройте **<http://127.0.0.1:8875>**. Для постоянной настройки запишите эти переменные в `.env`. `DEPLOY_WORKSPACE` задаёт каталог deployment state, `EVOLUTION_REPO_PATH` — путь к независимому evolution Git (по умолчанию `../evolution`). Текущая контейнерная установка использует UI 8765 и MCP 8811/8812 (host-порты 8011/8012 заняты); эти overrides сохранены в локальном `.env`. Ранее проверялись отдельные host/UI 8765 и Docker/UI 8875; их исторические диалоги/review относятся к тем установкам.
 
 ```bash
 docker compose ps
@@ -50,32 +50,64 @@ docker compose down
 
 Если UI не открывается, проверьте `docker compose ps -a` и логи: ошибка `init` блокирует зависимые сервисы. Ошибки модели смотрите в логах `analyst`/`ouroboros`; после исправления `.env` повторите `./run.sh -d`. Первый запуск без готового кеша требует сетевого доступа к источникам PDF и моделей.
 
+## Files: исходные данные без копий для UI
+
+`USER_FILES_PATH` задаёт единый физический каталог (по умолчанию `core/workspace/files`). Native Files открывает именно его; те же файлы напрямую смонтированы в init/Analyst/Evolution:
+
+- `OilAgent/Reports/` — загруженные OPEC/EIA PDF;
+- `OilAgent/Prices/` — исторические CSV, provenance и указатель текущего snapshot;
+- `OilAgent/Models/` — кеш весов и tokenizer;
+- пользовательские uploads и Deliverables — в том же дереве Files.
+
+Загрузчики сразу пишут сюда. Старые `workspace/reports|prices|models` и контейнерные cache-пути после миграции становятся ссылками на эти данные. Перенос не скачивает файлы заново; разные старые указатели/документы сохраняются в Imports, одинаковые копии объединяются. Перед первым переносом старых bind mounts `run.sh` останавливает сервисы; последующие старты не требуют миграции. Путь Files не включает `.env`, native settings, traces или evaluator. Наличие нового PDF в Files само по себе не добавляет его в фиксированный RAG corpus: corpus manifest остаётся операторским.
+
 ## Skills, subagents и границы текущей интеграции
 
-Сейчас в UI установлен **один instruction skill `oilgas_analyst`**. RAG, web и forecast реализованы в core как MCP-инструменты/аналитические маршруты, а не как отдельные native skills. Профиль Ouroboros открывает Analyst MCP только через `answer_question`; прямой `forecast_brent` в этом профиле модели недоступен. Проверенный UI-прогноз ARIMA/ETS получен через общий вход, а не через самостоятельный выбор native Main инструмента `forecast_brent`. [Сохранённое подтверждение](docs/native-delivery-evidence.json).
+В native UI регистрируются четыре instruction skills из `evolution/ouroboros_skills/`. Каждый имеет собственную версию, hash-bound review и переключатель включения:
 
-Аналитические subagents выключены (`OUROBOROS_SUBAGENTS_MODE=off`). Настроенный `oilagent-reviewer` предназначен для review и не является аналитическим специалистом. Launcher дополнительно запрещает delegation/file-write tools. Evolution MCP меняет только `policies/retrieval.json`: он **не создаёт и не улучшает native skills**. Наличие папки skills в evolution Git само по себе этого не обеспечивает.
-
-Совместить архитектуру со штатными skills/subagents Ouroboros можно. Следующее разделение — план доработки, ещё не реализованный функционал:
-
-| Native skill | Назначение | Существующая опора в core |
+| Skill | Назначение | MCP |
 |---|---|---|
-| `oilgas_analyst` | Координация и итоговый ответ | Общий аналитический маршрут |
-| `report_rag` | Поиск и сопоставление отчётов | Report retrieval и проверка цитат |
-| `web_research` | Свежие публикации и источники | Web/RSS и проверка дат |
-| `oil_forecast` | ARIMA/ETS и сценарии | `forecast_brent`, `supply_cut`, кеш истории |
+| `oilgas_analyst` | Координация, итоговый ответ и явные improvement experiments | `answer_question`, Evolution MCP |
+| `report_rag` | Датированные PDF, сопоставление и цитаты | `search_reports`, `answer_question` |
+| `web_research` | Свежие публикации, даты и тип источника | `search_web_sources`, `market_quote` |
+| `oil_forecast` | Новые ARIMA/ETS и supply-cut сценарии | `forecast(asset="brent", ...)`, `supply_cut` |
 
-Skill и subagent — разные сущности: skill задаёт инструкции/возможности, subagent выполняет выделенную задачу в отдельной сессии. Простой прогноз может выполнять Main с forecast skill и прямым MCP-вызовом; сложное исследование — штатные specialist subagents через `schedule_subagent`. Для этого нужны изменение профиля, разрешений launcher и grants дочерних сессий, а также сквозные проверки. Одного переключения subagents в настройках недостаточно.
+При первой установке выполните Review и включение **каждого** нужного skill в Skills. Python-расчёты остаются в core; инструкции живут и версионируются в evolution. Skills не дублируют код MCP. На существующем evolution обновление developer seed не перезаписывает инструкции автоматически.
 
-Создание/изменение skills требует отдельного пути: native authoring → кандидат в evolution Git → оценка поведения → штатный review точных байтов → включение принятой версии. Текущая оценка retrieval-policy не оценивает изменения skill-инструкций или делегирования. Эти возможности нельзя считать реализованными до интеграции и проверки такого цикла.
+Main имеет прямой доступ к Forecast MCP. Для простого прогноза делегирование не нужно. Для составной задачи настроены штатные API-model subagents `report-analyst`, `web-analyst`, `forecast-analyst`; отдельный `oilagent-reviewer` участвует в review. Ouroboros может отображать ID как `модель~row-id`, поскольку все используют один provider. В Settings → Agents доступны roster и настройки; выполненные дочерние задачи появляются после фактического `schedule_subagent`, а не при одном открытии UI.
+
+Делегирование работает через native `schedule_subagent`/`wait_tasks`/`get_task_result`: не более двух одновременных детей, один уровень вложенности, без file-write/shell и Evolution mutations у детей. Launcher устанавливает одинаковые guards/schema/delivery adapters и в Main, и в spawn/forkserver workers. Specialist — отдельная сессия; skill — инструкции, которые она использует. Для простых запросов дополнительные модельные вызовы не требуются.
+
+### Самоулучшение skills
+
+Evolution MCP теперь принимает `propose_skill`: создание нового или изменение существующего **instruction-only** `SKILL.md` из typed `name/description/version/instructions`, с capability `forecast|rag|web|coordinator`. Запрос требует recorded request/failure trace и текущий SHA main. `read_skill` возвращает committed инструкции; `get_diff` — точный diff кандидата. Кандидат создаётся в отдельной Git-ветке и не меняет установленные skills.
+
+`run_checks` для policy по-прежнему использует PDF без LLM. Для skill он делает **платные** проверки выбора реальных MCP-инструментов и аргументов: новую capability проверяет на всех её фиксированных кейсах; изменение — парно до/после на всём наборе. Нужны рост и отсутствие регрессий. Для нового skill отсутствие capability считается нулевой исходной функциональностью, а не провалом модели без инструкций. Это узкая проверка routing/arguments, не benchmark качества ответов. Повтор тех же проверенных байтов при неизменном evaluator/model переиспользует результат. Далее — отдельный critic; install/release/enable агенту не предоставлены.
+
+Операторский путь после успешных checks/critic, из `core/` с активным Python-окружением:
+
+```bash
+# Для кандидатов контейнерной установки укажите её runtime state:
+export WORKSPACE_PATH=workspace/container/evolution-runtime
+python scripts/skill_release.py stage CANDIDATE_ID --sha FULL_SHA --operator NAME --port 8765
+python scripts/skill_release.py review CANDIDATE_ID --port 8765
+# Дождитесь завершения native Review в UI, затем:
+python scripts/skill_release.py enable CANDIDATE_ID --sha FULL_SHA --operator NAME --port 8765
+# Откатить только этот skill, сохранив поздние несвязанные коммиты:
+python scripts/skill_release.py rollback CANDIDATE_ID --operator NAME --port 8765
+```
+
+`stage` выключает прежний skill и fast-forward обновляет чистый evolution main до точного кандидата. Новая версия остаётся выключенной до штатного native review; `enable` связывает SHA кандидата, evaluation, critic и native payload hash. Откат выключает skill и создаёт обратный Git-коммит; восстановленную версию оператор включает отдельно после проверки её review. Staging может временно сделать старую capability недоступной; атомарное переключение двух одновременно установленных версий не заявляется. Для host runtime используйте его `WORKSPACE_PATH` из `.env` вместо container override.
+
+Компактная проверка каталога: `python scripts/check_skill_workflow.py`. Флаг `--live` вызывает модель для прямого forecast и создания/оценки skill-кандидата, но ничего не устанавливает. Это отдельно от сквозной native UI проверки. OpenAI/local живьём не проверяются по решению пользователя.
 
 ## Модель и конфигурация
 
-Выбран GigaChat-2-Max: у кандидата есть доступ к Sber API, модель отвечает по-русски и прошла живые проверки structured routing, PDF/web/hybrid, расчётных маршрутов и native MCP. Это практический выбор для демонстрации; сравнительного benchmark моделей не проводилось.
+Текущий профиль — GigaChat 2 Lite (`GigaChat-2` в API), по выбору пользователя для экономии. Прежние сквозные проверки и reviews выполнялись на GigaChat-2-Max; их результаты не считаются проверкой качества Lite. Сравнительного benchmark моделей не проводилось. [API-имя модели](https://developers.sber.ru/docs/ru/gigachat/guides/selecting-a-model).
 
 ```dotenv
 LLM_PROVIDER=gigachat
-GIGACHAT_MODEL=GigaChat-2-Max
+GIGACHAT_MODEL=GigaChat-2
 GIGACHAT_CREDENTIALS=
 GIGACHAT_SCOPE=GIGACHAT_API_PERS
 GIGACHAT_CA_BUNDLE_FILE=
@@ -104,6 +136,24 @@ LLM_API_KEY=
 
 Остальные параметры — в [.env.example](.env.example): пути, retrieval top-k, web freshness, request limits, retention, цены для optional cost reservation. System env имеет приоритет. Защитные schema/caps и фиксированные спецификации моделей не редактируются policy-кандидатом.
 
+### Встроенный Codex как общий LLM-бэкенд
+
+Ouroboros поддерживает model operations через `claudexor::codex=<model>` отдельно от делегирования coding sessions. Наш optional bridge `/oilagent/v1/chat/completions` направляет LLM-запросы core в тот же owned model route; инструменты выполняет core, bridge их не запускает. Список providers остаётся `gigachat|openai|local`.
+
+Сначала подключите Codex через Accounts в native UI и выберите фактически доступный model ID. Затем для контейнерного запуска настройте `.env`:
+
+```dotenv
+LLM_PROVIDER=local
+LLM_MODEL=claudexor::codex=MODEL_ID_FROM_UI
+LLM_BASE_URL=http://ouroboros:8765/oilagent/v1
+OUROBOROS_LLM_BRIDGE_ENABLED=true
+LLM_API_KEY=VALUE_OF_LOCAL_LLM_BRIDGE_TOKEN
+```
+
+`run.sh` создаёт отдельный приватный `LLM_BRIDGE_TOKEN`; скопируйте его значение в `LLM_API_KEY` локально. Это внутренний Bearer-токен, не Codex OAuth token. Для host core вместо docker service URL используйте `http://127.0.0.1:8765/oilagent/v1`. Вызовите `./run.sh -d`: native Main/subagents используют Codex напрямую, Analyst/Evolution — через bridge. Текущий запуск остаётся на Lite; bridge по умолчанию выключен.
+
+Bridge ограничен выбранным Codex model ID, не исполняет произвольные команды, сохраняет tools/tool_choice/usage и не подставляет нули вместо неизвестных token counts. Поддерживаются non-streaming calls и `LLM_STRUCTURED_METHOD=function_calling`; `response_format`/json_schema/json_mode отклоняются явно. Нет авторизованного model source — запрос завершится ошибкой, без скрытого fallback на другую модель. Контракт покрыт офлайн-тестами; **живая проверка Codex ещё не выполнена, подключённого harness в текущей установке нет**. [Codex app-server](https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server), [локальная реализация](scripts/native_bridge.py).
+
 ## Аналитические возможности
 
 - PDF: два фиксированных публичных выпуска OPEC MOMR/EIA STEO за октябрь 2025, E5 на закреплённой revision и Chroma; источник, дата, PDF page и точные цитаты. PDF и веса не публикуются в Git; загрузчик проверяет SHA256. OPEC PDF не перераспространяется.
@@ -126,15 +176,15 @@ LLM_API_KEY=
 эластичность спроса [-0.3,-0.1], предложения [0,0.1], прочие условия неизменны.
 ```
 
-Analyst MCP: `health`, `answer_question(question, session_id="")`, `forecast_brent`, `supply_cut`, `market_quote`, `submit_feedback`, `search_reports`, `search_web_sources`. Native Main получает общий `answer_question`; его финальный ответ программно передаёт canonical core result, а не повторный пересказ.
+Analyst MCP: `health`, `answer_question(question, session_id="")`, `forecast(asset="brent", ...)`, `supply_cut`, `market_quote`, `submit_feedback`, `search_reports`, `search_web_sources`. Native Main получает прямые аналитические MCP; для `answer_question` и `forecast` адаптер передаёт canonical core result с request ID.
 
 ## Самоулучшение и два Git
 
-`core/` и соседний `evolution/` — самостоятельные репозитории. Путь evolution задаётся `EVOLUTION_REPO_PATH`; пустая папка/unborn Git подготавливается автоматически. Core, evaluator и schemas защищены; кандидат меняет только `policies/retrieval.json`.
+`core/` и соседний `evolution/` — самостоятельные репозитории. Путь evolution задаётся `EVOLUTION_REPO_PATH`; пустая папка/unborn Git подготавливается автоматически. Core, evaluator и schemas защищены; кандидат меняет либо `policies/retrieval.json`, либо один instruction-only `ouroboros_skills/<name>/SKILL.md`.
 
 Policy задаёт bounded strategy/top-k, reranker/вес и query-context той же PDF-страницы. Serving читает developer seed либо проверенный release bundle, **не незакоммиченные правки и не candidate branch**. Начальный serving сохраняет прежнее per-publisher поведение, baseline не ухудшался ради демонстрации.
 
-Evolution MCP: `propose_change`, `get_diff`, `run_checks`, `request_review`, `get_status`. Нужен существующий request trace; число кандидатов ограничено. `run_checks` сравнивает настоящий PDF retrieval на замороженных development/validation случаях, требует роста и отсутствия регрессий. Critic доступен после PASS. Ни approval, ни merge/release, ни shell через MCP нет.
+Evolution MCP: `propose_change`, `propose_skill`, `read_skill`, `get_diff`, `run_checks`, `request_review`, `get_status`. Нужен существующий request trace; число кандидатов ограничено. Для policy `run_checks` сравнивает настоящий PDF retrieval на замороженных development/validation случаях, требует роста и отсутствия регрессий. Critic доступен после PASS. Ни approval, ни merge/release, ни shell через MCP нет.
 
 ```bash
 python scripts/release.py status

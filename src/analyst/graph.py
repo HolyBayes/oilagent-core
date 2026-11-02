@@ -665,7 +665,7 @@ def answer_question(question: str, session_id: str = "") -> dict:
         state["versions"] = {
             "provider": os.getenv("LLM_PROVIDER", "gigachat"),
             "model": (
-                os.getenv("GIGACHAT_MODEL", "GigaChat-2-Max")
+                os.getenv("GIGACHAT_MODEL", "GigaChat-2")
                 if os.getenv("LLM_PROVIDER", "gigachat") == "gigachat"
                 else os.getenv("LLM_MODEL", "")
             ),

@@ -20,6 +20,8 @@ dependencies = [
   "statsmodels==0.15.0",
   "pandas==3.1.0",
   "xlrd==2.0.2",
+  "PyYAML==6.0.3",
+  "jsonschema==4.26.0",
 ]
 
 [project.optional-dependencies]
@@ -29,7 +31,7 @@ dev = ["pytest==9.2.0", "ruff==0.17.3"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-analyst = ["seeds/oilgas_analyst/SKILL.md", "seeds/web_sources.json"]
+analyst = ["seeds/*/SKILL.md", "seeds/web_sources.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

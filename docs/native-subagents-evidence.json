@@ -1,0 +1,369 @@
+{
+  "model": "GigaChat-2-Max",
+  "transport": "real native root → native API-model child → HTTP Analyst MCP",
+  "tasks": [
+    {
+      "task_id": "f4f2a014d5904db5",
+      "parent_task_id": null,
+      "status": "cancelled",
+      "result": "Running task cancelled and worker terminated.",
+      "tool_calls": 2
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "parent_task_id": null,
+      "status": "completed",
+      "result": "Вот результат расчёта нового прогноза цен на нефть Brent на два месяца вперёд с использованием моделей ARIMA и ETS через аналитическую платформу OilAgent MCP:\n\n### Таблица прогнозов\n\n**Модель ARIMA**\n\n| Месяц     | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|-----------|-----------------|------------|-------------|\n| 2026-11  | 128.08         | 110.05     | 149.05      |\n| 2026-12  | 129.02         | 100.76     | 165.21      |\n\n**Модель ETS**\n\n| Месяц     | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|-----------|-----------------|------------|-------------|\n| 2026-11  | 124.83         | 117.03     | 133.15      |\n| 2026-12  | 124.83         | 115.91     | 134.44      |\n\n### Источники и ограничения\n\n- **Историческая информация**: EIA Europe Brent Spot Price FOB (последнее наблюдаемое значение: 2026-10-27).\n- **Статус расчётов**: partial (частичный).\n- **Предупреждения**:\n  - Имеются значительные пропуски в запрашиваемом историческом диапазоне данных.\n  - Интервалы прогноза не учитывают все возможные структурные и геополитические шоки.\n  - Простейшая модель (\"naive\") показала лучшие показатели точности на ближайшем горизонте по сравнению с выбранными моделями.\n\n### Рекомендации\n\n1. Рассмотрите интеграцию дополнительной внешней информации для повышения качества прогноза.\n2. Учитывайте широкие интервалы неопределённости при принятии решений на основе этих прогнозов.\n3. Проведите дополнительный анализ чувствительности к возможным изменениям предложения нефти.\n\nRequest ID: 8d099b19-589f-4cc3-bff7-95a8c20cdacb",
+      "tool_calls": 8
+    },
+    {
+      "task_id": "9c537e46",
+      "parent_task_id": "ff9ee34c5b824909",
+      "status": "completed",
+      "result": "Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2026-10. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.\n\nARIMA [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-11 | 128.08 | 110.05 | 149.05 |\n| 2026-12 | 129.02 | 100.76 | 165.21 |\n\nETS [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-11 | 124.83 | 117.03 | 133.15 |\n| 2026-12 | 124.83 | 115.91 | 134.44 |\n\nARIMA и ETS рассчитаны отдельно; выбор сделан на calibration, не на test.\n\nОграничения: Интервалы не охватывают все структурные и геополитические шоки. Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются. Не весь запрошенный диапазон опубликован или загружен; пробелы указаны в data_cache. Средние рассчитаны по доступным наблюдениям; есть праздники и лаг публикации. Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде.\n\n[F1] Исторический дневной ряд: EIA Europe Brent Spot Price FOB — daily historical observations, USD/bbl; средние по доступным наблюдениям месяца. Последнее дневное наблюдение: 2026-10-27. https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls\n\nЗапрос: `8d099b19-589f-4cc3-bff7-95a8c20cdacb`; статус: `partial`.",
+      "tool_calls": 2
+    }
+  ],
+  "tools": [
+    {
+      "task_id": "f4f2a014d5904db5",
+      "tool": "enable_tools",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "tool": "list_available_tools",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "schedule_subagent",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "finish_task",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "finish_task",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "finish_task",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "get_task_result",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "wait_tasks",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "finish_task",
+      "status": "argument_error",
+      "tool_code": "TOOL_ARG_ERROR"
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "tool": "finish_task",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "9c537e46",
+      "tool": "mcp_analyst__forecast",
+      "status": "ok",
+      "tool_code": "OK"
+    },
+    {
+      "task_id": "9c537e46",
+      "tool": "finish_task",
+      "status": "ok",
+      "tool_code": "OK"
+    }
+  ],
+  "skills": [
+    {
+      "name": "oil_forecast",
+      "version": "0.4.0",
+      "enabled": true,
+      "review_status": "clean",
+      "review_stale": false,
+      "executable_review": true,
+      "content_hash": "a001cf0b3d4e81c86ad8522f276b644c6f9cc88c570e17dd9727df70f844251b"
+    },
+    {
+      "name": "oilgas_analyst",
+      "version": "0.4.0",
+      "enabled": true,
+      "review_status": "clean",
+      "review_stale": false,
+      "executable_review": true,
+      "content_hash": "0628304917089ad49568832dbb4956f07a926c0adc5094fb7ebf5ed7ea4793c2"
+    },
+    {
+      "name": "report_rag",
+      "version": "0.4.0",
+      "enabled": true,
+      "review_status": "clean",
+      "review_stale": false,
+      "executable_review": true,
+      "content_hash": "1c8672a9c2b56fd3948f88fd6bb3c28fb6a4173587af02a565cf521e27430dcc"
+    },
+    {
+      "name": "web_research",
+      "version": "0.4.0",
+      "enabled": true,
+      "review_status": "clean",
+      "review_stale": false,
+      "executable_review": true,
+      "content_hash": "317dfc90613af34a359c8ffea782ee163009f1bbc9e2416de23f96c661808b26"
+    }
+  ],
+  "usage": [
+    {
+      "task_id": "api_skill_review",
+      "category": "multi_model_review_review",
+      "review_skill": "oilgas_analyst",
+      "state": "settled",
+      "prompt_tokens": 43659,
+      "completion_tokens": 6,
+      "cached_tokens": 4
+    },
+    {
+      "task_id": "api_skill_review",
+      "category": "multi_model_review_review",
+      "review_skill": "oil_forecast",
+      "state": "settled",
+      "prompt_tokens": 43303,
+      "completion_tokens": 6,
+      "cached_tokens": 3
+    },
+    {
+      "task_id": "api_skill_review",
+      "category": "multi_model_review_review",
+      "review_skill": "report_rag",
+      "state": "settled",
+      "prompt_tokens": 43239,
+      "completion_tokens": 6,
+      "cached_tokens": 3
+    },
+    {
+      "task_id": "api_skill_review",
+      "category": "multi_model_review_review",
+      "review_skill": "web_research",
+      "state": "settled",
+      "prompt_tokens": 2459,
+      "completion_tokens": 6,
+      "cached_tokens": 40749
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 39522,
+      "completion_tokens": 35,
+      "cached_tokens": 4
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 4681,
+      "completion_tokens": 45,
+      "cached_tokens": 35848
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "cached_tokens": null
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "cached_tokens": null
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "cached_tokens": null
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "cached_tokens": null
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "cached_tokens": null
+    },
+    {
+      "task_id": "f4f2a014d5904db5",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "cached_tokens": null
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 45883,
+      "completion_tokens": 161,
+      "cached_tokens": 4
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 16843,
+      "completion_tokens": 43,
+      "cached_tokens": 30009
+    },
+    {
+      "task_id": "9c537e46",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 12874,
+      "completion_tokens": 51,
+      "cached_tokens": 27494
+    },
+    {
+      "task_id": "9c537e46",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 2389,
+      "completion_tokens": 39,
+      "cached_tokens": 5
+    },
+    {
+      "task_id": "9c537e46",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 9758,
+      "completion_tokens": 1351,
+      "cached_tokens": 35744
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 14251,
+      "completion_tokens": 43,
+      "cached_tokens": 35864
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 54213,
+      "completion_tokens": 523,
+      "cached_tokens": 4
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 10405,
+      "completion_tokens": 532,
+      "cached_tokens": 44926
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 17527,
+      "completion_tokens": 105,
+      "cached_tokens": 40826
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 12233,
+      "completion_tokens": 105,
+      "cached_tokens": 47683
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 23909,
+      "completion_tokens": 105,
+      "cached_tokens": 37570
+    },
+    {
+      "task_id": "ff9ee34c5b824909",
+      "category": "task",
+      "review_skill": "",
+      "state": "settled",
+      "prompt_tokens": 12608,
+      "completion_tokens": 105,
+      "cached_tokens": 50467
+    }
+  ],
+  "limits": [
+    "First task cancelled on SDK nullable-schema error; second succeeded after adapter fix.",
+    "Original live parent paraphrased warnings. Correction verified by offline replay of the real native child; no second paid end-to-end run.",
+    "This run predates switch to Lite; it does not establish Lite quality."
+  ],
+  "parent_delivery_fix": {
+    "actual_native_store_replay": true,
+    "canonical_child_result_preserved": true,
+    "rehydration_after_parent_resume": true,
+    "model_calls": 0,
+    "method": "Offline replay against actual completed native child and pinned task store."
+  }
+}

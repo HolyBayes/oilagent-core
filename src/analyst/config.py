@@ -10,8 +10,12 @@ CORE_ROOT = Path(os.getenv("OILAGENT_CORE_ROOT", Path(__file__).resolve().parent
 
 def configured_path(name: str, default: str) -> Path:
     load_dotenv(CORE_ROOT / ".env", override=False)
-    path = Path(os.getenv(name, default))
+    path = Path(os.getenv(name) or default)
     return (path if path.is_absolute() else CORE_ROOT / path).resolve()
+
+
+def user_files():
+    return configured_path("USER_FILES_PATH", "workspace/files")
 
 
 def workspace() -> Path:
@@ -66,7 +70,7 @@ def chat_model():
         if not model_ready():
             raise ValueError("Configure GIGACHAT_CREDENTIALS in local .env")
         return GigaChat(
-            model=os.getenv("GIGACHAT_MODEL", "GigaChat-2-Max"),
+            model=os.getenv("GIGACHAT_MODEL", "GigaChat-2"),
             credentials=os.environ["GIGACHAT_CREDENTIALS"],
             scope=os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
             ca_bundle_file=os.getenv("GIGACHAT_CA_BUNDLE_FILE") or None,

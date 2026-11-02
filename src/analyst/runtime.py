@@ -13,7 +13,7 @@ from analyst.config import CORE_ROOT, configured_path, evolution_repo
 def provider_settings(env):
     provider = env.get("LLM_PROVIDER", "gigachat")
     if provider == "gigachat":
-        return f"gigachat::{env.get('GIGACHAT_MODEL') or 'GigaChat-2-Max'}", {
+        return f"gigachat::{env.get('GIGACHAT_MODEL') or 'GigaChat-2'}", {
             "GIGACHAT_CREDENTIALS": env.get("GIGACHAT_CREDENTIALS", ""),
             "GIGACHAT_SCOPE": env.get("GIGACHAT_SCOPE") or "GIGACHAT_API_PERS",
             "GIGACHAT_VERIFY_SSL_CERTS": "true",
@@ -24,6 +24,8 @@ def provider_settings(env):
     model, url = env.get("LLM_MODEL", ""), env.get("LLM_BASE_URL", "")
     if not model or (provider == "local" and not url):
         raise ValueError("Configure LLM_MODEL and the local endpoint")
+    if provider == "local" and model.startswith("claudexor::codex="):
+        return model, {}
     if url:
         return f"openai-compatible::{model}", {
             "OPENAI_COMPATIBLE_BASE_URL": url,
@@ -46,9 +48,12 @@ def settings_profile(env, model_keys, skill_source):
             "OUROBOROS_CONTEXT_MODE_AUTO_LOW": "false",
             "OUROBOROS_REVIEW_ENFORCEMENT": "blocking",
             "OUROBOROS_AUTO_GRANT_REVIEWED_SKILLS": "false",
-            "OUROBOROS_SUBAGENTS_MODE": "off",
-            "OUROBOROS_MAX_WORKERS": 1,
-            "OUROBOROS_MAX_ROUNDS": 3,
+            "OUROBOROS_SUBAGENTS_MODE": "auto",
+            "OUROBOROS_MAX_ACTIVE_SUBAGENTS_PER_ROOT": 2,
+            "OUROBOROS_MAX_SUBAGENT_DEPTH": 1,
+            "OUROBOROS_ALLOW_MUTATIVE_SUBAGENTS": "false",
+            "OUROBOROS_MAX_WORKERS": 3,
+            "OUROBOROS_MAX_ROUNDS": 8,
             "OUROBOROS_TASK_ABS_CEILING_SEC": 300,
             "OUROBOROS_REVIEW_MAX_CYCLES": "1",
             "TOTAL_BUDGET": 2.0,
@@ -68,6 +73,26 @@ def settings_profile(env, model_keys, skill_source):
             "OUROBOROS_SUBAGENTS": {
                 "enabled": True,
                 "items": [
+                    *[
+                        {
+                            "subagent_id": slug,
+                            "recommended_use": purpose,
+                            "route": {"kind": "api_model", "target_id": route},
+                            "effort": "medium",
+                            "review_eligible": False,
+                        }
+                        for slug, purpose in [
+                            (
+                                "report-analyst",
+                                "Use report_rag skill to gather PDF evidence and citations.",
+                            ),
+                            ("web-analyst", "Use web_research skill for dated web evidence."),
+                            (
+                                "forecast-analyst",
+                                "Use oil_forecast and forecast for calculations.",
+                            ),
+                        ]
+                    ],
                     {
                         "subagent_id": "oilagent-reviewer",
                         "recommended_use": "Review exact skill bytes",
@@ -75,7 +100,7 @@ def settings_profile(env, model_keys, skill_source):
                         "effort": "medium",
                         "delivery": "packet",
                         "review_eligible": True,
-                    }
+                    },
                 ],
             },
             "MCP_ENABLED": True,
@@ -86,7 +111,19 @@ def settings_profile(env, model_keys, skill_source):
                     "name": f"OilAgent {kind}",
                     "enabled": True,
                     "schemas_at_start": kind == "analyst",
-                    "allowed_tools": ["answer_question"] if kind == "analyst" else [],
+                    "allowed_tools": (
+                        [
+                            "answer_question",
+                            "forecast",
+                            "supply_cut",
+                            "market_quote",
+                            "search_reports",
+                            "search_web_sources",
+                            "submit_feedback",
+                        ]
+                        if kind == "analyst"
+                        else []
+                    ),
                     "transport": "streamable_http",
                     "url": env.get(f"{kind.upper()}_MCP_URL", f"http://127.0.0.1:{port}/mcp"),
                     "auth_header": "Authorization",
@@ -124,6 +161,14 @@ def isolated_env(root, repo):
         for key in ["PATH", "LANG", "LC_ALL", "TMPDIR", "SYSTEMROOT"]
         if key in os.environ
     }
+    files = configured_path("USER_FILES_PATH", "workspace/files")
+    files.mkdir(parents=True, exist_ok=True)
+    env.update(
+        {
+            key: os.getenv(key, "")
+            for key in ["OUROBOROS_LLM_BRIDGE_ENABLED", "LLM_BRIDGE_TOKEN", "LLM_MODEL"]
+        }
+    )
     env.update(
         {
             "PYTHONPATH": str(repo),
@@ -133,8 +178,9 @@ def isolated_env(root, repo):
             "OUROBOROS_REPO_DIR": str(repo),
             "OUROBOROS_DATA_DIR": str(root / "data"),
             "OUROBOROS_SETTINGS_PATH": str(root / "data/settings.json"),
-            "OUROBOROS_USER_FILES_ROOT": str(root / "user_files"),
-            "OUROBOROS_DELIVERABLES_ROOT": str(root / "user_files/Deliverables"),
+            "OUROBOROS_USER_FILES_ROOT": str(files),
+            "OUROBOROS_FILE_BROWSER_DEFAULT": str(files),
+            "OUROBOROS_DELIVERABLES_ROOT": str(files / "Deliverables"),
         }
     )
     return env

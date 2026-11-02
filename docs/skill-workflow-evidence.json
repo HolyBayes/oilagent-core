@@ -1,0 +1,238 @@
+{
+  "live": true,
+  "transport": "compact model → in-process real MCP",
+  "native_ui_or_delegation_proof": false,
+  "skills": [
+    "oil_forecast",
+    "oilgas_analyst",
+    "report_rag",
+    "web_research"
+  ],
+  "forecast": {
+    "tool": "forecast",
+    "status": "partial",
+    "request_id": "9e0511f8-9625-48e7-b14e-b3daf0751dad",
+    "usage": {
+      "output_tokens": 75,
+      "input_tokens": 705,
+      "total_tokens": 780,
+      "input_token_details": {
+        "cache_read": 3
+      }
+    }
+  },
+  "author_attempts": [
+    {
+      "call": {
+        "name": "propose_skill",
+        "args": {
+          "base_sha": "1ce5cbbb089eec2e1ac0266c3676df1881c66f1a",
+          "capability": "forecast",
+          "content": "---\nname: brent_forecast\ndescription: \"Forecast Brent crude oil prices using ARIMA/ETS models with user-defined horizon_months and optional ISO dates.\"\nversion: 1\ntype: instruction\nos: any\n---\n\n## Overview\n\nThe `brent_forecast` skill forecasts Brent crude oil prices using ARIMA and ETS models. It supports user-defined forecast horizons in months and optional ISO date parameters for start and end dates. The skill relies on daily EIA data and provides nominal 80% prediction intervals.\n\n## Usage\n\n### Required Parameters\n\n- `horizon_months`: Number of months to forecast into the future.\n\n### Optional Parameters\n\n- `as_of`: ISO date to forecast from (default: today)\n- `start_date`: ISO date to start historical data from\n- `end_date`: ISO date to end historical data at\n\n### Example\n\n```json\n{\n  \"horizon_months\": 6,\n  \"as_of\": \"2023-10-01\",\n  \"start_date\": \"2020-01-01\",\n  \"end_date\": \"2023-09-30\"\n}\n```\n\n### Special Cases\n\nFor `supply_cut` scenarios, the skill will request missing parameters:\n- `P0`: Initial price\n- `Q0`: Initial quantity\n- `cut`: Size of supply cut\n- `elasticities`: Elasticity parameters\n\n### Output\n\nThe skill returns two tables:\n1. ARIMA model forecast\n2. ETS model forecast\n\nEach table includes:\n- Forecasted values\n- Nominal 80% prediction intervals\n- Daily EIA source data\n\n### Notes\n\n- Forecasts are based on report_rag, not new calculations\n- No CSV upload is supported\n- Uses `mcp_analyst__forecast` for model execution\n```\n, ",
+          "idempotency_key": "live-new-forecast",
+          "name": "brent_forecast",
+          "rationale": "This skill provides a specialized forecasting capability for Brent crude oil prices using ARIMA/ETS models. It supports user-defined forecast horizons and optional date parameters, while relying on daily EIA data. The skill is designed to handle supply cut scenarios by requesting necessary parameters and provides both ARIMA and ETS model forecasts with nominal 80% prediction intervals. The skill is intended for analytical use cases requiring oil price forecasts.",
+          "trace_id": "ae15138f-d7f0-4133-86ad-f87f6a87053e"
+        },
+        "id": "4d8e4a54-3d17-4967-84a0-5afdf8c70703",
+        "type": "tool_call"
+      },
+      "usage": {
+        "output_tokens": 647,
+        "input_tokens": 910,
+        "total_tokens": 1557,
+        "input_token_details": {
+          "cache_read": 22
+        }
+      },
+      "validation_error": "Error executing tool propose_skill: Skill version is required"
+    },
+    {
+      "call": {
+        "name": "propose_skill",
+        "args": {
+          "base_sha": "1ce5cbbb089eec2e1ac0266c3676df1881c66f1a",
+          "capability": "forecast",
+          "content": "---\\nname: brent_forecast\\ndescription: \\\"Forecast Brent crude oil prices using ARIMA/ETS models with user-defined horizon_months and optional ISO dates.\\\"\\nversion: 1\\ntype: instruction\\nos: any\\n---\\n\\n## Overview\\n\\nThe `brent_forecast` skill forecasts Brent crude oil prices using ARIMA and ETS models. It supports user-defined forecast horizons in months and optional ISO date parameters for start and end dates. The skill relies on daily EIA data and provides nominal 80% prediction intervals.\\n\\n## Usage\\n\\n### Required Parameters\\n\\n- `horizon_months`: Number of months to forecast into the future.\\n\\n### Optional Parameters\\n\\n- `as_of`: ISO date to forecast from (default: today)\\n- `start_date`: ISO date to start historical data from\\n- `end_date`: ISO date to end historical data at\\n\\n### Example\\n\\n```json\\n{\\n  \\\"horizon_months\\\": 6,\\n  \\\"as_of\\\": \\\"2023-10-01\\\",\\n  \\\"start_date\\\": \\\"2020-01-01\\\",\\n  \\\"end_date\\\": \\\"2023-09-30\\\"\\n}\\n```\\n\\n### Special Cases\\n\\nFor `supply_cut` scenarios, the skill will request missing parameters:\\n- `P0`: Initial price\\n- `Q0`: Initial quantity\\n- `cut`: Size of supply cut\\n- `elasticities`: Elasticity parameters\\n\\n### Output\\n\\nThe skill returns two tables:\\n1. ARIMA model forecast\\n2. ETS model forecast\\n\\nEach table includes:\\n- Forecasted values\\n- Nominal 80% prediction intervals\\n- Daily EIA source data\\n\\n### Notes\\n\\n- Forecasts are based on report_rag, not new calculations\\n- No CSV upload is supported\\n- Uses `mcp_analyst__forecast` for model execution\\n```",
+          "idempotency_key": "live-new-forecast",
+          "name": "brent_forecast",
+          "rationale": "This skill provides a specialized forecasting capability for Brent crude oil prices using ARIMA/ETS models. It supports user-defined forecast horizons and optional date parameters, while relying on daily EIA data. The skill is designed to handle supply cut scenarios by requesting necessary parameters and provides both ARIMA and ETS model forecasts with nominal 80% prediction intervals. The skill is intended for analytical use cases requiring oil price forecasts.",
+          "trace_id": "ae15138f-d7f0-4133-86ad-f87f6a87053e"
+        },
+        "id": "bdc5a3c4-6aa4-4d98-90df-56b91546ef46",
+        "type": "tool_call"
+      },
+      "usage": {
+        "output_tokens": 677,
+        "input_tokens": 785,
+        "total_tokens": 1462,
+        "input_token_details": {
+          "cache_read": 633
+        }
+      }
+    },
+    {
+      "call": {
+        "name": "propose_skill",
+        "args": {
+          "base_sha": "1ce5cbbb089eec2e1ac0266c3676df1881c66f1a",
+          "capability": "forecast",
+          "description": "Forecast Brent oil prices using ARIMA/ETS models with user-defined horizon months and optional ISO dates. Supports supply cut scenarios with missing parameters. Uses daily EIA data source. Preserves both model tables and nominal 80% intervals. Forecasts are based on report_rag, not new calculations.",
+          "idempotency_key": "live-new-forecast",
+          "instructions": "# Brent Oil Price Forecasting Skill\n\n## Overview\n\nThis skill forecasts Brent oil prices using ARIMA/ETS models with user-defined parameters. It supports both standard forecasting and supply cut scenarios. The skill uses daily EIA data as the source and preserves both model tables and nominal 80% prediction intervals.\n\n## Parameters\n\n- **horizon_months**: Number of months to forecast into the future (required)\n- **asset**: Always set to \"brent\" (required)\n- **as_of**: Optional ISO date to specify the forecast date\n- **start_date**: Optional ISO date to specify the start of the historical data range\n- **end_date**: Optional ISO date to specify the end of the historical data range\n- **supply_cut**: Optional flag to indicate a supply cut scenario\n  - If supply_cut is provided, the user must also provide:\n    - **P0**: Initial price level\n    - **Q0**: Initial quantity level\n    - **cut**: Supply cut percentage\n    - **elasticities**: Elasticity parameters for the supply cut model\n\n## Behavior\n\n1. The skill uses the `mcp_analyst__forecast` tool for generating forecasts.\n2. For standard forecasts, it uses ARIMA/ETS models with the specified horizon.\n3. For supply cut scenarios, it prompts the user for missing parameters (P0, Q0, cut, elasticities) if not provided.\n4. Forecasts are based on report_rag, not new calculations.\n5. Preserves both model tables and nominal 80% prediction intervals.\n6. Uses daily EIA data as the source.\n\n## Example Usage\n\n### Standard Forecast\n```\nForecast Brent oil prices for the next 6 months.\n```\n\n### Supply Cut Scenario\n```\nForecast Brent oil prices for the next 3 months considering a supply cut of 5%. Initial price is $80, initial quantity is 100M barrels, and elasticities are 0.5.\n```\n\n## Notes\n\n- This skill does not support CSV uploads.\n- All date parameters must be in ISO format (YYYY-MM-DD).\n- For supply cut scenarios, all required parameters must be provided.\n- The skill does not perform any executable payload actions.\n\n## Rationale\n\nThis skill provides a specialized forecasting capability for Brent oil prices, supporting both standard forecasting and supply cut scenarios. It leverages established ARIMA/ETS models while ensuring consistency with report_rag standards. The skill is designed to be user-friendly, with clear parameter requirements and behavior definitions.",
+          "name": "brent_forecast",
+          "rationale": "This skill provides a specialized forecasting capability for Brent oil prices, supporting both standard forecasting and supply cut scenarios. It leverages established ARIMA/ETS models while ensuring consistency with report_rag standards. The skill is designed to be user-friendly, with clear parameter requirements and behavior definitions.",
+          "trace_id": "869362d5-682d-4cc4-986f-6331cf169281",
+          "version": "0.1.0"
+        },
+        "id": "d0f8fbd4-cd4c-4ba2-8064-e1bcb52bdc10",
+        "type": "tool_call"
+      },
+      "usage": {
+        "output_tokens": 840,
+        "input_tokens": 956,
+        "total_tokens": 1796,
+        "input_token_details": {
+          "cache_read": 3
+        }
+      }
+    }
+  ],
+  "candidate": {
+    "base_sha": "1ce5cbbb089eec2e1ac0266c3676df1881c66f1a",
+    "artifact": "ouroboros_skills/brent_forecast/SKILL.md",
+    "skill_name": "brent_forecast",
+    "capability": "forecast",
+    "rationale": "This skill provides a specialized forecasting capability for Brent oil prices, supporting both standard forecasting and supply cut scenarios. It leverages established ARIMA/ETS models while ensuring consistency with report_rag standards. The skill is designed to be user-friendly, with clear parameter requirements and behavior definitions.",
+    "trace_id": "869362d5-682d-4cc4-986f-6331cf169281",
+    "content_sha256": "3f6654f05086aa06d43c4cfce47726eb4c1bc4f6ae452f4281a8dbde7f79ddac",
+    "candidate_id": "11cfce306f1ac0056e3c08cc065a5866",
+    "candidate_sha": "85b02f1f3b4463a35f485f5298bd7fffc01c9c40",
+    "payload_hash": "0b1258582bc71d17c319499824edf47b736e7eaf1d5ed7e7d89b0fabfcf27b60",
+    "status": "REVIEWED_UNRELEASED",
+    "release_available": false,
+    "quality_checks": {
+      "passed": true,
+      "scope": "paired model tool choice/arguments; no tool execution or answer-quality claim",
+      "new_capability": true,
+      "candidate_sha": "85b02f1f3b4463a35f485f5298bd7fffc01c9c40",
+      "identity": {
+        "core_source_sha256": "122eb3a441ff40031dee323f578f9dedb92e2e1e26e53bdbcce56a77b75688fd",
+        "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+        "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955",
+        "skill_evaluator_sha256": "41d28fadd7bbabf2e804d520cc0d4e211d238e4119e6496176b25692a30d3adf",
+        "eval_sha256": "ade2d9ebf34fee01d1a0ce407db522be29e158bdf38674cc740f7b621c9b5757",
+        "provider": "gigachat",
+        "model": "GigaChat-2-Max",
+        "endpoint_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ouroboros_pin_sha256": "3068c7a8eb12433fcbed780592cf555905a5ff51e66f04abfd13799831189ad3"
+      },
+      "before": 0,
+      "after": 3,
+      "total": 3,
+      "regressions": [],
+      "cases": [
+        {
+          "case_id": "forecast_horizon",
+          "before": {
+            "passed": false,
+            "usage": {}
+          },
+          "after": {
+            "passed": true,
+            "usage": {
+              "output_tokens": 81,
+              "input_tokens": 1329,
+              "total_tokens": 1410,
+              "input_token_details": {
+                "cache_read": 3
+              }
+            },
+            "tool": "mcp_analyst__forecast",
+            "arguments": {
+              "as_of": "",
+              "asset": "brent",
+              "end_date": "",
+              "horizon_months": 4,
+              "start_date": ""
+            }
+          }
+        },
+        {
+          "case_id": "forecast_range",
+          "before": {
+            "passed": false,
+            "usage": {}
+          },
+          "after": {
+            "passed": true,
+            "usage": {
+              "output_tokens": 111,
+              "input_tokens": 1359,
+              "total_tokens": 1470,
+              "input_token_details": {
+                "cache_read": 5
+              }
+            },
+            "tool": "mcp_analyst__forecast",
+            "arguments": {
+              "as_of": "2026-01-15",
+              "asset": "brent",
+              "end_date": "2025-12-31",
+              "horizon_months": 2,
+              "start_date": "2015-01-01"
+            }
+          }
+        },
+        {
+          "case_id": "scenario_missing",
+          "before": {
+            "passed": false,
+            "usage": {}
+          },
+          "after": {
+            "passed": true,
+            "usage": {
+              "output_tokens": 102,
+              "input_tokens": 1341,
+              "total_tokens": 1443,
+              "input_token_details": {
+                "cache_read": 3
+              }
+            }
+          }
+        }
+      ]
+    },
+    "critic": {
+      "verdict": "APPROVE",
+      "findings": [
+        "The diff introduces a new skill for forecasting Brent oil prices using ARIMA/ETS models, which is a new capability. The skill supports both standard forecasting and supply cut scenarios, leveraging daily EIA data and preserving model tables and prediction intervals. The parameters and behavior are clearly defined, and the skill is designed to be user-friendly. The rationale provided is appropriate and alignes with the skill's functionality. The paired model tool choice/arguments checks passed for all cases, indicating that the skill correctly selects and uses the `mcp_analyst__forecast` tool with appropriate arguments. No tool execution or answer-quality claims are made, which is consistent with the scope of the skill. No regressions were detected, and the new capability appears to be implemented correctly. The synthetic fixture coverage is adequate for the scope of the skill, though it is noted that it is not proof of general quality improvement. Overall, the diff appears to meet the requirements and can be approved."
+      ],
+      "candidate_sha": "85b02f1f3b4463a35f485f5298bd7fffc01c9c40",
+      "checks_sha256": "d5709923cad97f531cb2e76ff9c721db650b7c306a7ed4996914cd3859652ea6"
+    },
+    "critic_usage": {
+      "output_tokens": 246,
+      "input_tokens": 2207,
+      "total_tokens": 2453,
+      "input_token_details": {
+        "cache_read": 3
+      }
+    }
+  },
+  "author_usage": {
+    "output_tokens": 840,
+    "input_tokens": 956,
+    "total_tokens": 1796,
+    "input_token_details": {
+      "cache_read": 3
+    }
+  },
+  "limitations": [
+    "Compact model/in-process MCP probe; not native UI delegation.",
+    "New skill absent before; 0/3 is absence of capability, not a model baseline.",
+    "Earlier malformed raw-YAML attempt and one timed-out author request have incomplete usage accounting.",
+    "No skill installed, enabled or published by this probe."
+  ]
+}

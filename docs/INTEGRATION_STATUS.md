@@ -1,5 +1,10 @@
 # Фактический статус
 
+
+Обновление native-интеграции: четыре skills 0.4.0 с независимыми clean review/enable; direct `forecast(asset="brent")`; три штатных specialist rows и реальный completed parent/child run. Его model был Max. Текущий запуск переведён на GigaChat 2 Lite; отдельный короткий Lite → HTTP MCP расчёт прошёл, диапазон взят из cache без сетевой загрузки. Files показывает единое хранилище PDF/CSV/model cache; старые пути — aliases. Optional Codex model bridge подготовлен и покрыт contract tests, но выключен и живьём без подключённого harness не проверен.
+
+Свидетельства расширения: [native subagents/reviews](native-subagents-evidence.json), [skill creation/checks/critic](skill-workflow-evidence.json), [Lite](lite-evidence.json), [Files](native-files-evidence.json). В skill experiment новая capability прошла 3/3 и получила APPROVE; она не установлена. Это не демонстрация улучшения существующего production skill. Предыдущие записи ниже относятся к своим версиям/моделям.
+
 Обновлено 2 ноября 2026. Это демонстрационная реализация на публичных данных, не заключение о production readiness. Предыдущий аудит сохранён в [REQUIREMENTS_AUDIT](REQUIREMENTS_AUDIT.md) и относится к указанным там старым коммитам.
 
 ## Реализовано
@@ -19,7 +24,7 @@
 
 | Проверка | Результат / предел |
 |---|---|
-| Pytest | 133 тестов прошли; сторонние deprecation warnings сохранены |
+| Pytest | 161 тест прошёл; сторонние deprecation warnings сохранены |
 | Ruff lint/format | Проходят |
 | Fixed acceptance | 25/30; 13 реальных retrieval cases + 17 deterministic contracts; LLM не вызывается |
 | PDF/web/hybrid/scenario/quote/forecast/follow-up | Живые GigaChat/публичные данные, примеры и неуспехи сохранены; это выбранные cases, не blind answer benchmark |

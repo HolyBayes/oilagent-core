@@ -70,3 +70,24 @@ def test_canonical_delivery_does_not_rewrite_sources_or_tables():
     assert result["answer"] in delivered and "ежемесячный" not in delivered
     assert result["request_id"] in delivered
     assert functions["canonical_delivery"]([], "no tool result") == "no tool result"
+
+
+def test_nullable_native_wait_schema_uses_existing_non_null_alternative():
+    original = {
+        "type": "object",
+        "required": ["authority_fields"],
+        "properties": {
+            "authority_fields": {
+                "type": ["array", "null"],
+                "items": {"type": "string"},
+                "minItems": 1,
+            },
+            "receipt": {"anyOf": [{"type": "object", "properties": {}}, {"type": "null"}]},
+        },
+    }
+    converted = normalize(original)
+    assert converted["properties"]["authority_fields"]["type"] == "array"
+    assert converted["properties"]["authority_fields"]["minItems"] == 1
+    assert converted["properties"]["receipt"]["type"] == "object"
+    assert converted["required"] == original["required"]
+    assert original["properties"]["authority_fields"]["type"] == ["array", "null"]

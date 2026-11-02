@@ -13,7 +13,7 @@ x-model-environment: &model-environment
   TRACE_RETENTION_DAYS: ${TRACE_RETENTION_DAYS:-7}
   WEB_MAX_AGE_DAYS: ${WEB_MAX_AGE_DAYS:-7}
   QUOTE_MAX_AGE_SEC: ${QUOTE_MAX_AGE_SEC:-345600}
-  GIGACHAT_MODEL: ${GIGACHAT_MODEL:-GigaChat}
+  GIGACHAT_MODEL: ${GIGACHAT_MODEL:-GigaChat-2}
   GIGACHAT_CREDENTIALS: ${GIGACHAT_CREDENTIALS:-}
   GIGACHAT_SCOPE: ${GIGACHAT_SCOPE:-GIGACHAT_API_PERS}
   GIGACHAT_CA_BUNDLE_FILE: ${CONTAINER_CA_BUNDLE_FILE:-}
@@ -29,12 +29,17 @@ services:
     user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
     environment:
       EVOLUTION_REPO_PATH: /evolution
+      USER_FILES_PATH: /files
       WORKSPACE_PATH: /app/workspace/runtime
     entrypoint: ["python", "scripts/container_init.py"]
     volumes:
       - "${DEPLOY_WORKSPACE:-./workspace/container}/rag:/app/workspace/rag"
-      - "${DEPLOY_WORKSPACE:-./workspace/container}/reports:/app/workspace/reports"
-      - "${DEPLOY_WORKSPACE:-./workspace/container}/models:/app/workspace/models"
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Reports"
+        target: /files/OilAgent/Reports
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Models"
+        target: /files/OilAgent/Models
       - "${DEPLOY_WORKSPACE:-./workspace/container}/init:/app/workspace/runtime"
       - "${EVOLUTION_REPO_PATH:-../evolution}:/evolution"
     cap_drop: ["ALL"]
@@ -50,16 +55,26 @@ services:
       WEB_ENABLED: ${WEB_ENABLED:-true}
       RAG_TOP_K: ${RAG_TOP_K:-4}
       EVOLUTION_REPO_PATH: /evolution
-      BRENT_CACHE_PATH: /app/workspace/prices
+      USER_FILES_PATH: /files
+      BRENT_CACHE_PATH: /files/OilAgent/Prices
       TRACE_PATH: /app/workspace/traces
       SESSION_DB_PATH: /app/workspace/sessions/sessions.sqlite3
       RELEASE_PATH: /releases
     command: ["analyst", "--host", "0.0.0.0", "--port", "8011"]
     ports: ["127.0.0.1:${ANALYST_PORT:-8011}:8011"]
     volumes:
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Reports"
+        target: /files/OilAgent/Reports
+        read_only: true
       - "${DEPLOY_WORKSPACE:-./workspace/container}/rag:/app/workspace/rag"
-      - "${DEPLOY_WORKSPACE:-./workspace/container}/models:/app/workspace/models:ro"
-      - "${DEPLOY_WORKSPACE:-./workspace/container}/prices:/app/workspace/prices"
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Models"
+        target: /files/OilAgent/Models
+        read_only: true
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Prices"
+        target: /files/OilAgent/Prices
       - "${DEPLOY_WORKSPACE:-./workspace/container}/traces:/app/workspace/traces"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/sessions:/app/workspace/sessions"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/releases:/releases:ro"
@@ -86,19 +101,28 @@ services:
       EVOLUTION_MAX_CANDIDATES: ${EVOLUTION_MAX_CANDIDATES:-2}
       EVOLUTION_EVAL_PATH: ${EVOLUTION_EVAL_PATH:-data/evolution_eval.json}
       EVOLUTION_MCP_TOKEN: ${EVOLUTION_MCP_TOKEN:?Set EVOLUTION_MCP_TOKEN in .env}
+      USER_FILES_PATH: /files
       WORKSPACE_PATH: /app/workspace/runtime
+      SKILL_EVAL_PATH: ${SKILL_EVAL_PATH:-data/skill_eval.json}
       RELEASE_PATH: /releases
       TRACE_PATH: /app/workspace/traces
       EVOLUTION_REPO_PATH: /evolution
     command: ["evolution", "--host", "0.0.0.0", "--port", "8012"]
     ports: ["127.0.0.1:${EVOLUTION_PORT:-8012}:8012"]
     volumes:
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Reports"
+        target: /files/OilAgent/Reports
+        read_only: true
       - "${DEPLOY_WORKSPACE:-./workspace/container}/certificates:/certificates:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/llm:/provider-lock"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/evolution-runtime:/app/workspace/runtime"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/traces:/app/workspace/traces:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/rag:/app/workspace/rag"
-      - "${DEPLOY_WORKSPACE:-./workspace/container}/models:/app/workspace/models:ro"
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Models"
+        target: /files/OilAgent/Models
+        read_only: true
       - "${DEPLOY_WORKSPACE:-./workspace/container}/releases:/releases:ro"
       - "${EVOLUTION_REPO_PATH:-../evolution}:/evolution"
     healthcheck:
@@ -122,11 +146,16 @@ services:
       <<: *model-environment
       ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
       EVOLUTION_MCP_TOKEN: ${EVOLUTION_MCP_TOKEN:?Set EVOLUTION_MCP_TOKEN in .env}
+      OUROBOROS_LLM_BRIDGE_ENABLED: ${OUROBOROS_LLM_BRIDGE_ENABLED:-false}
+      LLM_BRIDGE_TOKEN: ${LLM_BRIDGE_TOKEN:-}
       ANALYST_MCP_URL: http://analyst:8011/mcp
       EVOLUTION_MCP_URL: http://evolution:8012/mcp
     ports: ["127.0.0.1:${UI_PORT:-8765}:8765"]
     volumes:
       - "${DEPLOY_WORKSPACE:-./workspace/container}/container-native:/runtime"
+      - type: bind
+        source: "${USER_FILES_PATH:-./workspace/files}"
+        target: /runtime/user_files
       - "${EVOLUTION_REPO_PATH:-../evolution}:/evolution:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/certificates:/certificates:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/llm:/provider-lock"

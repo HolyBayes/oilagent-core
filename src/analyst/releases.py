@@ -17,7 +17,13 @@ def sha(data):
 
 
 def identity():
-    files = sorted((CORE_ROOT / "src/analyst").rglob("*.py"))
+    files = sorted(
+        [
+            *(CORE_ROOT / "src/analyst").rglob("*.py"),
+            *(CORE_ROOT / "scripts").glob("native_*.py"),
+            CORE_ROOT / "scripts/container_native.py",
+        ]
+    )
     code = sha(b"".join(str(p.relative_to(CORE_ROOT)).encode() + p.read_bytes() for p in files))
     corpus = sha((CORE_ROOT / "data/reports.json").read_bytes())
     return {

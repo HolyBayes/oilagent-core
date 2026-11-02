@@ -5,7 +5,7 @@ import hmac
 import json
 import os
 from typing import Annotated
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
@@ -15,13 +15,13 @@ from starlette.responses import JSONResponse
 from analyst.config import CORE_ROOT, configured_path, evolution_repo, workspace
 from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
-from analyst.forecast import forecast_brent
+from analyst.forecast import forecast_brent, render_forecast
 from analyst.graph import answer_question
 from analyst.quotes import latest_quote
 from analyst.rag import ReportIndex
 from analyst.releases import active_release
 from analyst.scenario import SupplyScenario, supply_cut_scenario
-from analyst.traces import record_feedback
+from analyst.traces import record_feedback, save_trace
 from analyst.web import search_web, web_enabled
 
 
@@ -55,20 +55,55 @@ def create_server(kind: str, host: str, port: int):
             """
             return answer_question(question, session_id)
 
-        @server.tool(name="forecast_brent")
-        def forecast_brent_prices(
+        @server.tool(name="forecast")
+        def forecast_prices(
+            asset: Annotated[str, Field(min_length=1, max_length=32)],
             horizon_months: Annotated[int, Field(ge=1, le=6)] = 3,
             as_of: str = "",
             start_date: str = "",
             end_date: str = "",
         ) -> dict:
-            """Calculate ARIMA/ETS Brent forecasts, 80% prediction intervals and backtest.
+            """Calculate ARIMA/ETS forecasts, 80% prediction intervals and backtest.
+
+            asset: brent (only supported asset; other names are rejected).
 
             start_date/end_date: inclusive ISO dates of daily history, default last 120
             completed months. Reuse cached history; download only uncovered intervals.
             as_of: calculation cutoff, no later than today. Horizon is in months.
             """
-            return forecast_brent(horizon_months, as_of, start_date, end_date)
+            if asset.casefold() != "brent":
+                raise ValueError("Unsupported forecast asset; currently supported: brent")
+            request_id = str(uuid4())
+            try:
+                result = forecast_brent(horizon_months, as_of, start_date, end_date)
+                result = {
+                    **result,
+                    "asset": "brent",
+                    "answer": render_forecast(result),
+                    "request_id": request_id,
+                    "status": "forecasted" if result["data_cache"]["complete"] else "partial",
+                }
+            except Exception as exc:
+                result = {
+                    "asset": "brent",
+                    "request_id": request_id,
+                    "status": "forecast_unavailable",
+                    "answer": "Прогноз недоступен: " + type(exc).__name__,
+                }
+            save_trace(
+                {
+                    **result,
+                    "tool": "forecast",
+                    "arguments": dict(
+                        asset="brent",
+                        horizon_months=horizon_months,
+                        as_of=as_of,
+                        start_date=start_date,
+                        end_date=end_date,
+                    ),
+                }
+            )
+            return result
 
         @server.tool()
         def supply_cut(
@@ -109,6 +144,56 @@ def create_server(kind: str, host: str, port: int):
     else:
         backend = Evolution(workspace(), repo=evolution_repo())
 
+        def require_trace(trace_id):
+            request_id = str(UUID(trace_id))
+            trace_path = configured_path("TRACE_PATH", "workspace/traces") / f"{request_id}.json"
+            if not trace_path.exists():
+                raise ValueError("A recorded failure/request trace is required")
+            if json.loads(trace_path.read_text()).get("request_id") != request_id:
+                raise ValueError("Trace identity mismatch")
+
+        @server.tool()
+        def read_skill(name: str) -> dict:
+            """Read a committed instruction skill from trusted main, never from a candidate."""
+            from analyst.skill_evolution import skill_path
+
+            sha = backend.baseline()["base_sha"]
+            return {"base_sha": sha, "content": backend.git("show", f"{sha}:{skill_path(name)}")}
+
+        @server.tool()
+        def propose_skill(
+            base_sha: str,
+            name: str,
+            capability: str,
+            description: Annotated[str, Field(min_length=1, max_length=500)],
+            version: Annotated[str, Field(min_length=1, max_length=64)],
+            instructions: Annotated[str, Field(min_length=1, max_length=10000)],
+            rationale: Annotated[str, Field(min_length=1, max_length=2000)],
+            trace_id: str,
+            idempotency_key: str,
+        ) -> dict:
+            """Create/revise an instruction-only skill Git candidate; never install or enable it.
+
+            capability: forecast, rag, web or coordinator. version: semver string, e.g. 0.1.0.
+            instructions: Markdown body only. Backend writes validated YAML metadata.
+            run_checks for skills makes paid paired model tool-selection evaluations.
+            Native review and operator stage/enable are separate, required actions.
+            """
+            from analyst.skill_evolution import instruction_manifest
+            from analyst.skill_evolution import propose_skill as propose
+
+            require_trace(trace_id)
+            return propose(
+                backend,
+                base_sha,
+                name,
+                capability,
+                instruction_manifest(name, description, version, instructions),
+                rationale,
+                trace_id,
+                idempotency_key,
+            )
+
         @server.tool()
         def propose_change(
             base_sha: str,
@@ -119,13 +204,7 @@ def create_server(kind: str, host: str, port: int):
             idempotency_key: str,
         ) -> dict:
             """Create a policy-only Git candidate. Cannot change code, tests or permissions."""
-            request_id = str(UUID(trace_id))
-            trace_path = configured_path("TRACE_PATH", "workspace/traces") / f"{request_id}.json"
-            if not trace_path.exists():
-                raise ValueError("A recorded failure/request trace is required")
-            recorded = json.loads(trace_path.read_text())
-            if recorded.get("request_id") != request_id:
-                raise ValueError("Trace identity mismatch")
+            require_trace(trace_id)
             return backend.propose(
                 base_sha,
                 artifact,
@@ -142,7 +221,10 @@ def create_server(kind: str, host: str, port: int):
 
         @server.tool()
         def run_checks(candidate_id: str) -> dict:
-            """Compare retrieval policies on fixed operator-owned PDF cases without a model call."""
+            """Policy: fixed PDF checks, no LLM. Skill: paid paired tool-selection evaluation.
+
+            Both require improvement and no regressions; no installation or release occurs.
+            """
             return backend.checks(candidate_id, real=True)
 
         @server.tool()

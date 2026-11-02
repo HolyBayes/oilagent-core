@@ -9,6 +9,8 @@ import httpx
 
 from analyst.runtime import isolated_env, prepare, runtime_paths
 
+DOMAIN_SKILLS = {"oilgas_analyst", "oil_forecast", "report_rag", "web_research"}
+
 
 def submit_task(client, prompt_file):
     root, python = runtime_paths()
@@ -19,7 +21,11 @@ def submit_task(client, prompt_file):
         raise ValueError("Enable the current reviewed oilgas_analyst skill first")
     # Bundled extensions bypass the static tool list unless disabled here.
     for skill in skills:
-        if skill.get("enabled") and skill["name"] != "oilgas_analyst":
+        if (
+            skill.get("enabled")
+            and skill.get("type") != "instruction"
+            and skill["name"] not in DOMAIN_SKILLS
+        ):
             off = client.post(
                 f"/api/skills/{skill['name']}/toggle",
                 json={"enabled": False, "expected_content_hash": skill["content_hash"]},
@@ -44,7 +50,18 @@ def submit_task(client, prompt_file):
             timeout=30,
         )
     )
-    allowed = {"finish_task", "list_available_tools", "enable_tools", "list_skills"}
+    allowed = {
+        "finish_task",
+        "compact_context",
+        "list_available_tools",
+        "enable_tools",
+        "list_skills",
+        "read_file",
+        "schedule_subagent",
+        "get_task_result",
+        "wait_task",
+        "wait_tasks",
+    }
     disabled = sorted(set(names) - allowed)
     return client.post(
         "/api/tasks",
@@ -67,6 +84,7 @@ def main():
     )
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--prompt-file")
+    parser.add_argument("--name", default="oilgas_analyst")
     args = parser.parse_args()
     if args.action == "prepare":
         root, _, _ = prepare()
@@ -74,7 +92,7 @@ def main():
         return
     root, python = runtime_paths()
     repo = root / "repo"
-    if not (root / "data/settings.json").exists():
+    if args.action == "serve" and not (root / "data/settings.json").exists():
         parser.error("Run prepare first")
     if args.action == "serve":
         subprocess.run(
@@ -101,14 +119,14 @@ def main():
             # Local sources are read in place; the installer returns 409 for them.
             result = client.post(
                 "/api/skill-catalog/install",
-                json={"id": "oilagent/oilgas_analyst", "turn_on_when_ready": True},
+                json={"id": f"oilagent/{args.name}", "turn_on_when_ready": True},
             )
             if result.status_code == 409 and result.json().get("code") == "local_source":
                 print({"status": "registered_in_place", "review_required": True})
                 return
         elif args.action in {"review", "enable"}:
             rows = client.get("/api/extensions").json()["skills"]
-            skill = next(row for row in rows if row["name"] == "oilgas_analyst")
+            skill = next(row for row in rows if row["name"] == args.name)
             reviewed = skill.get("executable_review") and not skill.get("review_stale")
             if args.action == "review" and reviewed:
                 print({"status": "reused_exact_review", "content_hash": skill["content_hash"]})
@@ -116,9 +134,9 @@ def main():
             if args.action == "enable" and not reviewed:
                 parser.error("Skill has no current executable review; no bypass is permitted")
             result = client.post(
-                "/api/skills/oilgas_analyst/review"
+                f"/api/skills/{args.name}/review"
                 if args.action == "review"
-                else "/api/skills/oilgas_analyst/toggle",
+                else f"/api/skills/{args.name}/toggle",
                 json={}
                 if args.action == "review"
                 else {"enabled": True, "expected_content_hash": skill["content_hash"]},
@@ -150,7 +168,6 @@ def main():
                     ]
                 }
                 for row in rows
-                if row.get("name") == "oilgas_analyst"
             ]
         elif args.action == "catalog":
             data = [{"id": row.get("id"), "name": row.get("name")} for row in data.get("items", [])]
