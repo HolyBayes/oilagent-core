@@ -4,7 +4,7 @@ import json
 import os
 
 from analyst.config import configured_path
-from analyst.evidence import fit_context
+from analyst.evidence import fit_context, supporting_passages
 from analyst.rag import ReportIndex
 from analyst.releases import active_release, identity, sha
 
@@ -23,7 +23,7 @@ def supported(case, rows):
         any(
             row["publisher"] == expected["publisher"]
             and row["page"] == expected["page"]
-            and any(expected["quote"] in row.get(field, "") for field in ("text", "page_intro"))
+            and any(expected["quote"] in text for text in supporting_passages(row))
             for row in rows
         )
         for expected in requirements

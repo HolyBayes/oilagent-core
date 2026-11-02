@@ -6,6 +6,13 @@ from collections import Counter
 
 ALIASES = {
     "спрос": "demand",
+    "миров": "global",
+    "world": "global",
+    "прогноз": "forecast",
+    "производ": "production",
+    "перв": "first",
+    "полугод": "half",
+    "уров": "average",
     "добыч": "production",
     "запас": "inventories",
     "корзин": "basket",
@@ -29,7 +36,7 @@ def tokens(text):
     ]
 
 
-def rerank(rows, query):
+def rerank(rows, query, weight=1.0):
     if not rows:
         return rows
     docs = [Counter(tokens(row["text"])) for row in rows]
@@ -50,5 +57,18 @@ def rerank(rows, query):
     ranks = {i: r for r, i in enumerate(lexical)}
     return [
         rows[i]
-        for i in sorted(range(len(rows)), key=lambda i: -(1 / (60 + i) + 1 / (60 + ranks[i])))
+        for i in sorted(range(len(rows)), key=lambda i: -(1 / (60 + i) + weight / (60 + ranks[i])))
     ]
+
+
+def query_passages(text, query):
+    wanted = set(tokens(query)) - {"eia", "opec"}
+    sentences = re.split(r"(?<=[.!?])\s+(?=[A-ZА-Я])", text)
+    ranked = sorted(
+        enumerate(sentences),
+        key=lambda item: (
+            -len(set(tokens(item[1])) & wanted) / (len(tokens(item[1])) ** 0.5 or 1),
+            item[0],
+        ),
+    )
+    return [sentence[:1000] for _, sentence in ranked[:2]]

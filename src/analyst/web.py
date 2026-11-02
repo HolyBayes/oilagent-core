@@ -126,7 +126,7 @@ def normalize_results(items, *, freshness, now, policy, today=False):
     return [{**e, "source_id": f"W{i}"} for i, e in enumerate(evidence[:5], 1)], sorted(warnings)
 
 
-def search_web(query, freshness=True):
+def search_web(query, freshness=True, publishers=None):
     if not 1 <= len(query) <= 4000:
         raise ValueError("Web query must contain 1..4000 characters")
     if not web_enabled():
@@ -135,19 +135,28 @@ def search_web(query, freshness=True):
         from ddgs import DDGS
 
         policy, sha, policy_warnings = source_policy()
-        requested_eia = bool(re.search(r"\bEIA\b", query, re.I))
+        requested_eia = "EIA" in (publishers or []) or bool(re.search(r"\bEIA\b", query, re.I))
         if requested_eia:
             policy = {"official": [h for h in policy["official"] if h == "eia.gov"], "news": []}
         client = DDGS(timeout=10, verify=True)
         method = client.news if freshness else client.text
         backend_warnings = []
         try:
-            items = method(
-                query, backend="duckduckgo", max_results=20, timelimit="w" if freshness else None
+            items = (
+                official_news(query)
+                if requested_eia and freshness
+                else method(
+                    query,
+                    backend="duckduckgo",
+                    max_results=20,
+                    timelimit="w" if freshness else None,
+                )
             )
         except Exception as exc:
             items = []
             backend_warnings.append(f"web_backend_error:{type(exc).__name__}")
+        if requested_eia and freshness:
+            backend_warnings.append("web_official_rss")
         evidence, warnings = normalize_results(
             items,
             freshness=freshness,
@@ -155,7 +164,10 @@ def search_web(query, freshness=True):
             policy=policy,
             today=bool(re.search(r"\b(?:сегодня|today)\b", query, re.I)),
         )
-        if not evidence and freshness:
+        if requested_eia and freshness:
+            for row in evidence:
+                row["date_origin"] = "official_rss"
+        if not evidence and freshness and not requested_eia:
             evidence, feed_warnings = normalize_results(
                 official_news(query),
                 freshness=True,

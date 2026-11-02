@@ -19,6 +19,7 @@ from analyst.forecast import forecast_brent
 from analyst.graph import answer_question
 from analyst.quotes import latest_quote
 from analyst.rag import ReportIndex
+from analyst.releases import active_release
 from analyst.scenario import SupplyScenario, supply_cut_scenario
 from analyst.traces import record_feedback
 from analyst.web import search_web, web_enabled
@@ -152,7 +153,9 @@ def create_server(kind: str, host: str, port: int):
         @server.tool()
         def get_status(candidate_id: str = "") -> dict:
             """Read candidate status, or trusted baseline when candidate_id is omitted."""
-            return backend.load(candidate_id) if candidate_id else backend.baseline()
+            if candidate_id:
+                return backend.load(candidate_id)
+            return {**backend.baseline(), "serving": active_release()}
 
     return server
 

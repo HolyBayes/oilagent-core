@@ -6,7 +6,7 @@ from functools import lru_cache
 from itertools import zip_longest
 
 from analyst.config import CORE_ROOT, configured_path
-from analyst.ranking import rerank
+from analyst.ranking import query_passages, rerank
 
 
 def digest(data):
@@ -214,7 +214,7 @@ class ReportIndex:
             ):
                 candidates.append({**meta, "chunk_id": cid, "text": text, "distance": distance})
             if policy.reranker == "bm25":
-                candidates = rerank(candidates, query)
+                candidates = rerank(candidates, query, weight=policy.lexical_weight)
             for candidate in candidates:
                 meta = candidate
                 page = (meta["doc_id"], meta["page"])
@@ -237,4 +237,20 @@ class ReportIndex:
                     text = intro["documents"][0]
                     row["page_intro"] = text[:800].rsplit(" ", 1)[0] if len(text) > 800 else text
                     row["intro_chunk_id"] = intro["ids"][0]
+        if include_context and policy.page_expansion == "query":
+            for row in rows:
+                page = collection.get(
+                    where={"$and": [{"doc_id": row["doc_id"]}, {"page": row["page"]}]}
+                )
+                chunks = sorted(
+                    zip(page["metadatas"], page["documents"]), key=lambda item: item[0]["offset"]
+                )
+                text = ""
+                for metadata, part in chunks:
+                    offset = metadata["offset"]
+                    if offset > len(text):
+                        raise ValueError("Missing page chunk")
+                    text = text[:offset] + part
+                row["support_spans"] = query_passages(text, query)
+                row["context_chunk_ids"] = page["ids"]
         return [{**row, "source_id": f"R{i}"} for i, row in enumerate(rows, 1)]

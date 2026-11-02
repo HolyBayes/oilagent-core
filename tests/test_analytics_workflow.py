@@ -55,12 +55,23 @@ def test_hybrid_keeps_sources_and_dates(sources, monkeypatch):
 
     def invoke(schema, messages):
         if schema is Route:
-            return Route(intent="domain_qa", freshness_required=True, hybrid=True), {}
+            return Route(
+                intent="domain_qa",
+                freshness_required=True,
+                hybrid=True,
+                metric="price",
+                reference_period="2026",
+                report_query="historical",
+                web_query="current gas news",
+            ), {}
+        requirements = json.loads(messages[1][1])["requirements"]
+        assert not requirements.get("report_query") and not requirements.get("web_query")
+        assert not requirements.get("metric") and not requirements.get("reference_period")
         return ReportDraft(
             abstain=False,
             claims=[
                 ReportClaim(text=s["text"], quote=s["text"], source_id=s["source_id"])
-                for s in (report, web)
+                for s in json.loads(messages[1][1])["reports"]
             ],
         ), {}
 
@@ -162,3 +173,28 @@ def test_comparison_requires_same_definitions():
     result, warning = compare_claims([a, b])
     assert not warning and result["value"] == "0.4"
     assert compare_claims([a, {**b, "unit": "USD/bbl"}])[1]
+
+
+def test_hybrid_preserves_report_answer_when_web_model_is_unavailable(sources, monkeypatch):
+    report, web = sources
+
+    def invoke(schema, messages):
+        rows = json.loads(messages[1][1])["reports"]
+        if rows[0]["source_id"].startswith("W"):
+            raise TimeoutError("private transport message")
+        return ReportDraft(
+            abstain=False,
+            claims=[ReportClaim(text=report["text"], quote=report["text"], source_id="R1")],
+        ), {}
+
+    monkeypatch.setattr(pipeline, "invoke_structured", invoke)
+    result = pipeline.respond(
+        {
+            "question": "Исторический отчёт, а затем новости",
+            "route": {"intent": "domain_qa", "hybrid": True, "freshness_required": True},
+            "evidence": [report, web],
+            "report_evidence": [report],
+        }
+    )
+    assert result["status"] == "partial" and result["claims"][0]["source_id"] == "R1"
+    assert "private transport message" not in json.dumps(result)

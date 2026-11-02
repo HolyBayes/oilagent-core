@@ -10,6 +10,8 @@ class RetrievalPolicy(BaseModel):
     comparison_strategy: Literal["pooled", "per_publisher"] = "pooled"
     top_k_per_publisher: int = Field(default=2, ge=2, le=4)
     reranker: Literal["vector", "bm25"] = "vector"
+    lexical_weight: float = Field(default=1.0, ge=0, le=2)
+    page_expansion: Literal["intro", "query"] = "intro"
 
 
 class Route(BaseModel):

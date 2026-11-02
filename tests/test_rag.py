@@ -216,3 +216,35 @@ def test_policy_controls_actual_pdf_search(index):
     )
     assert {s["publisher"] for s in attributed} == {"EIA"}
     assert {s["publisher"] for s in pooled} == {"EIA", "OPEC"}
+
+
+def test_query_page_context_is_exact_and_bound_to_source(index):
+    index.ingest()
+    rows = index.search(
+        "EIA Brent forecast 2026",
+        policy={
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 4,
+            "page_expansion": "query",
+        },
+    )
+    assert rows and rows[0]["support_spans"] and rows[0]["context_chunk_ids"]
+    row = rows[0]
+    draft = ReportDraft(
+        abstain=False,
+        claims=[
+            ReportClaim(
+                text="Цена 52 в 2026", source_id=row["source_id"], quote=row["support_spans"][0]
+            )
+        ],
+    )
+    assert validate_claims(draft, rows)[0]
+    foreign = {
+        **row,
+        "source_id": "R9",
+        "support_spans": [],
+        "text": "Another page",
+        "page_intro": "",
+    }
+    draft.claims[0].source_id = "R9"
+    assert validate_claims(draft, [foreign])[1] == ["invalid_citation"]

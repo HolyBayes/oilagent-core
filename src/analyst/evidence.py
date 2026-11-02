@@ -22,6 +22,10 @@ def numbers(text):
     }
 
 
+def supporting_passages(source):
+    return [source.get("text", ""), source.get("page_intro", ""), *source.get("support_spans", [])]
+
+
 def validate_claims(draft: ReportDraft, evidence):
     sources = {e["source_id"]: e for e in evidence}
     accepted, warnings = [], []
@@ -32,7 +36,7 @@ def validate_claims(draft: ReportDraft, evidence):
         if (
             not source
             or not claim.quote.strip()
-            or not any(claim.quote in source.get(k, "") for k in ["text", "page_intro"])
+            or not any(claim.quote in text for text in supporting_passages(source))
             or re.search(r"https?://|\[(?:R|W)\d+\]", claim.text)
         ):
             warnings.append("invalid_citation")
@@ -117,7 +121,7 @@ def rejection_details(draft, evidence):
         if not source:
             details.append({"source_id": claim.source_id, "reason": "unknown_source_id"})
             continue
-        if not any(claim.quote in source.get(k, "") for k in ["text", "page_intro"]):
+        if not any(claim.quote in text for text in supporting_passages(source)):
             details.append(
                 {
                     "source_id": claim.source_id,
