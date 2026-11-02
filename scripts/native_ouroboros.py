@@ -76,7 +76,11 @@ def pinned_schema_names(registry):
         schema["function"]["name"]
         for schema in registry.schemas()
         if schema["function"]["name"].startswith("mcp_")
-        and schema["function"]["name"] not in on_demand
+        and (
+            schema["function"]["name"] not in on_demand
+            or schema["function"]["name"]
+            in {"mcp_analyst__answer_question", "mcp_analyst__forecast"}
+        )
     }
 
 
@@ -227,6 +231,8 @@ def install_delivery_adapter():
                 session_id = "native-" + hashlib.sha256(str(chat_id).encode()).hexdigest()[:32]
                 args = {**args, "session_id": session_id}
         result = original_execute(self, name, args)
+        if name.startswith(("mcp_analyst__", "mcp_evolution__")) and result.status == "ok":
+            self._ctx._oilagent_tool_observed = True
         if name.startswith("mcp_analyst__") and result.status == "ok":
             payload = analyst_result(result.text)
             if payload:
@@ -254,9 +260,27 @@ def install_delivery_adapter():
         tools = kwargs.get("tools") or args[1]
         tools._ctx._oilagent_results = []
         tools._ctx._oilagent_joined = set()
+        tools._ctx._oilagent_tool_observed = False
         text, usage, trace = original_loop(*args, **kwargs)
         results = tools._ctx._oilagent_results
+        if not results and not tools._ctx._oilagent_tool_observed:
+            from ouroboros.task_status import load_effective_task_result
+            from ouroboros.tool_access_paths import canonical_data_root
+
+            task = load_effective_task_result(
+                canonical_data_root(tools._ctx), tools._ctx.task_id, materialize_artifacts=False
+            )
+            question = task.get("description", "")
+            if isinstance(question, str) and 1 <= len(question) <= 4000:
+                execute(tools, "mcp_analyst__answer_question", {"question": question})
+                results = tools._ctx._oilagent_results
+                trace["oilagent_report_first_fallback"] = bool(results)
         delivered = final_delivery(tools._ctx, results, text)
+        if not results and not tools._ctx._oilagent_tool_observed:
+            delivered = (
+                "Не удалось подтвердить ответ по источникам. Непроверенные цифры не приводятся."
+            )
+            trace["oilagent_unverified_delivery_blocked"] = True
         if results:
             trace["canonical_analyst_delivery"] = [r["request_id"] for r in results]
             trace["canonical_child_deliveries"] = sorted(tools._ctx._oilagent_joined)

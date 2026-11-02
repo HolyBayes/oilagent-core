@@ -1,0 +1,1360 @@
+{
+  "transport": "HTTP Analyst MCP; not native Main",
+  "model": "GigaChat-2",
+  "cases": [
+    {
+      "case": "report",
+      "question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026?",
+      "result": {
+        "question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026?",
+        "request_id": "ab4e5d15-c1b3-422e-871a-5f1997a8a29b",
+        "route": {
+          "intent": "domain_qa",
+          "freshness_required": false,
+          "horizon_months": 6,
+          "as_of": "2025-10",
+          "instrument": "Brent",
+          "start_date": "2026-01-01",
+          "end_date": "2026-06-30",
+          "metric": "price",
+          "geography": "",
+          "reference_period": "2025-10",
+          "publishers": [
+            "EIA"
+          ],
+          "quote_requested": false,
+          "hybrid": false,
+          "report_query": "EIA October 2025 report",
+          "compare": false,
+          "scenario_inputs": {},
+          "scenario_price": 0.0,
+          "scenario_supply_mbd": 0.0,
+          "scenario_cut_mbd": 0.0,
+          "demand_elasticity_low": 0.0,
+          "demand_elasticity_high": 0.0,
+          "supply_elasticity_low": 0.0,
+          "supply_elasticity_high": 0.0,
+          "web_query": ""
+        },
+        "status": "answered",
+        "answer": "We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. [R2]\n\nWe forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26). [R3]\n\n\nИсточники:\n\n[R2] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6\n\n[R3] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 5: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=5",
+        "warnings": [],
+        "usage": {
+          "route": {
+            "output_tokens": 328,
+            "input_tokens": 865,
+            "total_tokens": 1193,
+            "input_token_details": {
+              "cache_read": 0
+            }
+          },
+          "synthesis": {
+            "output_tokens": 283,
+            "input_tokens": 3739,
+            "total_tokens": 4022,
+            "input_token_details": {
+              "cache_read": 0
+            }
+          }
+        },
+        "evidence": [
+          {
+            "offset": 0,
+            "page": 3,
+            "published_at": "2025-10-07",
+            "publisher": "EIA",
+            "doc_id": "eia_2025_10",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "numeric_verified": false,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:3:0",
+            "text": "October 2025 Short-Term Energy Outlook Overview U.S. energy market indicators 2024 2025 2026 Brent crude oil spot price (dollars per barrel) $81 $69 $52 Retail gasoline price (dollars per gallon) $3.30 $3.10 $2.90 U.S. crude oil production (million barrels per day) 13.2 13.5 13.5 Natural gas price at Henry Hub (dollars per million British thermal units) $2.20 $3.40 $3.90 U.S. liquefied natural gas gross exports (billion cubic feet per day) 12 15 16 Shares of U.S. electricity generation Natural gas 42% 40% 40% Coal 16% 17% 16% Renewables 23% 24% 26% Nuclear 19% 18% 18% U.S. GDP (percentage change) 2.8% 1.8% 2.4% U.S. CO2 emissions (billion metric tons) 4.8 4.9 4.8 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Values in this table are rounded and may not match values in other tables in this report. • Global oil prices. We expect global oil inventories to rise through 2026, putting significant downward pressure on oil prices in the coming months. We forecast that the Brent crude oil price will fall to an average of $62 per barrel (b) in the fourth quarter of 2025 and $52/b in 2026. • Global oil production. Global liquid fuels production increases throughout the forecast, which we expect will drive inventory accumulation. Production growth is led by countries outside of OPEC+, where production rises by 2.0 million b/d in 2025 and by 0.7 million b/d in 2026. OPEC+ increases total liquids production by 0.6 million b",
+            "distance": 0.16679340600967407,
+            "source_id": "R1"
+          },
+          {
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "offset": 0,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "doc_id": "eia_2025_10",
+            "page": 6,
+            "numeric_verified": true,
+            "publisher": "EIA",
+            "published_at": "2025-10-07",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:6:0",
+            "text": "October 2025 Inventory builds in our forecast are significant even with our expectation that OPEC+ will produce below its targets in the coming months. Along with strong production growth among non-OPEC countries, the forecast increase in global oil inventories is based on the OPEC+ announcements to increase the group’s oil production. OPEC+ began increasing production in April 2025, and for much of this year, the group’s production has been close to its targets. Last month, the group increased production targets through October 2025, but there is uncertainty regarding some members’ ability to reach the targets given near- term limits on spare capacity. We completed modeling and analysis for this forecast before the October 5 OPEC+ announcement that the group would increase production targets for November 2025. We forecast that global oil inventories will increase by an average of 2.1 million b/d in 2026, compared with an average annual increase of 1.9 million b/d this year. Inventory builds will be highest in 1Q26, averaging more than 2.7 million b/d. Strong inventory builds could fill commercial storage options on land, which would prompt market participants to seek other, more expensive options for storing crude oil, such as floating storage. As a result, some of the crude oil price declines will likely reflect the higher marginal cost of storage. We forecast that inventory builds will moderate later in 2026 due to a combination of higher global oil demand and slightly lower oil production growth, both in response to lower oil prices. We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months",
+            "distance": 0.16991180181503296,
+            "source_id": "R2"
+          },
+          {
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "publisher": "EIA",
+            "page": 5,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "doc_id": "eia_2025_10",
+            "numeric_verified": true,
+            "offset": 0,
+            "published_at": "2025-10-07",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:5:0",
+            "text": "October 2025 Global Oil Markets Global oil prices Brent crude oil spot prices averaged $68 per barrel (b) in September, unchanged from the average in August. We forecast that growing global oil supply and the transition away from peak summer seasonal demand will lead to significant growth in global oil inventories over the forecast, causing crude oil prices to fall in the coming months. We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26). We expect inventory builds will average 2.6 million barrels per day (b/d) in 4Q25 and will remain elevated through 2026, putting significant downward pressure on oil prices. Global oil prices have remained stable in recent months despite global oil inventory builds—which we estimate as the difference between global oil supply and demand—averaging an estimated 1.9 million b/d from May through September. Several factors have likely offset strong growth in supply to keep prices relatively stable. One likely factor is China’s additions to its oil stockpiles. China does not report data on its oil inventories. However, based on imports, exports, refining data, and oil inventory data from third-party and official sources, we assess that China has accumulated significant oil inventories this year. Because China’s inventory builds have been strategic in nature, they have potentially acted as a source of demand, limiting downward price pressures more than our estimated balances would otherwise suggest. It is also possible that global oil demand was higher over the summer than we currently estimate. The lag in actual oil demand data, particularly outside of the OECD, means that our estimates for global demand for 2Q25 and 3Q25 are still a mix of",
+            "distance": 0.1738271713256836,
+            "source_id": "R3"
+          },
+          {
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "published_at": "2025-10-07",
+            "page": 18,
+            "offset": 1281,
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "publisher": "EIA",
+            "numeric_verified": false,
+            "doc_id": "eia_2025_10",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:1281",
+            "text": "ption million barrels per day 3 forecast 3 2.3 world 2 other non-OECD Middle East 2 India 1.1 1.1 China 1.0 1 other OECD United States 1 0 -1 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025",
+            "distance": 0.17448323965072632,
+            "page_intro": "Organization of the Petroleum Exporting Countries (OPEC) surplus crude oil production capacity million barrels per day 6 forecast 5 2015-2024 average 4 3 2 1 0 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Black line represents 2015-2024 average (2.9 million barrels per day). WorldWorld liquidliquidfuelsfuelsconsumptionconsumption ComponentsComponentsofofannualannualchangechange millionmillion barrelsbarrelsperperdayday millionmillion barrelsbarrelsperperdayday 108108 4.04.0 forecastforecast 106106 3.53.5 worldworld changechange 104104 3.03.0 OrganizationEconomicOrganizationEconomic forfor Cooperation Cooperation andand 102102 2.52.5 2.32.3 Development Development 100100",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:0",
+            "source_id": "R4"
+          }
+        ],
+        "report_evidence": [
+          {
+            "offset": 0,
+            "page": 3,
+            "published_at": "2025-10-07",
+            "publisher": "EIA",
+            "doc_id": "eia_2025_10",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "numeric_verified": false,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:3:0",
+            "text": "October 2025 Short-Term Energy Outlook Overview U.S. energy market indicators 2024 2025 2026 Brent crude oil spot price (dollars per barrel) $81 $69 $52 Retail gasoline price (dollars per gallon) $3.30 $3.10 $2.90 U.S. crude oil production (million barrels per day) 13.2 13.5 13.5 Natural gas price at Henry Hub (dollars per million British thermal units) $2.20 $3.40 $3.90 U.S. liquefied natural gas gross exports (billion cubic feet per day) 12 15 16 Shares of U.S. electricity generation Natural gas 42% 40% 40% Coal 16% 17% 16% Renewables 23% 24% 26% Nuclear 19% 18% 18% U.S. GDP (percentage change) 2.8% 1.8% 2.4% U.S. CO2 emissions (billion metric tons) 4.8 4.9 4.8 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Values in this table are rounded and may not match values in other tables in this report. • Global oil prices. We expect global oil inventories to rise through 2026, putting significant downward pressure on oil prices in the coming months. We forecast that the Brent crude oil price will fall to an average of $62 per barrel (b) in the fourth quarter of 2025 and $52/b in 2026. • Global oil production. Global liquid fuels production increases throughout the forecast, which we expect will drive inventory accumulation. Production growth is led by countries outside of OPEC+, where production rises by 2.0 million b/d in 2025 and by 0.7 million b/d in 2026. OPEC+ increases total liquids production by 0.6 million b",
+            "distance": 0.16679340600967407,
+            "source_id": "R1"
+          },
+          {
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "offset": 0,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "doc_id": "eia_2025_10",
+            "page": 6,
+            "numeric_verified": true,
+            "publisher": "EIA",
+            "published_at": "2025-10-07",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:6:0",
+            "text": "October 2025 Inventory builds in our forecast are significant even with our expectation that OPEC+ will produce below its targets in the coming months. Along with strong production growth among non-OPEC countries, the forecast increase in global oil inventories is based on the OPEC+ announcements to increase the group’s oil production. OPEC+ began increasing production in April 2025, and for much of this year, the group’s production has been close to its targets. Last month, the group increased production targets through October 2025, but there is uncertainty regarding some members’ ability to reach the targets given near- term limits on spare capacity. We completed modeling and analysis for this forecast before the October 5 OPEC+ announcement that the group would increase production targets for November 2025. We forecast that global oil inventories will increase by an average of 2.1 million b/d in 2026, compared with an average annual increase of 1.9 million b/d this year. Inventory builds will be highest in 1Q26, averaging more than 2.7 million b/d. Strong inventory builds could fill commercial storage options on land, which would prompt market participants to seek other, more expensive options for storing crude oil, such as floating storage. As a result, some of the crude oil price declines will likely reflect the higher marginal cost of storage. We forecast that inventory builds will moderate later in 2026 due to a combination of higher global oil demand and slightly lower oil production growth, both in response to lower oil prices. We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months",
+            "distance": 0.16991180181503296,
+            "source_id": "R2"
+          },
+          {
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "publisher": "EIA",
+            "page": 5,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "doc_id": "eia_2025_10",
+            "numeric_verified": true,
+            "offset": 0,
+            "published_at": "2025-10-07",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:5:0",
+            "text": "October 2025 Global Oil Markets Global oil prices Brent crude oil spot prices averaged $68 per barrel (b) in September, unchanged from the average in August. We forecast that growing global oil supply and the transition away from peak summer seasonal demand will lead to significant growth in global oil inventories over the forecast, causing crude oil prices to fall in the coming months. We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26). We expect inventory builds will average 2.6 million barrels per day (b/d) in 4Q25 and will remain elevated through 2026, putting significant downward pressure on oil prices. Global oil prices have remained stable in recent months despite global oil inventory builds—which we estimate as the difference between global oil supply and demand—averaging an estimated 1.9 million b/d from May through September. Several factors have likely offset strong growth in supply to keep prices relatively stable. One likely factor is China’s additions to its oil stockpiles. China does not report data on its oil inventories. However, based on imports, exports, refining data, and oil inventory data from third-party and official sources, we assess that China has accumulated significant oil inventories this year. Because China’s inventory builds have been strategic in nature, they have potentially acted as a source of demand, limiting downward price pressures more than our estimated balances would otherwise suggest. It is also possible that global oil demand was higher over the summer than we currently estimate. The lag in actual oil demand data, particularly outside of the OECD, means that our estimates for global demand for 2Q25 and 3Q25 are still a mix of",
+            "distance": 0.1738271713256836,
+            "source_id": "R3"
+          },
+          {
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "published_at": "2025-10-07",
+            "page": 18,
+            "offset": 1281,
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "publisher": "EIA",
+            "numeric_verified": false,
+            "doc_id": "eia_2025_10",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:1281",
+            "text": "ption million barrels per day 3 forecast 3 2.3 world 2 other non-OECD Middle East 2 India 1.1 1.1 China 1.0 1 other OECD United States 1 0 -1 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025",
+            "distance": 0.17448323965072632,
+            "page_intro": "Organization of the Petroleum Exporting Countries (OPEC) surplus crude oil production capacity million barrels per day 6 forecast 5 2015-2024 average 4 3 2 1 0 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Black line represents 2015-2024 average (2.9 million barrels per day). WorldWorld liquidliquidfuelsfuelsconsumptionconsumption ComponentsComponentsofofannualannualchangechange millionmillion barrelsbarrelsperperdayday millionmillion barrelsbarrelsperperdayday 108108 4.04.0 forecastforecast 106106 3.53.5 worldworld changechange 104104 3.03.0 OrganizationEconomicOrganizationEconomic forfor Cooperation Cooperation andand 102102 2.52.5 2.32.3 Development Development 100100",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:0",
+            "source_id": "R4"
+          }
+        ],
+        "claims": [
+          {
+            "text": "We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025.",
+            "source_id": "R2",
+            "quote": "We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025.",
+            "kind": "fact",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          },
+          {
+            "text": "We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26).",
+            "source_id": "R3",
+            "quote": "We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26).",
+            "kind": "fact",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          }
+        ],
+        "calculation": null,
+        "session_id": "c41f47bc-d3fb-40f5-966a-25c7f1cc1c72",
+        "release": {
+          "release_id": "developer-seed",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 4
+          },
+          "identity": {
+            "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+            "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+            "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+          }
+        },
+        "resolved_question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026?",
+        "missing": [],
+        "recorded_at": "2026-11-02T15:10:46.710962+00:00",
+        "budget": {
+          "llm_calls": 2,
+          "tool_calls": 1,
+          "repairs": 0,
+          "unknown_cost_reservation": 0,
+          "input_tokens": 4604,
+          "output_tokens": 611,
+          "elapsed_sec": 5.2271,
+          "estimated_cost": null,
+          "cost_currency": null,
+          "hard_money_guarantee": false,
+          "reservation_enabled": false,
+          "usage_complete": true,
+          "unknown_usage_calls": 0,
+          "events": [
+            {
+              "tool": "reports",
+              "at_sec": 2.715
+            }
+          ]
+        },
+        "release_id": "developer-seed",
+        "versions": {
+          "provider": "gigachat",
+          "model": "GigaChat-2",
+          "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+          "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+          "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+        },
+        "trace_file": "ab4e5d15-c1b3-422e-871a-5f1997a8a29b.json"
+      }
+    },
+    {
+      "case": "web",
+      "question": "Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?",
+      "result": {
+        "question": "Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?",
+        "request_id": "31aa5928-f4d6-4caa-b6d8-9a1068dc41de",
+        "route": {
+          "intent": "domain_qa",
+          "freshness_required": true,
+          "horizon_months": 0,
+          "as_of": "",
+          "instrument": "",
+          "start_date": "2025-04-18",
+          "end_date": "2025-04-25",
+          "metric": "",
+          "geography": "",
+          "reference_period": "",
+          "publishers": [
+            "EIA"
+          ],
+          "quote_requested": false,
+          "hybrid": false,
+          "report_query": "",
+          "compare": false,
+          "scenario_inputs": {},
+          "scenario_price": 0.0,
+          "scenario_supply_mbd": 0.0,
+          "scenario_cut_mbd": 0.0,
+          "demand_elasticity_low": 0.0,
+          "demand_elasticity_high": 0.0,
+          "supply_elasticity_low": 0.0,
+          "supply_elasticity_high": 0.0,
+          "web_query": "Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?"
+        },
+        "warnings": [
+          "model_error:ValueError",
+          "extractive_fallback"
+        ],
+        "usage": {
+          "route": {
+            "output_tokens": 324,
+            "input_tokens": 855,
+            "total_tokens": 1179,
+            "input_token_details": {
+              "cache_read": 0
+            }
+          }
+        },
+        "evidence": [
+          {
+            "page": 34,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "doc_id": "eia_2025_10",
+            "publisher": "EIA",
+            "offset": 6468,
+            "numeric_verified": false,
+            "published_at": "2025-10-07",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:34:6468",
+            "text": "in the glossary of the EIA Petroleum Supply Monthly (DOE/EIA-0109). Consumption of petroleum by the non-OECD countries is \"apparent consumption,\" which includes internal consumption, refinery fuel and loss, and bunkering. (d) OECD = Organization for Economic Cooperation and Development: Australia, Austria, Belgium, Canada, Chile, Czech Republic, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Iceland, Ireland, Israel, Italy, Japan, Latvia, Lithuania, Luxembourg, Mexico, Netherlands, New Zealand, Norway, Poland, Portugal, Slovakia, Slovenia, South Korea, Spain, Sweden, Switzerland, Turkiye, United Kingdom, and United States. Notes: EIA completed modeling and analysis for this report on October 2, 2025. - = no data available The approximate break between historical and forecast values is shown with historical data with no shading; estimates and forecasts are shaded gray. Minor discrepancies with published historical data are due to independent rounding. Sources: Historical data: Energy Information Administration International Energy Statistics (https://www.eia.gov/international/data/world). Forecasts: EIA Short-Term Integrated Forecasting System.",
+            "distance": 0.19076967239379883,
+            "page_intro": "Table 3a. World Petroleum and Other Liquid Fuels Production, Consumption, and Inventories U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Production (million barrels per day) (a) World total ............................................................................... 102.60 103.23 103.09 103.83 103.62 105.06 107.43 107.31 106.39 106.97 107.55 107.77 103.19 105.87 107.17 Crude oil .............................................................................. 76.98 76.49 76.16 76.73 77.24 77.89 79.74 79.95 79.38 79.22 79.50 79.73 76.59 78.71 79.46 Other liquids ......................................................................... 25.62 26.73 26.93 27.11 26.39 27.17 27.69 27.36",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:34:0",
+            "source_id": "R1"
+          },
+          {
+            "kind": "web",
+            "publisher": "eia.gov",
+            "priority": 0,
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68364",
+            "title": "LNG imports make up increasing share of Colombia's natural gas supply",
+            "published_at": "2026-10-29T09:00:00-05:00",
+            "retrieved_at": "2026-11-02T15:10:50.890424+00:00",
+            "date_origin": "official_rss",
+            "text": "LNG imports make up increasing share of Colombia's natural gas supply. Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.",
+            "content_hash": "5c87eb56c94745ee046d4a385c1d9bc24a8ab17168dcaca8f27c71f3d8a0056d",
+            "numeric_verified": true,
+            "source_id": "W1",
+            "policy_revision": "a7b5bf308c74123ccb91492196d44ccb9429caca"
+          },
+          {
+            "published_at": "2025-10-07",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "doc_id": "eia_2025_10",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "numeric_verified": false,
+            "offset": 0,
+            "page": 2,
+            "publisher": "EIA",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:2:0",
+            "text": "October 2025 The U.S. Energy Information Administration (EIA), the statistical and analytical agency within the U.S. Department of Energy (DOE), prepared this report. By law, our data, analyses, and forecasts are independent of approval by any other officer or employee of the U.S. Government. The views in this report do not represent those of DOE or any other federal agencies. U.S. Energy Information Administration | Short-Term Energy Outlook 1",
+            "distance": 0.19152921438217163,
+            "source_id": "R2"
+          },
+          {
+            "doc_id": "eia_2025_10",
+            "published_at": "2025-10-07",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "numeric_verified": false,
+            "publisher": "EIA",
+            "page": 50,
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "offset": 7137,
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:50:7137",
+            "text": "steam, sulfur, nonrenewable waste, and miscellaneous technologies. (d) Pumped storage hydroelectric, biomass, geothermal, petroleum, other fossil gases, batteries, and other nonrenewable fuels. See notes (b) and (c). (e) Includes regional generation from power plants operated by electric power sector, plus net energy receipts from neighboring regions (see Figure 36 for STEO electricity supply regions). Notes: EIA completed modeling and analysis for this report on October 2, 2025. The approximate break between historical and forecast values is shown with historical data with no shading; estimates and forecasts are shaded gray. The electric power sector includes utility-scale generating power plants (total capacity is larger than 1 megawatt) operated by electric utilities and independent power producers. Sources: Historical data: Latest data available from EIA databases supporting the following reports: Electric Power Monthly and Electric Power Annual. Minor discrepancies with published historical data are due to independent rounding and possible revisions not yet reflected in the STEO. Forecast: EIA Short-Term Integrated Forecasting System.",
+            "distance": 0.19757133722305298,
+            "page_intro": "Table 7d part 2. U.S. Regional Electricity Generation, Electric Power Sector (billion kilowatthours), continued from Table 7d part 1 U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Midwest (MISO) Total generation ............................... 146.4 149.2 170.6 149.2 159.8 149.9 175.9 151.5 155.6 149.6 176.0 150.2 615.4 637.1 631.4 Natural gas ..................................... 48.1 54.0 69.0 49.0 41.4 48.3 66.7 48.6 43.0 49.4 65.8 46.5 220.1 205.0 204.7 Coal ................................................ 42.8 38.1 51.3 42.1 53.3 43.2 55.9 41.0 45.2 34.4 53.0 41.4 174.4 193.4 174.0 Nuclear ........................................... 20.9 21.8 25.1 22.7 23.3 20.2 23.6 23.3 24.6",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:50:0",
+            "source_id": "R3"
+          },
+          {
+            "published_at": "2025-10-07",
+            "numeric_verified": false,
+            "doc_id": "eia_2025_10",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "offset": 9863,
+            "page": 39,
+            "publisher": "EIA",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:39:9863",
+            "text": "f) The crude oil adjustment equals the sum of disposition items (e.g. refinery inputs) minus the sum of supply items (e.g. production). (g) Renewables and oxygenate production includes pentanes plus, oxygenates (excluding fuel ethanol), and renewable fuels. Beginning in January 2021, renewable fuels includes biodiesel, renewable diesel, renewable jet fuel, renewable heating oil, renewable naphtha and gasoline, and other renewable fuels. For December 2020 and prior, renewable fuels includes only biodiesel. (h) Petroleum products adjustment includes hydrogen/oxygenates/renewables/other hydrocarbons, motor gasoline blending components, and finished motor gasoline. (i) Other oils includes aviation gasoline blending components, finished aviation gasoline, kerosene, petrochemical feedstocks, special naphthas, lubricants, waxes, petroleum coke, asphalt and road oil, still gas, and miscellaneous products. Notes: EIA completed modeling and analysis for this report on October 2, 2025. - = no data available The approximate break between historical and forecast values is shown with historical data with no shading; estimates and forecasts are shaded gray. Minor discrepancies with published historical data are due to independent rounding. Sources: Historical data: Latest data available from Energy Information Administration databases supporting the following reports: Petroleum Supply Monthly; Petroleum Supply Annual; and Weekly Petroleum Status Report. Forecasts: EIA Short-Term Integrated Forecasting System.",
+            "distance": 0.19843870401382446,
+            "page_intro": "Table 4a. U.S. Petroleum and Other Liquids Supply, Consumption, and Inventories U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Supply (million barrels per day) U.S. total crude oil production (a) .................................................... 12.94 13.27 13.27 13.45 13.28 13.48 13.68 13.66 13.62 13.53 13.40 13.48 13.23 13.53 13.51 Alaska ............................................................................................. 0.43 0.42 0.40 0.43 0.44 0.43 0.39 0.44 0.45 0.45 0.42 0.49 0.42 0.42 0.45 Federal Gulf of America (b) ............................................................ 1.78 1.82 1.76 1.78 1.79 1.85 1.96 1.94 2.00 2.00 1.90 1.93 1.79 1.89 1.96 Lower 48",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:39:0",
+            "source_id": "R4"
+          }
+        ],
+        "report_evidence": [
+          {
+            "page": 34,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "doc_id": "eia_2025_10",
+            "publisher": "EIA",
+            "offset": 6468,
+            "numeric_verified": false,
+            "published_at": "2025-10-07",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:34:6468",
+            "text": "in the glossary of the EIA Petroleum Supply Monthly (DOE/EIA-0109). Consumption of petroleum by the non-OECD countries is \"apparent consumption,\" which includes internal consumption, refinery fuel and loss, and bunkering. (d) OECD = Organization for Economic Cooperation and Development: Australia, Austria, Belgium, Canada, Chile, Czech Republic, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Iceland, Ireland, Israel, Italy, Japan, Latvia, Lithuania, Luxembourg, Mexico, Netherlands, New Zealand, Norway, Poland, Portugal, Slovakia, Slovenia, South Korea, Spain, Sweden, Switzerland, Turkiye, United Kingdom, and United States. Notes: EIA completed modeling and analysis for this report on October 2, 2025. - = no data available The approximate break between historical and forecast values is shown with historical data with no shading; estimates and forecasts are shaded gray. Minor discrepancies with published historical data are due to independent rounding. Sources: Historical data: Energy Information Administration International Energy Statistics (https://www.eia.gov/international/data/world). Forecasts: EIA Short-Term Integrated Forecasting System.",
+            "distance": 0.19076967239379883,
+            "page_intro": "Table 3a. World Petroleum and Other Liquid Fuels Production, Consumption, and Inventories U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Production (million barrels per day) (a) World total ............................................................................... 102.60 103.23 103.09 103.83 103.62 105.06 107.43 107.31 106.39 106.97 107.55 107.77 103.19 105.87 107.17 Crude oil .............................................................................. 76.98 76.49 76.16 76.73 77.24 77.89 79.74 79.95 79.38 79.22 79.50 79.73 76.59 78.71 79.46 Other liquids ......................................................................... 25.62 26.73 26.93 27.11 26.39 27.17 27.69 27.36",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:34:0",
+            "source_id": "R1"
+          },
+          {
+            "published_at": "2025-10-07",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "doc_id": "eia_2025_10",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "numeric_verified": false,
+            "offset": 0,
+            "page": 2,
+            "publisher": "EIA",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:2:0",
+            "text": "October 2025 The U.S. Energy Information Administration (EIA), the statistical and analytical agency within the U.S. Department of Energy (DOE), prepared this report. By law, our data, analyses, and forecasts are independent of approval by any other officer or employee of the U.S. Government. The views in this report do not represent those of DOE or any other federal agencies. U.S. Energy Information Administration | Short-Term Energy Outlook 1",
+            "distance": 0.19152921438217163,
+            "source_id": "R2"
+          },
+          {
+            "doc_id": "eia_2025_10",
+            "published_at": "2025-10-07",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "numeric_verified": false,
+            "publisher": "EIA",
+            "page": 50,
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "offset": 7137,
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:50:7137",
+            "text": "steam, sulfur, nonrenewable waste, and miscellaneous technologies. (d) Pumped storage hydroelectric, biomass, geothermal, petroleum, other fossil gases, batteries, and other nonrenewable fuels. See notes (b) and (c). (e) Includes regional generation from power plants operated by electric power sector, plus net energy receipts from neighboring regions (see Figure 36 for STEO electricity supply regions). Notes: EIA completed modeling and analysis for this report on October 2, 2025. The approximate break between historical and forecast values is shown with historical data with no shading; estimates and forecasts are shaded gray. The electric power sector includes utility-scale generating power plants (total capacity is larger than 1 megawatt) operated by electric utilities and independent power producers. Sources: Historical data: Latest data available from EIA databases supporting the following reports: Electric Power Monthly and Electric Power Annual. Minor discrepancies with published historical data are due to independent rounding and possible revisions not yet reflected in the STEO. Forecast: EIA Short-Term Integrated Forecasting System.",
+            "distance": 0.19757133722305298,
+            "page_intro": "Table 7d part 2. U.S. Regional Electricity Generation, Electric Power Sector (billion kilowatthours), continued from Table 7d part 1 U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Midwest (MISO) Total generation ............................... 146.4 149.2 170.6 149.2 159.8 149.9 175.9 151.5 155.6 149.6 176.0 150.2 615.4 637.1 631.4 Natural gas ..................................... 48.1 54.0 69.0 49.0 41.4 48.3 66.7 48.6 43.0 49.4 65.8 46.5 220.1 205.0 204.7 Coal ................................................ 42.8 38.1 51.3 42.1 53.3 43.2 55.9 41.0 45.2 34.4 53.0 41.4 174.4 193.4 174.0 Nuclear ........................................... 20.9 21.8 25.1 22.7 23.3 20.2 23.6 23.3 24.6",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:50:0",
+            "source_id": "R3"
+          },
+          {
+            "published_at": "2025-10-07",
+            "numeric_verified": false,
+            "doc_id": "eia_2025_10",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "offset": 9863,
+            "page": 39,
+            "publisher": "EIA",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:39:9863",
+            "text": "f) The crude oil adjustment equals the sum of disposition items (e.g. refinery inputs) minus the sum of supply items (e.g. production). (g) Renewables and oxygenate production includes pentanes plus, oxygenates (excluding fuel ethanol), and renewable fuels. Beginning in January 2021, renewable fuels includes biodiesel, renewable diesel, renewable jet fuel, renewable heating oil, renewable naphtha and gasoline, and other renewable fuels. For December 2020 and prior, renewable fuels includes only biodiesel. (h) Petroleum products adjustment includes hydrogen/oxygenates/renewables/other hydrocarbons, motor gasoline blending components, and finished motor gasoline. (i) Other oils includes aviation gasoline blending components, finished aviation gasoline, kerosene, petrochemical feedstocks, special naphthas, lubricants, waxes, petroleum coke, asphalt and road oil, still gas, and miscellaneous products. Notes: EIA completed modeling and analysis for this report on October 2, 2025. - = no data available The approximate break between historical and forecast values is shown with historical data with no shading; estimates and forecasts are shaded gray. Minor discrepancies with published historical data are due to independent rounding. Sources: Historical data: Latest data available from Energy Information Administration databases supporting the following reports: Petroleum Supply Monthly; Petroleum Supply Annual; and Weekly Petroleum Status Report. Forecasts: EIA Short-Term Integrated Forecasting System.",
+            "distance": 0.19843870401382446,
+            "page_intro": "Table 4a. U.S. Petroleum and Other Liquids Supply, Consumption, and Inventories U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Supply (million barrels per day) U.S. total crude oil production (a) .................................................... 12.94 13.27 13.27 13.45 13.28 13.48 13.68 13.66 13.62 13.53 13.40 13.48 13.23 13.53 13.51 Alaska ............................................................................................. 0.43 0.42 0.40 0.43 0.44 0.43 0.39 0.44 0.45 0.45 0.42 0.49 0.42 0.42 0.45 Federal Gulf of America (b) ............................................................ 1.78 1.82 1.76 1.78 1.79 1.85 1.96 1.94 2.00 2.00 1.90 1.93 1.79 1.89 1.96 Lower 48",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:39:0",
+            "source_id": "R4"
+          }
+        ],
+        "web_attempted": true,
+        "session_id": "df134ade-7112-4f63-a7f8-88e4f42a7db6",
+        "release": {
+          "release_id": "developer-seed",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 4
+          },
+          "identity": {
+            "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+            "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+            "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+          }
+        },
+        "resolved_question": "Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?",
+        "status": "partial",
+        "claims": [
+          {
+            "text": "Выдержка источника, не полный ответ: «LNG imports make up increasing share of Colombia's natural gas supply. Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.»",
+            "source_id": "W1",
+            "quote": "LNG imports make up increasing share of Colombia's natural gas supply. Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.",
+            "kind": "excerpt",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          }
+        ],
+        "answer": "Выдержка источника, не полный ответ: «LNG imports make up increasing share of Colombia's natural gas supply. Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.» [W1]\n\n\nИсточники:\n\n[W1] web, eia.gov: LNG imports make up increasing share of Colombia's natural gas supply, публикация 2026-10-29T09:00:00-05:00, получено 2026-11-02T15:10:50.890424+00:00: https://www.eia.gov/todayinenergy/detail.php?id=68364",
+        "missing": [
+          "Полный ответ не подтверждён; показана проверенная выдержка"
+        ],
+        "recorded_at": "2026-11-02T15:10:50.938314+00:00",
+        "budget": {
+          "llm_calls": 1,
+          "tool_calls": 2,
+          "repairs": 0,
+          "unknown_cost_reservation": 0,
+          "input_tokens": 855,
+          "output_tokens": 324,
+          "elapsed_sec": 4.1961,
+          "estimated_cost": null,
+          "cost_currency": null,
+          "hard_money_guarantee": false,
+          "reservation_enabled": false,
+          "usage_complete": true,
+          "unknown_usage_calls": 0,
+          "events": [
+            {
+              "tool": "reports",
+              "at_sec": 2.8383
+            },
+            {
+              "tool": "web",
+              "at_sec": 2.9301
+            }
+          ]
+        },
+        "release_id": "developer-seed",
+        "versions": {
+          "provider": "gigachat",
+          "model": "GigaChat-2",
+          "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+          "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+          "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+        },
+        "trace_file": "31aa5928-f4d6-4caa-b6d8-9a1068dc41de.json"
+      }
+    },
+    {
+      "case": "hybrid",
+      "question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026; а затем добавь последние новости EIA о природном газе за 7 дней. Раздели источники.",
+      "result": {
+        "question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026; а затем добавь последние новости EIA о природном газе за 7 дней. Раздели источники.",
+        "request_id": "2cf3aa0b-56ce-41f0-b1bd-83c1c1804ae8",
+        "route": {
+          "intent": "domain_qa",
+          "freshness_required": true,
+          "horizon_months": 6,
+          "as_of": "2026-01-01",
+          "instrument": "Brent",
+          "start_date": "2026-01-01",
+          "end_date": "2026-06-30",
+          "metric": "price",
+          "geography": "",
+          "reference_period": "2025-October",
+          "publishers": [
+            "EIA"
+          ],
+          "quote_requested": false,
+          "hybrid": true,
+          "report_query": "EIA October 2025 report",
+          "compare": false,
+          "scenario_inputs": {},
+          "scenario_price": 0.0,
+          "scenario_supply_mbd": 0.0,
+          "scenario_cut_mbd": 0.0,
+          "demand_elasticity_low": 0.0,
+          "demand_elasticity_high": 0.0,
+          "supply_elasticity_low": 0.0,
+          "supply_elasticity_high": 0.0,
+          "web_query": "EIA natural gas news for last 7 days"
+        },
+        "status": "partial",
+        "answer": "Выдержка источника, не полный ответ: «will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months, crude oil prices could be higher than in our forecast. However, a slowdown in China’s purchases of oil slated for inventory would likely put downward pressure on oil prices as more oil begins to show up in visible oil inventory data. Other factors also contribute to significant uncertainty in our price forecast. Although we do not forecast any major supply disruptions, risks to oil supply remain. The ongoing tensions and negotiations related to the Russia-Ukraine conflict could affect supply, while fu» [R4]\n\nLNG imports make up increasing share of Colombia's natural gas supply. [W1]\n\nColombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. [W1]\n\nA potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. [W1]\n\nColombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño. [W1]\n\n\nИсточники:\n\n[R4] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6\n\n[W1] web, eia.gov: LNG imports make up increasing share of Colombia's natural gas supply, публикация 2026-10-29T09:00:00-05:00, получено 2026-11-02T15:10:54.534519+00:00: https://www.eia.gov/todayinenergy/detail.php?id=68364\n\nПробелы: Полный ответ не подтверждён; показана проверенная выдержка",
+        "warnings": [
+          "synthesis_abstained_or_invalid",
+          "extractive_fallback",
+          "web_official_rss",
+          "web_missing_or_old_date",
+          "web_untrusted_source",
+          "web_search_snippets"
+        ],
+        "usage": {
+          "route": {
+            "output_tokens": 340,
+            "input_tokens": 139,
+            "total_tokens": 479,
+            "input_token_details": {
+              "cache_read": 749
+            }
+          },
+          "report_synthesis": {
+            "input_tokens": 8008,
+            "output_tokens": 530,
+            "total_tokens": 8538
+          },
+          "web_synthesis": {
+            "output_tokens": 381,
+            "input_tokens": 443,
+            "total_tokens": 824,
+            "input_token_details": {
+              "cache_read": 621
+            }
+          }
+        },
+        "evidence": [
+          {
+            "numeric_verified": false,
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "published_at": "2025-10-07",
+            "publisher": "EIA",
+            "page": 3,
+            "doc_id": "eia_2025_10",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "offset": 0,
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:3:0",
+            "text": "October 2025 Short-Term Energy Outlook Overview U.S. energy market indicators 2024 2025 2026 Brent crude oil spot price (dollars per barrel) $81 $69 $52 Retail gasoline price (dollars per gallon) $3.30 $3.10 $2.90 U.S. crude oil production (million barrels per day) 13.2 13.5 13.5 Natural gas price at Henry Hub (dollars per million British thermal units) $2.20 $3.40 $3.90 U.S. liquefied natural gas gross exports (billion cubic feet per day) 12 15 16 Shares of U.S. electricity generation Natural gas 42% 40% 40% Coal 16% 17% 16% Renewables 23% 24% 26% Nuclear 19% 18% 18% U.S. GDP (percentage change) 2.8% 1.8% 2.4% U.S. CO2 emissions (billion metric tons) 4.8 4.9 4.8 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Values in this table are rounded and may not match values in other tables in this report. • Global oil prices. We expect global oil inventories to rise through 2026, putting significant downward pressure on oil prices in the coming months. We forecast that the Brent crude oil price will fall to an average of $62 per barrel (b) in the fourth quarter of 2025 and $52/b in 2026. • Global oil production. Global liquid fuels production increases throughout the forecast, which we expect will drive inventory accumulation. Production growth is led by countries outside of OPEC+, where production rises by 2.0 million b/d in 2025 and by 0.7 million b/d in 2026. OPEC+ increases total liquids production by 0.6 million b",
+            "distance": 0.1382806897163391,
+            "source_id": "R1"
+          },
+          {
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "offset": 1281,
+            "publisher": "EIA",
+            "numeric_verified": false,
+            "published_at": "2025-10-07",
+            "page": 18,
+            "doc_id": "eia_2025_10",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:1281",
+            "text": "ption million barrels per day 3 forecast 3 2.3 world 2 other non-OECD Middle East 2 India 1.1 1.1 China 1.0 1 other OECD United States 1 0 -1 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025",
+            "distance": 0.13999539613723755,
+            "page_intro": "Organization of the Petroleum Exporting Countries (OPEC) surplus crude oil production capacity million barrels per day 6 forecast 5 2015-2024 average 4 3 2 1 0 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Black line represents 2015-2024 average (2.9 million barrels per day). WorldWorld liquidliquidfuelsfuelsconsumptionconsumption ComponentsComponentsofofannualannualchangechange millionmillion barrelsbarrelsperperdayday millionmillion barrelsbarrelsperperdayday 108108 4.04.0 forecastforecast 106106 3.53.5 worldworld changechange 104104 3.03.0 OrganizationEconomicOrganizationEconomic forfor Cooperation Cooperation andand 102102 2.52.5 2.32.3 Development Development 100100",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:0",
+            "source_id": "R2"
+          },
+          {
+            "publisher": "EIA",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "published_at": "2025-10-07",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "offset": 0,
+            "page": 33,
+            "numeric_verified": false,
+            "doc_id": "eia_2025_10",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:33:0",
+            "text": "Table 2. Energy Prices U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Crude Oil (dollars per barrel) West Texas Intermediate Spot Average ............................ 77.50 81.77 76.43 70.74 71.85 64.63 65.79 58.05 47.97 48.33 48.68 49.00 76.60 65.00 48.50 Brent Spot Average ........................................................... 82.96 84.72 80.03 74.65 75.83 68.01 68.99 62.05 51.97 51.67 52.00 53.00 80.56 68.64 52.16 U.S. Imported Average ...................................................... 72.22 79.62 74.83 69.36 70.83 64.12 64.07 55.32 45.19 45.58 45.95 46.25 74.14 64.07 45.75 U.S. Refiner Average Acquisition Cost .............................. 76.42 81.76 76.98 71.39 72.63 65.59 65.61 57.21 47.24 47.60 47.93 48.25 76.63 65.24 47.76 U.S. Liquid Fuels (dollars per gallon) Wholesale Petroleum Product Prices Gasoline ....................................................................... 2.46 2.58 2.34 2.11 2.20 2.17 2.22 1.99 1.77 1.89 1.93 1.76 2.37 2.14 1.84 Diesel Fuel ................................................................... 2.70 2.51 2.31 2.23 2.39 2.18 2.38 2.34 2.06 1.95 2.07 2.10 2.43 2.32 2.04 Fuel Oil ........................................................................ 2.",
+            "distance": 0.14157116413116455,
+            "source_id": "R3"
+          },
+          {
+            "published_at": "2025-10-07",
+            "doc_id": "eia_2025_10",
+            "offset": 1604,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "page": 6,
+            "publisher": "EIA",
+            "numeric_verified": true,
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:6:1604",
+            "text": "will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months, crude oil prices could be higher than in our forecast. However, a slowdown in China’s purchases of oil slated for inventory would likely put downward pressure on oil prices as more oil begins to show up in visible oil inventory data. Other factors also contribute to significant uncertainty in our price forecast. Although we do not forecast any major supply disruptions, risks to oil supply remain. The ongoing tensions and negotiations related to the Russia-Ukraine conflict could affect supply, while further sanctions could be enacted against purchasers of Russia’s oil. Geopolitical developments, including Ukraine’s attacks on Russia’s oil ports, have raised market concerns that oil production or exports could be disrupted. In addition, ongoing trade negotiations and legal challenges related to tariffs between the United States and its trading partners could affect economic and oil demand growth, with implications for oil prices. Lastly, given the expectations of significant oversupply beginning later this year, OPEC+ could revisit its plans for increased production, easing downward pressure on oil prices. Global oil consumption and production The planned increases to OPEC+ production and strong supply growth outside of the group continue to drive global liquid fuels production growth in our forecast. Forecast global liquid fuels production increases by 2.7 million b/d in 2025 and by another 1.3 million b/d in 2026. We expect countries outside of OPEC+ to lead our forecast total liquids production growth. Production from those countries rises by 2.0 million b/d in 2025, 0.3 million b/",
+            "distance": 0.1423545479774475,
+            "page_intro": "October 2025 Inventory builds in our forecast are significant even with our expectation that OPEC+ will produce below its targets in the coming months. Along with strong production growth among non-OPEC countries, the forecast increase in global oil inventories is based on the OPEC+ announcements to increase the group’s oil production. OPEC+ began increasing production in April 2025, and for much of this year, the group’s production has been close to its targets. Last month, the group increased production targets through October 2025, but there is uncertainty regarding some members’ ability to reach the targets given near- term limits on spare capacity. We completed modeling and analysis for this forecast before the October 5 OPEC+ announcement that the group would increase production",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:6:0",
+            "source_id": "R4"
+          },
+          {
+            "kind": "web",
+            "publisher": "eia.gov",
+            "priority": 0,
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68364",
+            "title": "LNG imports make up increasing share of Colombia's natural gas supply",
+            "published_at": "2026-10-29T09:00:00-05:00",
+            "retrieved_at": "2026-11-02T15:10:54.534519+00:00",
+            "date_origin": "official_rss",
+            "text": "LNG imports make up increasing share of Colombia's natural gas supply. Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.",
+            "content_hash": "5c87eb56c94745ee046d4a385c1d9bc24a8ab17168dcaca8f27c71f3d8a0056d",
+            "numeric_verified": true,
+            "source_id": "W1",
+            "policy_revision": "a7b5bf308c74123ccb91492196d44ccb9429caca"
+          }
+        ],
+        "report_evidence": [
+          {
+            "numeric_verified": false,
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "published_at": "2025-10-07",
+            "publisher": "EIA",
+            "page": 3,
+            "doc_id": "eia_2025_10",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "offset": 0,
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:3:0",
+            "text": "October 2025 Short-Term Energy Outlook Overview U.S. energy market indicators 2024 2025 2026 Brent crude oil spot price (dollars per barrel) $81 $69 $52 Retail gasoline price (dollars per gallon) $3.30 $3.10 $2.90 U.S. crude oil production (million barrels per day) 13.2 13.5 13.5 Natural gas price at Henry Hub (dollars per million British thermal units) $2.20 $3.40 $3.90 U.S. liquefied natural gas gross exports (billion cubic feet per day) 12 15 16 Shares of U.S. electricity generation Natural gas 42% 40% 40% Coal 16% 17% 16% Renewables 23% 24% 26% Nuclear 19% 18% 18% U.S. GDP (percentage change) 2.8% 1.8% 2.4% U.S. CO2 emissions (billion metric tons) 4.8 4.9 4.8 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Values in this table are rounded and may not match values in other tables in this report. • Global oil prices. We expect global oil inventories to rise through 2026, putting significant downward pressure on oil prices in the coming months. We forecast that the Brent crude oil price will fall to an average of $62 per barrel (b) in the fourth quarter of 2025 and $52/b in 2026. • Global oil production. Global liquid fuels production increases throughout the forecast, which we expect will drive inventory accumulation. Production growth is led by countries outside of OPEC+, where production rises by 2.0 million b/d in 2025 and by 0.7 million b/d in 2026. OPEC+ increases total liquids production by 0.6 million b",
+            "distance": 0.1382806897163391,
+            "source_id": "R1"
+          },
+          {
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "offset": 1281,
+            "publisher": "EIA",
+            "numeric_verified": false,
+            "published_at": "2025-10-07",
+            "page": 18,
+            "doc_id": "eia_2025_10",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:1281",
+            "text": "ption million barrels per day 3 forecast 3 2.3 world 2 other non-OECD Middle East 2 India 1.1 1.1 China 1.0 1 other OECD United States 1 0 -1 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025",
+            "distance": 0.13999539613723755,
+            "page_intro": "Organization of the Petroleum Exporting Countries (OPEC) surplus crude oil production capacity million barrels per day 6 forecast 5 2015-2024 average 4 3 2 1 0 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 Data source: U.S. Energy Information Administration, Short-Term Energy Outlook, October 2025 Note: Black line represents 2015-2024 average (2.9 million barrels per day). WorldWorld liquidliquidfuelsfuelsconsumptionconsumption ComponentsComponentsofofannualannualchangechange millionmillion barrelsbarrelsperperdayday millionmillion barrelsbarrelsperperdayday 108108 4.04.0 forecastforecast 106106 3.53.5 worldworld changechange 104104 3.03.0 OrganizationEconomicOrganizationEconomic forfor Cooperation Cooperation andand 102102 2.52.5 2.32.3 Development Development 100100",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:18:0",
+            "source_id": "R2"
+          },
+          {
+            "publisher": "EIA",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "published_at": "2025-10-07",
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "offset": 0,
+            "page": 33,
+            "numeric_verified": false,
+            "doc_id": "eia_2025_10",
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:33:0",
+            "text": "Table 2. Energy Prices U.S. Energy Information Administration | Short-Term Energy Outlook - October 2025 2024 2025 2026 Year Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 2024 2025 2026 Crude Oil (dollars per barrel) West Texas Intermediate Spot Average ............................ 77.50 81.77 76.43 70.74 71.85 64.63 65.79 58.05 47.97 48.33 48.68 49.00 76.60 65.00 48.50 Brent Spot Average ........................................................... 82.96 84.72 80.03 74.65 75.83 68.01 68.99 62.05 51.97 51.67 52.00 53.00 80.56 68.64 52.16 U.S. Imported Average ...................................................... 72.22 79.62 74.83 69.36 70.83 64.12 64.07 55.32 45.19 45.58 45.95 46.25 74.14 64.07 45.75 U.S. Refiner Average Acquisition Cost .............................. 76.42 81.76 76.98 71.39 72.63 65.59 65.61 57.21 47.24 47.60 47.93 48.25 76.63 65.24 47.76 U.S. Liquid Fuels (dollars per gallon) Wholesale Petroleum Product Prices Gasoline ....................................................................... 2.46 2.58 2.34 2.11 2.20 2.17 2.22 1.99 1.77 1.89 1.93 1.76 2.37 2.14 1.84 Diesel Fuel ................................................................... 2.70 2.51 2.31 2.23 2.39 2.18 2.38 2.34 2.06 1.95 2.07 2.10 2.43 2.32 2.04 Fuel Oil ........................................................................ 2.",
+            "distance": 0.14157116413116455,
+            "source_id": "R3"
+          },
+          {
+            "published_at": "2025-10-07",
+            "doc_id": "eia_2025_10",
+            "offset": 1604,
+            "title": "EIA Short-Term Energy Outlook — October 2025",
+            "page": 6,
+            "publisher": "EIA",
+            "numeric_verified": true,
+            "url": "https://www.eia.gov/outlooks/steo/archives/oct25.pdf",
+            "sha256": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755",
+            "chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:6:1604",
+            "text": "will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months, crude oil prices could be higher than in our forecast. However, a slowdown in China’s purchases of oil slated for inventory would likely put downward pressure on oil prices as more oil begins to show up in visible oil inventory data. Other factors also contribute to significant uncertainty in our price forecast. Although we do not forecast any major supply disruptions, risks to oil supply remain. The ongoing tensions and negotiations related to the Russia-Ukraine conflict could affect supply, while further sanctions could be enacted against purchasers of Russia’s oil. Geopolitical developments, including Ukraine’s attacks on Russia’s oil ports, have raised market concerns that oil production or exports could be disrupted. In addition, ongoing trade negotiations and legal challenges related to tariffs between the United States and its trading partners could affect economic and oil demand growth, with implications for oil prices. Lastly, given the expectations of significant oversupply beginning later this year, OPEC+ could revisit its plans for increased production, easing downward pressure on oil prices. Global oil consumption and production The planned increases to OPEC+ production and strong supply growth outside of the group continue to drive global liquid fuels production growth in our forecast. Forecast global liquid fuels production increases by 2.7 million b/d in 2025 and by another 1.3 million b/d in 2026. We expect countries outside of OPEC+ to lead our forecast total liquids production growth. Production from those countries rises by 2.0 million b/d in 2025, 0.3 million b/",
+            "distance": 0.1423545479774475,
+            "page_intro": "October 2025 Inventory builds in our forecast are significant even with our expectation that OPEC+ will produce below its targets in the coming months. Along with strong production growth among non-OPEC countries, the forecast increase in global oil inventories is based on the OPEC+ announcements to increase the group’s oil production. OPEC+ began increasing production in April 2025, and for much of this year, the group’s production has been close to its targets. Last month, the group increased production targets through October 2025, but there is uncertainty regarding some members’ ability to reach the targets given near- term limits on spare capacity. We completed modeling and analysis for this forecast before the October 5 OPEC+ announcement that the group would increase production",
+            "intro_chunk_id": "e5a35182d43c6a568d773d07a8e6381b4fed75eb1523de110f1af33a9d281755:6:0",
+            "source_id": "R4"
+          }
+        ],
+        "claims": [
+          {
+            "text": "Выдержка источника, не полный ответ: «will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months, crude oil prices could be higher than in our forecast. However, a slowdown in China’s purchases of oil slated for inventory would likely put downward pressure on oil prices as more oil begins to show up in visible oil inventory data. Other factors also contribute to significant uncertainty in our price forecast. Although we do not forecast any major supply disruptions, risks to oil supply remain. The ongoing tensions and negotiations related to the Russia-Ukraine conflict could affect supply, while fu»",
+            "source_id": "R4",
+            "quote": "will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months, crude oil prices could be higher than in our forecast. However, a slowdown in China’s purchases of oil slated for inventory would likely put downward pressure on oil prices as more oil begins to show up in visible oil inventory data. Other factors also contribute to significant uncertainty in our price forecast. Although we do not forecast any major supply disruptions, risks to oil supply remain. The ongoing tensions and negotiations related to the Russia-Ukraine conflict could affect supply, while fu",
+            "kind": "excerpt",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          },
+          {
+            "text": "LNG imports make up increasing share of Colombia's natural gas supply.",
+            "source_id": "W1",
+            "quote": "LNG imports make up increasing share of Colombia's natural gas supply.",
+            "kind": "fact",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          },
+          {
+            "text": "Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall.",
+            "source_id": "W1",
+            "quote": "Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall.",
+            "kind": "fact",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          },
+          {
+            "text": "A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation.",
+            "source_id": "W1",
+            "quote": "A potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation.",
+            "kind": "fact",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          },
+          {
+            "text": "Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.",
+            "source_id": "W1",
+            "quote": "Colombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño.",
+            "kind": "fact",
+            "value": "",
+            "unit": "",
+            "period": "",
+            "metric": "",
+            "geography": "",
+            "vintage": "",
+            "observation_type": "unspecified"
+          }
+        ],
+        "web_attempted": true,
+        "calculation": null,
+        "session_id": "bc2e8565-97ac-4915-9d87-8041d801b7eb",
+        "release": {
+          "release_id": "developer-seed",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 4
+          },
+          "identity": {
+            "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+            "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+            "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+          }
+        },
+        "resolved_question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026; а затем добавь последние новости EIA о природном газе за 7 дней. Раздели источники.",
+        "missing": [
+          "Полный ответ не подтверждён; показана проверенная выдержка"
+        ],
+        "recorded_at": "2026-11-02T15:11:01.766522+00:00",
+        "budget": {
+          "llm_calls": 4,
+          "tool_calls": 2,
+          "repairs": 1,
+          "unknown_cost_reservation": 0,
+          "input_tokens": 8590,
+          "output_tokens": 1251,
+          "elapsed_sec": 10.8042,
+          "estimated_cost": null,
+          "cost_currency": null,
+          "hard_money_guarantee": false,
+          "reservation_enabled": false,
+          "usage_complete": true,
+          "unknown_usage_calls": 0,
+          "events": [
+            {
+              "tool": "reports",
+              "at_sec": 2.6117
+            },
+            {
+              "tool": "web",
+              "at_sec": 2.6781
+            }
+          ]
+        },
+        "release_id": "developer-seed",
+        "versions": {
+          "provider": "gigachat",
+          "model": "GigaChat-2",
+          "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+          "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+          "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+        },
+        "trace_file": "2cf3aa0b-56ce-41f0-b1bd-83c1c1804ae8.json"
+      }
+    },
+    {
+      "case": "forecast",
+      "question": "Рассчитай новый прогноз Brent на 3 месяца с интервалами 80%, as_of 2026-10-01, история 2016-10-01 — 2026-09-30.",
+      "result": {
+        "question": "Рассчитай новый прогноз Brent на 3 месяца с интервалами 80%, as_of 2026-10-01, история 2016-10-01 — 2026-09-30.",
+        "request_id": "226271d4-6115-4722-9322-9eab0358e426",
+        "route": {
+          "intent": "forecast",
+          "freshness_required": false,
+          "horizon_months": 3,
+          "as_of": "2026-10-01",
+          "instrument": "Brent",
+          "start_date": "2016-10-01",
+          "end_date": "2026-09-30",
+          "metric": "",
+          "geography": "",
+          "reference_period": "",
+          "publishers": [],
+          "quote_requested": false,
+          "hybrid": false,
+          "report_query": "",
+          "compare": false,
+          "scenario_inputs": {},
+          "scenario_price": 0.0,
+          "scenario_supply_mbd": 0.0,
+          "scenario_cut_mbd": 0.0,
+          "demand_elasticity_low": 0.0,
+          "demand_elasticity_high": 0.0,
+          "supply_elasticity_low": 0.0,
+          "supply_elasticity_high": 0.0,
+          "web_query": ""
+        },
+        "status": "forecasted",
+        "answer": "Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2026-09. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.\n\nARIMA [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-10 | 121.33 | 104.15 | 141.34 |\n| 2026-11 | 123.34 | 96.37 | 157.86 |\n| 2026-12 | 123.89 | 89.90 | 170.75 |\n\nETS [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-10 | 114.28 | 105.43 | 123.88 |\n| 2026-11 | 114.41 | 104.70 | 125.01 |\n| 2026-12 | 114.53 | 102.56 | 127.89 |\n\nARIMA и ETS рассчитаны отдельно; выбор сделан на calibration, не на test.\n\nОграничения: Интервалы не охватывают все структурные и геополитические шоки. Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются. Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде.\n\n[F1] Исторический дневной ряд: EIA Europe Brent Spot Price FOB — daily historical observations, USD/bbl; средние по доступным наблюдениям месяца. Последнее дневное наблюдение: 2026-09-30. https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+        "warnings": [
+          "Интервалы не охватывают все структурные и геополитические шоки.",
+          "Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются.",
+          "Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде."
+        ],
+        "usage": {
+          "route": {
+            "output_tokens": 307,
+            "input_tokens": 893,
+            "total_tokens": 1200,
+            "input_token_details": {
+              "cache_read": 0
+            }
+          }
+        },
+        "evidence": [],
+        "forecast": {
+          "instrument": "Brent",
+          "price_type": "Europe spot FOB",
+          "unit": "USD/bbl",
+          "frequency": "monthly",
+          "point_estimate": "conditional median of monthly average",
+          "as_of": "2026-10-01",
+          "data_end": "2026-09",
+          "generated_at": "2026-11-02T15:11:05.358608+00:00",
+          "horizon_months": 3,
+          "interval_level": 0.8,
+          "selected_model": "ETS",
+          "implementation_sha256": "5172b954919a01278a5701f28974313565da07a68ca8687cdfb6190afab83bef",
+          "model_spec": {
+            "ARIMA": "(1,1,0), no drift, log(price)",
+            "ETS": "additive error and damped additive trend, no seasonality, log(price)"
+          },
+          "forecasts": {
+            "ARIMA": {
+              "interval_method": "model_based_log_gaussian",
+              "calibration_origins": 0,
+              "points": [
+                {
+                  "month": "2026-10",
+                  "value": 121.33269496652011,
+                  "lower": 104.15440139565224,
+                  "upper": 141.3442223331058
+                },
+                {
+                  "month": "2026-11",
+                  "value": 123.34406175922196,
+                  "lower": 96.37377134749686,
+                  "upper": 157.86201326921417
+                },
+                {
+                  "month": "2026-12",
+                  "value": 123.89237966937809,
+                  "lower": 89.89551651989008,
+                  "upper": 170.7462433540295
+                }
+              ]
+            },
+            "ETS": {
+              "interval_method": "absolute_log_error_quantile_by_horizon",
+              "calibration_origins": 12,
+              "points": [
+                {
+                  "month": "2026-10",
+                  "value": 114.28201729719487,
+                  "lower": 105.42529989696129,
+                  "upper": 123.8827823139329
+                },
+                {
+                  "month": "2026-11",
+                  "value": 114.40513403531503,
+                  "lower": 104.69636140944111,
+                  "upper": 125.01422702220218
+                },
+                {
+                  "month": "2026-12",
+                  "value": 114.52591711968121,
+                  "lower": 102.55716860458874,
+                  "upper": 127.89145674130117
+                }
+              ]
+            },
+            "naive": {
+              "interval_method": "absolute_log_error_quantile_by_horizon",
+              "calibration_origins": 12,
+              "points": [
+                {
+                  "month": "2026-10",
+                  "value": 114.15909090909093,
+                  "lower": 105.49139973333371,
+                  "upper": 123.53896213467416
+                },
+                {
+                  "month": "2026-11",
+                  "value": 114.15909090909093,
+                  "lower": 104.70638134168492,
+                  "upper": 124.46517461683845
+                },
+                {
+                  "month": "2026-12",
+                  "value": 114.15909090909093,
+                  "lower": 101.90816761231899,
+                  "upper": 127.88276290834517
+                }
+              ]
+            }
+          },
+          "backtest_by_horizon": {
+            "ARIMA": [
+              {
+                "horizon": 1,
+                "origins": 13,
+                "mae": 5.203988910455424,
+                "rmse": 9.311192594878682,
+                "coverage": 0.9230769230769231,
+                "mean_interval_width": 21.325013086326713
+              },
+              {
+                "horizon": 2,
+                "origins": 13,
+                "mae": 10.586850639981144,
+                "rmse": 16.755330325393224,
+                "coverage": 0.8461538461538461,
+                "mean_interval_width": 34.36070337167327
+              },
+              {
+                "horizon": 3,
+                "origins": 13,
+                "mae": 15.1979714774896,
+                "rmse": 22.4632224989166,
+                "coverage": 0.6923076923076923,
+                "mean_interval_width": 44.69862692165569
+              },
+              {
+                "horizon": 4,
+                "origins": 13,
+                "mae": 16.689202897326332,
+                "rmse": 24.312115217227117,
+                "coverage": 0.7692307692307693,
+                "mean_interval_width": 53.42642073270262
+              },
+              {
+                "horizon": 5,
+                "origins": 13,
+                "mae": 17.06159057539321,
+                "rmse": 24.51711133591603,
+                "coverage": 0.7692307692307693,
+                "mean_interval_width": 61.13122066947472
+              },
+              {
+                "horizon": 6,
+                "origins": 13,
+                "mae": 16.909587506361166,
+                "rmse": 23.79923408692478,
+                "coverage": 0.8461538461538461,
+                "mean_interval_width": 68.139948457909
+              }
+            ],
+            "ETS": [
+              {
+                "horizon": 1,
+                "origins": 13,
+                "mae": 6.08116175952974,
+                "rmse": 10.301258657378089,
+                "coverage": 0.7692307692307693,
+                "mean_interval_width": 11.371902741360966
+              },
+              {
+                "horizon": 2,
+                "origins": 13,
+                "mae": 10.170397351801322,
+                "rmse": 16.99974040800206,
+                "coverage": 0.6153846153846154,
+                "mean_interval_width": 12.506923549754855
+              },
+              {
+                "horizon": 3,
+                "origins": 13,
+                "mae": 13.993484116992835,
+                "rmse": 21.54438059919673,
+                "coverage": 0.6923076923076923,
+                "mean_interval_width": 15.581170931582772
+              },
+              {
+                "horizon": 4,
+                "origins": 13,
+                "mae": 15.52109946050688,
+                "rmse": 23.16754810253934,
+                "coverage": 0.6153846153846154,
+                "mean_interval_width": 16.493121813204798
+              },
+              {
+                "horizon": 5,
+                "origins": 13,
+                "mae": 15.885900223247758,
+                "rmse": 23.504665046859696,
+                "coverage": 0.38461538461538464,
+                "mean_interval_width": 14.691848383117286
+              },
+              {
+                "horizon": 6,
+                "origins": 13,
+                "mae": 17.478757511406883,
+                "rmse": 23.808464026048842,
+                "coverage": 0.46153846153846156,
+                "mean_interval_width": 16.130161900245223
+              }
+            ],
+            "naive": [
+              {
+                "horizon": 1,
+                "origins": 13,
+                "mae": 6.088170662670677,
+                "rmse": 10.313644716466925,
+                "coverage": 0.7692307692307693,
+                "mean_interval_width": 11.12927164804798
+              },
+              {
+                "horizon": 2,
+                "origins": 13,
+                "mae": 10.185299377205572,
+                "rmse": 17.00397774680926,
+                "coverage": 0.6153846153846154,
+                "mean_interval_width": 12.18452514010837
+              },
+              {
+                "horizon": 3,
+                "origins": 13,
+                "mae": 13.961185505569945,
+                "rmse": 21.522822669248917,
+                "coverage": 0.6923076923076923,
+                "mean_interval_width": 16.017582905052805
+              },
+              {
+                "horizon": 4,
+                "origins": 13,
+                "mae": 15.47632293335955,
+                "rmse": 23.1376746037546,
+                "coverage": 0.6153846153846154,
+                "mean_interval_width": 15.518363111865325
+              },
+              {
+                "horizon": 5,
+                "origins": 13,
+                "mae": 15.832310163520686,
+                "rmse": 23.481631794379084,
+                "coverage": 0.38461538461538464,
+                "mean_interval_width": 13.67815409359412
+              },
+              {
+                "horizon": 6,
+                "origins": 13,
+                "mae": 17.52392889261768,
+                "rmse": 23.83543973380595,
+                "coverage": 0.46153846153846156,
+                "mean_interval_width": 14.813537161293631
+              }
+            ]
+          },
+          "selection_relative_error": {
+            "ARIMA": 0.0677100231955222,
+            "ETS": 0.06551604940868104
+          },
+          "backtest_protocol": {
+            "calibration_origins": 12,
+            "test_origins": 13,
+            "calibration_last_target": "2025-03",
+            "first_test_training_end": "2025-03"
+          },
+          "data_source": {
+            "instrument": "Brent",
+            "price_type": "Europe spot FOB",
+            "unit": "USD/bbl",
+            "source_url": "https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+            "retrieved_at": "2026-11-01T16:29:54.735446+00:00",
+            "raw_sha256": "c7c1e1eeb321fa5982f74747886963b35bd2df3c2f63960271c353421d5830ca",
+            "sha256": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473",
+            "kind": "historical_time_series",
+            "title": "EIA Europe Brent Spot Price FOB — daily historical observations",
+            "coverage": [
+              [
+                "1987-05-20",
+                "2026-10-27"
+              ]
+            ],
+            "provenance_entries": 1,
+            "provenance_sha256": "2237a068ec5162e112f4652812246daf6ac1ea58337597d4c124d46c7f206819"
+          },
+          "data_cache": {
+            "state": "hit",
+            "network_used": false,
+            "requested": [
+              "2016-10-01",
+              "2026-09-30"
+            ],
+            "missing": [],
+            "requested_from_provider": [],
+            "errors": [],
+            "snapshot": "a858eeaaaaa6d401054f71c73dcd4ea356030625a159dc40b10777d6f7460ac3",
+            "complete": true
+          },
+          "data_coverage": {
+            "last_observation": "2026-09-30",
+            "last_month_observations": 22,
+            "last_month_weekday_coverage": 1.0,
+            "minimum_weekday_coverage": 0.8095238095238095,
+            "requested_start_date": "2016-10-01",
+            "requested_end_date": "2026-09-30",
+            "effective_start_month": "2016-10",
+            "expected_end_month": "2026-09"
+          },
+          "warnings": [
+            "Интервалы не охватывают все структурные и геополитические шоки.",
+            "Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются.",
+            "Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде."
+          ]
+        },
+        "session_id": "1d35c845-4f51-442e-8c3c-b7104dc5afd9",
+        "release": {
+          "release_id": "developer-seed",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 4
+          },
+          "identity": {
+            "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+            "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+            "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+          }
+        },
+        "resolved_question": "Рассчитай новый прогноз Brent на 3 месяца с интервалами 80%, as_of 2026-10-01, история 2016-10-01 — 2026-09-30.",
+        "recorded_at": "2026-11-02T15:11:05.359134+00:00",
+        "budget": {
+          "llm_calls": 1,
+          "tool_calls": 1,
+          "repairs": 0,
+          "unknown_cost_reservation": 0,
+          "input_tokens": 893,
+          "output_tokens": 307,
+          "elapsed_sec": 3.5621,
+          "estimated_cost": null,
+          "cost_currency": null,
+          "hard_money_guarantee": false,
+          "reservation_enabled": false,
+          "usage_complete": true,
+          "unknown_usage_calls": 0,
+          "events": [
+            {
+              "tool": "forecast",
+              "at_sec": 2.6249
+            }
+          ]
+        },
+        "release_id": "developer-seed",
+        "versions": {
+          "provider": "gigachat",
+          "model": "GigaChat-2",
+          "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+          "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+          "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+        },
+        "trace_file": "226271d4-6115-4722-9322-9eab0358e426.json"
+      }
+    },
+    {
+      "case": "out_of_scope",
+      "question": "Напиши рецепт борща.",
+      "result": {
+        "question": "Напиши рецепт борща.",
+        "request_id": "c6deeb80-6797-438e-8200-9b4472d8ed65",
+        "route": {
+          "intent": "out_of_scope",
+          "freshness_required": false,
+          "horizon_months": 0,
+          "as_of": "",
+          "instrument": "",
+          "start_date": "",
+          "end_date": "",
+          "metric": "",
+          "geography": "",
+          "reference_period": "",
+          "publishers": [],
+          "quote_requested": false,
+          "hybrid": false,
+          "report_query": "",
+          "compare": false,
+          "scenario_inputs": {},
+          "scenario_price": 0.0,
+          "scenario_supply_mbd": 0.0,
+          "scenario_cut_mbd": 0.0,
+          "demand_elasticity_low": 0.0,
+          "demand_elasticity_high": 0.0,
+          "supply_elasticity_low": 0.0,
+          "supply_elasticity_high": 0.0,
+          "web_query": ""
+        },
+        "status": "out_of_scope",
+        "answer": "Я отвечаю на вопросы нефтегазового рынка.",
+        "warnings": [],
+        "usage": {
+          "route": {
+            "output_tokens": 276,
+            "input_tokens": 94,
+            "total_tokens": 370,
+            "input_token_details": {
+              "cache_read": 749
+            }
+          }
+        },
+        "evidence": [],
+        "session_id": "9435cf65-7d34-4818-83c0-499e9f70d851",
+        "release": {
+          "release_id": "developer-seed",
+          "policy": {
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 4
+          },
+          "identity": {
+            "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+            "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+            "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+          }
+        },
+        "resolved_question": "Напиши рецепт борща.",
+        "recorded_at": "2026-11-02T15:11:07.905561+00:00",
+        "budget": {
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "repairs": 0,
+          "unknown_cost_reservation": 0,
+          "input_tokens": 94,
+          "output_tokens": 276,
+          "elapsed_sec": 2.5281,
+          "estimated_cost": null,
+          "cost_currency": null,
+          "hard_money_guarantee": false,
+          "reservation_enabled": false,
+          "usage_complete": true,
+          "unknown_usage_calls": 0,
+          "events": []
+        },
+        "release_id": "developer-seed",
+        "versions": {
+          "provider": "gigachat",
+          "model": "GigaChat-2",
+          "core_source_sha256": "19e6292b9277b846a3a95b4b2642d9137841c71719f18852d99e764344d70480",
+          "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+          "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+        },
+        "trace_file": "c6deeb80-6797-438e-8200-9b4472d8ed65.json"
+      }
+    }
+  ]
+}

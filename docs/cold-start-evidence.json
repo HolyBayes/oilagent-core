@@ -1,0 +1,8 @@
+{
+  "storage": "/tmp/oilagent-cold-81vacs10",
+  "empty_application_data": true,
+  "cached_build_layers_allowed": true,
+  "llm_calls": 0,
+  "bootstrap_passed": true,
+  "exit_code": 0
+}

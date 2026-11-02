@@ -1,0 +1,396 @@
+{
+  "release_id": "6186663affd0ec07f4cc2faad780ae44f3907a58df81279cc68c8cb39bbc6687",
+  "reviews": {
+    "oil_forecast": "reused_exact_review",
+    "oilgas_analyst": {
+      "skill": "oilgas_analyst",
+      "status": "clean",
+      "content_hash": "fc728211e100d3d5e27905dd10b656218e9f5ad903b0a82adc59b7005319f3e5",
+      "reviewer_models": [
+        "gigachat/GigaChat-2 [oilagent-reviewer]"
+      ],
+      "review_profile": "",
+      "findings": [],
+      "panel": {
+        "seats": 1,
+        "additional_seats": 0,
+        "distinct_models": 1,
+        "observed_unknown_seats": 0,
+        "distinct_engines": 1,
+        "single_model_panel": true,
+        "composition": "full_pool",
+        "reason": "",
+        "reason_missing": false,
+        "chosen_by": "owner",
+        "assigned": [
+          "oilagent-reviewer"
+        ],
+        "additional": [],
+        "not_reached": [],
+        "pool": [
+          {
+            "seat_id": "oilagent-reviewer",
+            "model": "gigachat::GigaChat-2",
+            "effort": "medium",
+            "delivery": "packet",
+            "route": "api_chat"
+          }
+        ],
+        "pool_empty": false,
+        "main_self_review": false,
+        "strictness": "blocking",
+        "widened_from": [],
+        "reviewers_subset_ignored": false,
+        "reviewers_requested": [],
+        "coupling_only": [],
+        "coupling_only_ignored": [],
+        "reviewer_effort": {
+          "order": "",
+          "applied": [],
+          "not_applied": [],
+          "weaker_than_configured": []
+        }
+      },
+      "raw_actor_records": [
+        {
+          "model_id": "gigachat/GigaChat-2",
+          "status": "responded",
+          "slot_id": "oilagent-reviewer",
+          "additional": false,
+          "parsed_items": [],
+          "operation_state": "settled",
+          "late_result_pending": false,
+          "usage": {
+            "resolved_model": "gigachat/GigaChat-2"
+          },
+          "cost_usd": null,
+          "cost_kind": "unknown"
+        }
+      ],
+      "advisory_result": {},
+      "error": "",
+      "review_gate": {
+        "status": "clean",
+        "stale": false,
+        "executable_review": true,
+        "blocking_reason": "ready",
+        "review_enforcement": "blocking",
+        "summary": "Review is executable: verdict clean.",
+        "preflight_failed": false,
+        "preflight_failed_stale": false
+      },
+      "executable_review": true,
+      "auto_flow": false,
+      "auto_granted_keys": [],
+      "requested_keys": [],
+      "auto_granted_permissions": [],
+      "requested_permissions": [],
+      "deps_status": "not_required",
+      "deps_error": "",
+      "extension_action": "extension_inactive",
+      "extension_reason": "not_extension",
+      "extension_process": "server",
+      "extension_server_reconcile": "",
+      "extension_load_error": null,
+      "extension_live_loaded": false,
+      "turn_on_when_ready": "not_requested",
+      "record_id": "rl-20261102T150957-69216f962556",
+      "paid": true,
+      "seats": [
+        {
+          "seat_id": "oilagent-reviewer",
+          "model": "gigachat/GigaChat-2",
+          "route": "api_chat",
+          "delivery": "packet",
+          "payload_form": "inline",
+          "brief_chars": 186714,
+          "status": "responded",
+          "coverage": "unobserved",
+          "cost_usd": null,
+          "cost_kind": "unknown",
+          "additional": false
+        }
+      ],
+      "governance": {
+        "packet": {
+          "manifest": [
+            {
+              "path": "docs/CHECKLISTS.md",
+              "tier": 1,
+              "disposition": "inline",
+              "chars": 39706,
+              "reason": "applicable skill checklist section (skill layer), supplied by the surface"
+            },
+            {
+              "path": "docs/CHECKLISTS.md#Shared Contract Ownership",
+              "tier": 1,
+              "disposition": "not_applicable",
+              "chars": 0,
+              "reason": "a rule of this repository's own code; a skill payload is not it"
+            },
+            {
+              "path": "BIBLE.md",
+              "tier": 1,
+              "disposition": "inline",
+              "chars": 47015,
+              "reason": "tier 1: every reviewer carries it"
+            },
+            {
+              "path": "docs/CHECKLISTS_ARCHIVE.md",
+              "tier": 1,
+              "disposition": "not_applicable",
+              "chars": 0,
+              "reason": "standing disclosures of the body's own changes; not a skill rule"
+            },
+            {
+              "path": "docs/architecture/10-key-invariants.md",
+              "tier": 2,
+              "disposition": "inline",
+              "chars": 17998,
+              "reason": "tier 2: binds what a skill may touch (the chapters the checklist names)"
+            },
+            {
+              "path": "docs/architecture/12-host-service-companions-and-chat-ids.md",
+              "tier": 2,
+              "disposition": "inline",
+              "chars": 17673,
+              "reason": "tier 2: binds what a skill may touch (the chapters the checklist names)"
+            },
+            {
+              "path": "docs/architecture/13-external-skills-layer.md",
+              "tier": 2,
+              "disposition": "inline",
+              "chars": 9965,
+              "reason": "tier 2: binds what a skill may touch (the chapters the checklist names)"
+            },
+            {
+              "path": "docs/development/03-module-size-and-complexity.md",
+              "tier": 2,
+              "disposition": "inline",
+              "chars": 16589,
+              "reason": "tier 2: binds what a skill may touch (the chapters the checklist names)"
+            },
+            {
+              "path": "ouroboros/contracts/plugin_api.py",
+              "tier": 2,
+              "disposition": "navigation",
+              "chars": 22327,
+              "reason": "tier 2 by manifest facts: not an extension and the manifest declares no host-mediated capability"
+            },
+            {
+              "path": "ouroboros/extension_ui_validation.py",
+              "tier": 2,
+              "disposition": "navigation",
+              "chars": 42877,
+              "reason": "tier 2 by manifest facts: not an extension and the manifest declares no UI surface"
+            },
+            {
+              "path": "docs/DEVELOPMENT.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 0,
+              "reason": "book navigation; a chapter not required above is one read away"
+            },
+            {
+              "path": "docs/development/01-role-and-authority.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 1202,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/02-naming-and-boundaries.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 29076,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/04-core-governance-artifacts.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 11565,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/05-review-and-commit-protocol.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 12271,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/06-rules-by-change-class.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 71047,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/07-managed-update-rule.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 3789,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/08-mutation-attribution-rule.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 2863,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/09-process-custody-rule.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 6424,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/10-platform-abstraction-rule.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 2937,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/11-design-system.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 19845,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/12-mcp-client-integration.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 2145,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/13-gateway-boundary-pattern.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 2171,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/development/14-build-and-ci.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 19586,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/ARCHITECTURE.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 0,
+              "reason": "book navigation; a chapter not required above is one read away"
+            },
+            {
+              "path": "docs/architecture/01-high-level-architecture.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 109761,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/02-startup-onboarding-flow.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 20632,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/03-web-ui-pages-and-buttons.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 60778,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/04-server-api-endpoints.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 22234,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/05-supervisor-loop.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 25778,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/06-agent-core.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 191994,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/07-configuration.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 31453,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/08-git-branching-ci-and-build.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 19949,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/09-shutdown-and-process-cleanup.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 13099,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/architecture/11-frozen-contracts-v1.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 21189,
+              "reason": "the map is never inlined whole"
+            },
+            {
+              "path": "docs/CREATING_SKILLS.md",
+              "tier": 3,
+              "disposition": "navigation",
+              "chars": 155630,
+              "reason": "the skill author's guide: its heading map"
+            }
+          ],
+          "owed_chars": 148946
+        }
+      },
+      "job_id": "skill-job-65e011c0cb694b7c9b4499a516ebf4b2",
+      "group_id": "manual:oilgas_analyst",
+      "review_round": 3,
+      "snapshot_attempt": 1,
+      "snapshot_revised": true,
+      "task_id": "api_skill_review",
+      "root_task_id": "",
+      "origin_task_id": "",
+      "origin_root_task_id": "",
+      "presentation_owner_task_id": "",
+      "chat_id": 0,
+      "source": "skills",
+      "terminal_reason": "succeeded",
+      "executions": [
+        {
+          "kind": "api",
+          "model": "gigachat/GigaChat-2"
+        }
+      ]
+    },
+    "report_rag": "reused_exact_review",
+    "web_research": "reused_exact_review"
+  }
+}

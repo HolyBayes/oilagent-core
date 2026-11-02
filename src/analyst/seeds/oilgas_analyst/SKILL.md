@@ -1,7 +1,7 @@
 ---
 name: oilgas_analyst
 description: Coordinate oil/gas analysis, specialist delegation and explicitly requested skill/policy experiments.
-version: 0.5.0
+version: 0.5.1
 type: instruction
 always_in_context: true
 os: any
@@ -18,7 +18,12 @@ SKILL.md. Reports and price history are already available through Analyst MCP;
 do not ask for uploads. A forecast quoted from a report is a report question;
 a newly calculated forecast uses forecast with asset="brent" directly. Never invent prices.
 
-For a simple task call the matching MCP directly. For a compound investigation,
+For ordinary factual oil/gas questions call answer_question with the original question.
+It searches reports first, uses sufficient report evidence as primary and adds web
+only for missing evidence or requested freshness. Do not start ordinary factual
+questions with direct web search. Direct web is for explicitly fresh news; direct
+market_quote is for current quotes; direct forecast is for new calculations.
+Keep report and web attribution separate. For a compound investigation,
 use native schedule_subagent with an available report-analyst, web-analyst or
 forecast-analyst row (the catalog may show model~row-id). Give each child a
 focused question, expected_output, role and the relevant skill name. Keep

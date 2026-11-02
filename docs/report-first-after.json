@@ -1,0 +1,8 @@
+{
+  "task_id": "99c438e68ea946fc",
+  "status": "completed",
+  "result": "Не удалось подтвердить ответ по источникам. Непроверенные цифры не приводятся.",
+  "prompt_tokens": 43669,
+  "completion_tokens": 204,
+  "total_rounds": 1
+}

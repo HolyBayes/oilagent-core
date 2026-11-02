@@ -269,3 +269,20 @@ def test_typed_skill_api_builds_frontmatter_without_model_yaml():
     assert not parsed["always_in_context"]
     with pytest.raises(ValueError, match="version"):
         instruction_manifest("brent_forecast", "forecast", "1", "body")
+
+
+def test_primary_analyst_tools_are_loaded_even_when_marked_on_demand():
+    module = runpy.run_path(str(CORE_ROOT / "scripts/native_ouroboros.py"))
+    names = {
+        "mcp_analyst__answer_question",
+        "mcp_analyst__forecast",
+        "mcp_analyst__search_web_sources",
+    }
+    registry = SimpleNamespace(
+        schemas=lambda: [{"function": {"name": n}} for n in names],
+        on_demand_schema_names=lambda: names,
+    )
+    assert module["pinned_schema_names"](registry) == {
+        "mcp_analyst__answer_question",
+        "mcp_analyst__forecast",
+    }

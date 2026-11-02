@@ -1,0 +1,9 @@
+{
+  "task_id": "5aac1618f50b4b31",
+  "status": "completed",
+  "result": "We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. [R1]\n\n\nИсточники:\n\n[R1] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6\n\nЗапрос: `8aeb7e7b-8532-4b8a-8f2c-c85a18cd6ee9`; статус: `partial`.",
+  "prompt_tokens": 90162,
+  "completion_tokens": 327,
+  "total_rounds": 3,
+  "analyst_trace_exists": true
+}

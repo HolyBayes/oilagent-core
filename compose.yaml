@@ -46,6 +46,8 @@ services:
       USER_FILES_PATH: /files
       WORKSPACE_PATH: /app/workspace/runtime
       RELEASE_PATH: /releases
+      HF_HOME: /tmp/huggingface
+      HF_XET_CACHE: /tmp/hf-xet
       RUNNER_URL: http://executor:8013
       RUNNER_TOKEN: ${RUNNER_TOKEN:?Set RUNNER_TOKEN in .env}
     depends_on: [executor]
