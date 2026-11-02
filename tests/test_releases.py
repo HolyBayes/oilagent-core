@@ -102,3 +102,10 @@ def test_interrupted_release_reconciles_before_retry(reviewed, monkeypatch):
     rid = active_release()["release_id"]
     monkeypatch.setattr(backend, "save", save)
     assert publish(backend, state["candidate_id"], state["candidate_sha"], "test operator") == rid
+
+
+def test_rollback_to_seed_before_first_release_is_idempotent(tmp_path, monkeypatch):
+    monkeypatch.setenv("RELEASE_PATH", str(tmp_path / "new-releases"))
+    assert rollback("developer-seed") == "developer-seed"
+    assert rollback("developer-seed") == "developer-seed"
+    assert active_release()["release_id"] == "developer-seed"

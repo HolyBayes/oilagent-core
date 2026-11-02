@@ -9,7 +9,7 @@ from langgraph.graph import END, START, StateGraph
 
 from analyst.budget import Budget, BudgetExceeded, current_budget, tool_call
 from analyst.config import StructuredOutputError, invoke_structured, model_ready
-from analyst.contracts import ReportDraft, Route
+from analyst.contracts import ReportClaim, ReportDraft, Route
 from analyst.evidence import (
     compare_claims,
     fit_context,
@@ -161,6 +161,8 @@ def synthesize(messages):
         draft, usage = invoke_structured(ReportDraft, messages)
         return draft, usage, False
     except StructuredOutputError:
+        if current_budget.get():
+            current_budget.get().repair()
         retry_messages = [*messages]
         retry_messages[0] = (
             "system",
@@ -180,16 +182,36 @@ def report_question(state):
     ].strip(" ;")
 
 
+def extractive_fallback(state, reason):
+    claims = []
+    for source in state.get("evidence", []):
+        quote = source.get("text", "")[:750]
+        if not quote:
+            continue
+        claim = ReportClaim(
+            kind="excerpt",
+            text="Выдержка источника, не полный ответ: «" + quote + "»",
+            source_id=source["source_id"],
+            quote=quote,
+        )
+        accepted, _ = validate_claims(ReportDraft(claims=[claim], abstain=False), [source])
+        if accepted:
+            claims.extend(accepted)
+            break
+    return {
+        "status": "partial" if claims else "insufficient_evidence",
+        "claims": claims,
+        "answer": render_answer(claims, state.get("evidence", [])),
+        "missing": ["Полный ответ не подтверждён; показана проверенная выдержка"],
+        "warnings": [reason, "extractive_fallback"],
+    }
+
+
 def source_response(state):
     try:
         return respond(state)
     except Exception as exc:
-        return {
-            "status": "insufficient_evidence",
-            "claims": [],
-            "missing": ["Часть ответа недоступна: " + type(exc).__name__],
-            "warnings": ["source_synthesis_error:" + type(exc).__name__],
-        }
+        return extractive_fallback(state, "source_synthesis_error:" + type(exc).__name__)
 
 
 def respond_hybrid(state):
@@ -204,7 +226,7 @@ def respond_hybrid(state):
         "compare": False,
         "publishers": route.get("publishers", []),
     }
-    common = {**state, "route": source_route}
+    common = {**state, "route": source_route, "web_attempted": True}
     report = source_response(
         {
             **common,
@@ -424,6 +446,8 @@ def respond(state: State) -> dict:
         claims, warnings = validate_claims(draft, state["evidence"])
         if warnings and not draft.abstain and not parse_repaired:
             try:
+                if current_budget.get():
+                    current_budget.get().repair()
                 repaired, repair_usage = invoke_structured(
                     ReportDraft,
                     [
@@ -468,6 +492,11 @@ def respond(state: State) -> dict:
                 k: usage.get(k, 0) + repair_usage.get(k, 0)
                 for k in ("input_tokens", "output_tokens", "total_tokens")
             }
+        if not claims and state.get("web_attempted"):
+            fallback = extractive_fallback(state, "synthesis_abstained_or_invalid")
+            key = "web_synthesis" if "synthesis" in state.get("usage", {}) else "synthesis"
+            fallback["usage"] = {**state.get("usage", {}), key: usage}
+            return fallback
         missing = list(draft.missing)
         kinds = {("web" if c["source_id"].startswith("W") else "report") for c in claims}
         if state["route"].get("hybrid") and kinds != {"report", "web"}:
@@ -618,11 +647,14 @@ def answer_question(question: str, session_id: str = "") -> dict:
                 warnings=[*state.get("warnings", []), f"budget_exceeded:{exc}"],
             )
         except Exception as exc:
-            state.update(
-                status="failed",
-                answer="Модель недоступна или вернула неподдерживаемый формат.",
-                warnings=[*state.get("warnings", []), f"model_error:{type(exc).__name__}"],
-            )
+            if state.get("evidence"):
+                state.update(extractive_fallback(state, "model_error:" + type(exc).__name__))
+            else:
+                state.update(
+                    status="failed",
+                    answer="Модель недоступна или вернула неподдерживаемый формат.",
+                    warnings=[*state.get("warnings", []), f"model_error:{type(exc).__name__}"],
+                )
         finally:
             current_budget.reset(token)
         if reset:

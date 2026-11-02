@@ -1,29 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="450" viewBox="20 5 555 250">
-<title>OilAgent: serving and controlled evolution</title>
-<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#243444"/></marker></defs>
-<rect x="20" y="5" width="555" height="250" fill="white"/>
-<rect x="40" y="35" width="145" height="42" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="47" y="60" font-family="Arial, sans-serif" font-size="9" fill="#243444">Streamlit / руководитель</text>
-<rect x="225" y="35" width="150" height="42" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="232" y="60" font-family="Arial, sans-serif" font-size="9" fill="#243444">LangGraph core / serving</text>
-<rect x="415" y="35" width="140" height="42" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="422" y="60" font-family="Arial, sans-serif" font-size="9" fill="#243444">PDF / web / forecast</text>
-<rect x="40" y="110" width="145" height="44" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="47" y="135" font-family="Arial, sans-serif" font-size="9" fill="#243444">Ouroboros + MCP clients</text>
-<rect x="225" y="110" width="150" height="44" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="232" y="135" font-family="Arial, sans-serif" font-size="9" fill="#243444">Evolution MCP / candidate</text>
-<rect x="415" y="110" width="140" height="44" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="422" y="135" font-family="Arial, sans-serif" font-size="9" fill="#243444">Trusted runner / eval + critic</text>
-<rect x="225" y="185" width="150" height="44" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="232" y="210" font-family="Arial, sans-serif" font-size="9" fill="#243444">Developer Git / core + tests</text>
-<rect x="415" y="185" width="140" height="44" rx="5" fill="#eff4f9" stroke="#597a9c"/>
-<text x="422" y="210" font-family="Arial, sans-serif" font-size="9" fill="#243444">Human / approved bundle</text>
-<path d="M185 56 L225 56" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M375 56 L415 56" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M185 132 L225 132" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M375 132 L415 132" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M112 110 L225 77" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M485 154 L485 185" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M375 207 L415 207" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-<path d="M415 195 L397 195 L397 77 L375 77" fill="none" stroke="#243444" stroke-width=".8" marker-end="url(#arrow)"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="340" viewBox="0 0 740 340">
+<rect width="740" height="340" fill="white"/>
+<g font-family="Arial,sans-serif" fill="#172033">
+<rect x="15" y="25" width="205" height="85" rx="8" fill="#eaf5ef" stroke="#2f7757"/>
+<text x="30" y="53" font-size="18">Native Ouroboros UI</text><text x="30" y="80" font-size="14">Main + reviewed skill</text><text x="30" y="99" font-size="14">Canonical core answer</text>
+<rect x="267" y="25" width="205" height="85" rx="8" fill="#eaf5ef" stroke="#2f7757"/>
+<text x="282" y="53" font-size="18">Analyst MCP / graph</text><text x="282" y="80" font-size="14">Sessions, claims, budgets</text><text x="282" y="99" font-size="14">Traces and feedback</text>
+<rect x="519" y="25" width="205" height="85" rx="8" fill="#eaf5ef" stroke="#2f7757"/>
+<text x="534" y="53" font-size="18">PDF / web / models</text><text x="534" y="80" font-size="14">ARIMA, ETS, scenario</text><text x="534" y="99" font-size="14">Quotes + history cache</text>
+<rect x="15" y="205" width="205" height="85" rx="8" fill="#edf2fa" stroke="#426a95"/>
+<text x="30" y="233" font-size="18">Evolution MCP / Git</text><text x="30" y="260" font-size="14">Bounded policy candidate</text><text x="30" y="279" font-size="14">No shell or release tool</text>
+<rect x="267" y="205" width="205" height="85" rx="8" fill="#fff5df" stroke="#a7731d"/>
+<text x="282" y="233" font-size="18">Fixed eval + critic</text><text x="282" y="260" font-size="14">Gain AND no regression</text><text x="282" y="279" font-size="14">Else reject, keep baseline</text>
+<rect x="519" y="205" width="205" height="85" rx="8" fill="#edf2fa" stroke="#426a95"/>
+<text x="534" y="233" font-size="18">Operator release</text><text x="534" y="260" font-size="14">Exact SHA / atomic bundle</text><text x="534" y="279" font-size="14">Read-only serving / rollback</text>
+<path d="M220 67 H260 M472 67 H512 M117 110 V198 M220 247 H260" fill="none" stroke="#445466" stroke-width="2"/>
+<path d="M472 247 H512" fill="none" stroke="#445466" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M621 205 V151 H370 V116" fill="none" stroke="#445466" stroke-width="2"/>
+<text x="448" y="143" font-size="13">approved policy only</text>
+<text x="15" y="325" font-size="14">Latest native candidate: REJECTED for a validation regression. Serving policy unchanged.</text>
+</g></svg>

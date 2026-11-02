@@ -59,3 +59,11 @@ Offline HTTP smoke через немодифицированный Ouroboros MCP
 Более ранняя текущая проверка GigaChat: PDF-ответ с цитатой, сверенной с оригинальным EIA PDF; web вернул `needs_web` из-за DDGSException. [Результаты](gigachat-smoke-evidence.json): 3849 токенов. Forecast-проверка: ещё 575. Сумма этих прямых проверок — **4424 токена**, без последующих расходов native UI и не глобальный расход аккаунта.
 
 Первичные интерфейсы: [statsmodels ARIMA](https://www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.html), [ETSModel](https://www.statsmodels.org/stable/generated/statsmodels.tsa.exponential_smoothing.ets.ETSModel.html).
+
+## Дополнение 2 ноября 2026
+
+Расчётный модуль дополнен отдельным `supply_cut` tool: P0, Q0 и cut, интервалы отрицательной demand elasticity и неотрицательной supply elasticity, явные пользовательские assumptions. Проверяются finite inputs, cut < Q0, знаки и порядок границ. Цена и объёмы не берутся из фантазии LLM; отсутствующие inputs ведут к уточнению. Результат — conditional sensitivity, не confidence interval и не causal forecast.
+
+`market_quote` возвращает delayed Brent/WTI futures price с timestamp/exchange/unit/type из Yahoo chart metadata. Историческая EIA spot, опубликованный прогноз PDF и биржевая котировка показываются раздельно. Описание типа/задержки источника: [Yahoo Brent futures](https://finance.yahoo.com/quote/BZ%3DF/). Живой вызов и два метода в Linux проверены; примеры — examples/demo_dialogues.md и deployment-evidence.json.
+
+Native UI передаёт canonical forecast result без нового пересказа происхождения данных. Ошибка прежнего UI-прогона исправлена и отдельно проверена: native-delivery-evidence.json. Успех отдельного расчёта не доказывает будущую точность модели; недостаточное ETS coverage и преимущество naive не скрыты.

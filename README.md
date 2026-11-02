@@ -1,172 +1,132 @@
-# OilAgent — аналитик публичных отчётов
+# OilAgent
 
-Прототип тестового задания «Нефтегазовый аналитик»: LangGraph, локальный поиск по двум публичным PDF OPEC/EIA, ответы с цитатами, два HTTP MCP-сервиса и Git backend кандидатов самоулучшения. Бесплатный web-поиск через DuckDuckGo дополняет отчёты и обслуживает свежие запросы. ARIMA и ETS рассчитывают Brent forecast через общий graph и MCP. Штатный UI Ouroboros подключён; проверка частичная: его финальный пересказ может неверно назвать источник расчёта. Сценарный расчёт, blind eval и выпуск релизов ещё не реализованы. Недостаток данных приводит к отказу от ответа. Текущий корпус — исторические отчёты за октябрь 2025, а не актуальная рыночная картина.
+Нефтегазовый аналитик для публичных данных: native UI Ouroboros → Analyst MCP → LangGraph, локальный RAG OPEC/EIA, web, расчётные ARIMA/ETS и сценарии сокращения добычи. Отдельный Evolution MCP создаёт Git-кандидатов ограниченной retrieval-policy; оценка, critic и операторский выпуск отделены от аналитики.
 
-Архитектура: [ARCHITECTURE.md](ARCHITECTURE.md). Фактические результаты: [docs/INTEGRATION_STATUS.md](docs/INTEGRATION_STATUS.md).
+Фактический статус и ограничения: [INTEGRATION_STATUS](docs/INTEGRATION_STATUS.md). Краткий отчёт: [ARCHITECTURE_SUMMARY](docs/ARCHITECTURE_SUMMARY.md). Архитектура: [ARCHITECTURE.md](ARCHITECTURE.md). Реальные примеры: [demo_dialogues](examples/demo_dialogues.md).
 
-## Поиск по PDF
+## Запуск одной командой
 
-После установки зависимостей из core/:
-
-```bash
-python scripts/index_reports.py --download
-python scripts/index_reports.py --query 'Что EIA прогнозировало для Brent в отчёте за октябрь 2025?'
-python scripts/eval_reports.py
-python scripts/eval_reports.py --split holdout
-```
-
-Первый запуск скачивает фиксированные PDF и модель `intfloat/multilingual-e5-small` на точной revision. Embeddings считаются локально на CPU; GigaChat для индексации и поиска не используется. Повторная индексация не пересчитывает неизменившийся корпус; после загрузки модели поиск работает без сети. PDF, веса и Chroma находятся в ignored `workspace/`. URL, SHA256 и метаданные закреплены в `data/reports.json`; веса — в `config/embedding.json`. Пути и `RAG_TOP_K` настраиваются через system env / `.env.example`.
-
-Analyst MCP предоставляет `search_reports` без LLM и `answer_question` через общий graph. Ответ требует настроенной модели и обычно выполняет два запроса: маршрутизация и синтез. Выход содержит источник, дату выпуска и номер **PDF-страницы**; это не всегда печатный номер. Неизвестные ID, отсутствующие дословные цитаты и неподтверждённые числа отклоняются. Числовые ответы допускаются только с пяти страниц, визуально сверенных с PDF; графики и таблицы автоматически не интерпретируются. Проверка цитаты/чисел не доказывает смысловое соответствие утверждения источнику.
-
-Живой ответ и расход: [docs/RAG.md](docs/RAG.md). Промах OPEC исправлен добавлением начала той же страницы. На development — 4/4; на девяти заранее зафиксированных отложенных вопросах — 4/9, пять промахов остаются. Это проверка наличия опорных фрагментов, не качество ответов и не blind eval. [Сравнение до/после](docs/RETRIEVAL_EVAL.md). Изменения evolution пока проверяются на синтетической fixture и не активируются в реальном поиске автоматически.
-
-## Бесплатный web-поиск
+Нужны Docker Desktop/Engine и Python 3 для подготовки локальных каталогов. Из `core/`:
 
 ```bash
-python scripts/search_web.py 'OPEC oil'
+./run.sh -d
 ```
 
-DDGS обращается к DuckDuckGo без ключа или регистрации. `WEB_ENABLED=false` отключает сеть. Рабочие домены и приоритеты находятся в соседнем `evolution/policies/web_sources.json`; core читает committed main, а пустой/старый репозиторий получает явный seed fallback. Незакоммиченные и candidate-изменения не активируются.
+Первый запуск создаёт приватный `.env` из `.env.example` с разными случайными MCP-токенами. Заполните в нём доступ к модели и повторите команду. Для локальной модели API-ключ необязателен. Откройте <http://127.0.0.1:8765>. При первой установке instruction skill проходит штатные review/enable в Ouroboros; этот платный шаг не запускается скрыто при старте. Предыдущий review тех же байтов в той же установке переиспользуется.
 
-Для актуальных вопросов graph использует датированные web-выдержки; для исторических предпочитает отчёты и делает одну web-попытку при отсутствии опорных данных. Проверяются hostname, цитаты, числа и возраст источника. Поисковая дата не подменяет дату публикации, новость не считается live-котировкой. Бесплатный сервис нестабилен: сохранены успешная backend-выдача и ошибки adapter, платного fallback нет. [Протокол и ограничения](docs/WEB.md).
+Команда собирает CPU-образы, готовит независимый evolution Git, проверяет/загружает PDF и индексирует их, затем поднимает два MCP и native UI. Данные контейнерной установки находятся в `workspace/container/`; публичные PDF/веса из имеющегося локального кеша переиспользуются. Загрузка с нуля зависит от доступности OPEC/EIA/Hugging Face. Первичная попытка download из Docker получила TLS timeout; запуск с проверенным кешем и новым Linux-индексом подтверждён. Повторный запуск сохраняет Git, индекс, диалоги, review и кеш цен.
 
-## Расчётный прогноз (§2.5 задания)
+Порты можно изменить: `UI_PORT=8875 ANALYST_PORT=8811 EVOLUTION_PORT=8812 ./run.sh -d`. `DEPLOY_WORKSPACE` задаёт каталог deployment state. В текущем workspace проверочная контейнерная установка доступна на 8875, ранее подготовленный host UI — на 8765.
 
 ```bash
-python -c 'from analyst.forecast import forecast_brent, render_forecast; print(render_forecast(forecast_brent(3)))'
+docker compose ps
+docker compose logs --tail 30 analyst evolution ouroboros
+docker compose down
 ```
 
-Analyst MCP публикует `forecast_brent`: ARIMA и ETS, горизонты 1–6 месяцев, интервалы 80%, отдельный rolling backtest и naive benchmark. Graph сам вызывает расчёт для forecast intent; опубликованный прогноз из PDF обрабатывается отдельно. Источник — дневной ряд EIA с hash. MCP принимает `start_date`/`end_date`: покрытая история читается из кеша, недостающие интервалы догружаются через FRED без ключа; срез, даты и покрытие месяца показываются явно. В текущей отложенной проверке naive немного лучше выбранной ETS; номинальный уровень интервала не гарантирует фактическое покрытие. [Методика и live MCP/GigaChat evidence](docs/FORECAST.md).
+`down` останавливает сервисы, сохранённые данные остаются. UI авторского контура имеет read-only core/evolution, не видит eval-набор и Docker socket. Выпуск разрешён только операторскому CLI на хосте. [Проверка контейнеров](docs/deployment-evidence.json).
 
-UI и известные ограничения: [docs/UI.md](docs/UI.md). Кеш истории: `BRENT_CACHE_PATH`; необязательный `BRENT_DATA_PATH` включает режим локального CSV без сети.
+## Модель и конфигурация
 
-## Два репозитория
-
-Код находится в `OilAgent/core`, артефакты самоулучшений — в соседнем `OilAgent/evolution`. У каждого собственные `.git` и коммиты; core не содержит tracked nested evolution. Source instruction skill хранится в evolution. Подробнее: [docs/VERSIONING.md](docs/VERSIONING.md).
-
-Все команды ниже выполняются **из core/**. В текущем workspace уже есть окружение `../.venv` — его можно активировать через `source ../.venv/bin/activate`; создание нового окружения ниже нужно для чистой установки. Заранее заполненный evolution не требуется: bootstrap или первый запуск Evolution MCP создаёт стартовые артефакты из core.
-
-## Локальный запуск
-
-Проверенная среда: Python 3.13.2, macOS ARM64, Git. Требуемая версия Python ≥3.11; Python 3.11 и Docker пока отдельно не проверены. Виртуальное окружение и upstream checkout исключены из Git.
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.lock
-python -m pip install --no-build-isolation --no-deps -e .
-python scripts/bootstrap.py
-pytest -q
-python scripts/smoke_ouroboros.py
-```
-
-Bootstrap инициализирует отдельный соседний Evolution Git, если он отсутствует; существующую историю сохраняет. Upstream checkout по умолчанию находится в `../workspace/upstream/ouroboros`. Bootstrap скачивает **точный SHA** из `config/ouroboros-pin.json`, создаёт локальный `.env` с разными случайными MCP-токенами и сохраняет существующий `.env`. Не запускает LLM или полный runtime Ouroboros. `requirements.lock` — snapshot окружения прототипа для macOS ARM64, включая локальные embeddings и зависимости проверки upstream; не lock полного desktop-runtime Ouroboros или проверка Linux wheel compatibility.
-
-Отсутствующая/пустая папка или Git без коммитов получают один seed commit: `policies/retrieval.json`, `policies/web_sources.json` и `ouroboros_skills/oilgas_analyst/SKILL.md`. Skill seed поставляется внутри Python-пакета core, в том числе wheel; после инициализации рабочая версия принадлежит evolution. Это не automatic review/enable или production release. Повторный запуск не добавляет коммитов и не заменяет существующую policy. Незакоммиченные конфликтующие артефакты или существующая история без требуемых main/policy дают явную ошибку вместо перезаписи.
-
-Путь можно задать системной переменной:
-
-```bash
-export EVOLUTION_REPO_PATH=/absolute/path/to/evolution
-python scripts/bootstrap.py
-```
-
-Приоритет: **системный environment → core/.env → ../evolution**. Относительный путь разрешается от core, не от shell cwd. Docker Compose использует переменную как source bind mount на хосте, внутри контейнера Git находится в `/evolution`. Каталог хоста должен быть доступен контейнерному пользователю на запись.
-
-Smoke поднимает два процесса на свободных localhost-портах, проверяет 401 без токена, делает discovery и вызовы через **немодифицированный `ouroboros.mcp_client.MCPManager`**. Проверяется цепочка answer → propose → diff → checks → blocked review → status, идемпотентность proposal, отсутствие release. В конце процессы останавливаются, JSON evidence и логи остаются в `workspace/smoke/<run>/`. По умолчанию ключи LLM явно отключены в дочерних процессах, платных вызовов нет.
-
-Если canonical evolution пока пуст, smoke читает встроенный seed skill и создаёт Git только в изолированном runtime. Канонический путь при этом не заполняется: для его инициализации служат bootstrap или Evolution MCP.
-
-Загрузка instruction skill проверяется штатным upstream loader из external disk payload. Это **не** полный install/review/enable, не самостоятельный выбор tools моделью Ouroboros и не успешная работа аналитика на реальных отчётах.
-
-## Выбор модели
-
-Оба сервиса используют общий adapter из `src/analyst/config.py`. Настройки в локальном `.env`; ключи не публикуйте. Для GigaChat:
+Выбран GigaChat-2-Max: у кандидата есть доступ к Sber API, модель отвечает по-русски и прошла живые проверки structured routing, PDF/web/hybrid, расчётных маршрутов и native MCP. Это практический выбор для демонстрации; сравнительного benchmark моделей не проводилось.
 
 ```dotenv
 LLM_PROVIDER=gigachat
 GIGACHAT_MODEL=GigaChat-2-Max
-GIGACHAT_CREDENTIALS=<локальный секрет>
+GIGACHAT_CREDENTIALS=
 GIGACHAT_SCOPE=GIGACHAT_API_PERS
-GIGACHAT_CA_BUNDLE_FILE=/absolute/path/to/ca-bundle.pem
-LLM_STRUCTURED_METHOD=function_calling
+GIGACHAT_CA_BUNDLE_FILE=
+LLM_MAX_OUTPUT_TOKENS=
 ```
 
-Scope зависит от вашего доступа. CA bundle нужен, если системное доверие не содержит нужную цепочку. Проверка TLS включена. [Официальная интеграция GigaChat](https://github.com/ai-forever/langchain-gigachat/blob/master/libs/gigachat/README.md).
+Scope зависит от доступа. Custom CA bundle копируется в отдельный read-only mount; TLS verification включена. Пустое/отсутствующее `LLM_MAX_OUTPUT_TOKENS` или строка `None` не задаёт output cap в core SDK payload. Лимиты самого провайдера/платформы сохраняются. Автоматические retries core выключены. GigaChat-вызовы сериализованы общим файловым slot внутри установки. Независимые установки с одним ключом не следует нагружать одновременно; распределённой квоты аккаунта нет.
 
-Для OpenAI или совместимого внешнего API:
+Другие профили:
 
 ```dotenv
 LLM_PROVIDER=openai
-LLM_MODEL=<доступная модель>
-LLM_BASE_URL=https://your-provider.example/v1
-LLM_API_KEY=<локальный секрет>
-LLM_STRUCTURED_METHOD=function_calling
+LLM_MODEL=your-model
+LLM_BASE_URL=https://your-compatible-endpoint/v1
+LLM_API_KEY=
 ```
-
-Для официального OpenAI можно оставить `LLM_BASE_URL` пустым. Для локального OpenAI-совместимого сервера:
 
 ```dotenv
 LLM_PROVIDER=local
-LLM_MODEL=<установленная модель>
+LLM_MODEL=your-installed-model
 LLM_BASE_URL=http://127.0.0.1:11434/v1
 LLM_API_KEY=
-LLM_STRUCTURED_METHOD=function_calling
 ```
 
-Это клиент локального API, не встроенный загрузчик весов. Модель/сервер должны поддерживать выбранный structured output. Доступны `function_calling`, `json_schema`, `json_mode`; поддержка конкретной комбинации требует живого smoke. Локальный профиль требует явного endpoint, ключ необязателен. Настройка модели аналитика не настраивает автоматически модель полного runtime Ouroboros.
+В Docker адрес модели на macOS-хосте — `http://host.docker.internal:<port>/v1`. Нужна поддержка выбранного `LLM_STRUCTURED_METHOD=function_calling|json_schema|json_mode`. OpenAI/local покрыты офлайн-тестами конфигурации; **живые проверки пропущены по решению пользователя**.
 
-После настройки явный запуск с разрешением model calls:
+Остальные параметры — в [.env.example](.env.example): пути, retrieval top-k, web freshness, request limits, retention, цены для optional cost reservation. System env имеет приоритет. Защитные schema/caps и фиксированные спецификации моделей не редактируются policy-кандидатом.
 
-```bash
-python scripts/smoke_ouroboros.py --live
+## Аналитические возможности
+
+- PDF: два фиксированных публичных выпуска OPEC MOMR/EIA STEO за октябрь 2025, E5 на закреплённой revision и Chroma; источник, дата, PDF page и точные цитаты. PDF и веса не публикуются в Git; загрузчик проверяет SHA256. OPEC PDF не перераспространяется.
+- Web: DuckDuckGo/DDGS и официальный RSS EIA без ключа. Доверенные домены читаются из committed main `evolution/policies/web_sources.json`; рабочие/candidate правки не активируются. Даты публикации и получения различаются. RSS — публикация/описание, DDGS — поисковая выдержка; чтение полной статьи не заявляется.
+- Hybrid: независимый синтез report/web по своим вопросам и evidence, затем программное объединение ссылок и проверка полноты. Есть один repair на запрос; после отказа — явно помеченная подтверждённая выдержка/partial. Exact quote не доказывает смысловую релевантность.
+- Forecast: ARIMA + ETS, горизонты 1–6 месяцев, nominal 80% prediction intervals, rolling calibration/test и naive benchmark. История EIA spot загружается через FRED только для непокрытых интервалов, без TTL и перезаписи кешированных значений. `start_date`/`end_date` — включительные даты истории. [Методика](docs/FORECAST.md).
+- Scenario: условная оценка сокращения добычи по явным пользовательским P0/Q0/cut и диапазонам эластичностей. Это sensitivity analysis, не статистический прогноз; отсутствующие коэффициенты не придумываются.
+- Котировки: последняя доступная delayed Brent/WTI futures quote с exchange/type/timestamp/unit; не подмена EIA spot и не real-time feed. Urals feed не подключён.
+- Диалог: серверный session ID, последние шесть вопросов и параметры, SQLite TTL; предыдущий ответ не становится evidence. Новая policy закрепляется на новую сессию, несовместимое обновление core сбрасывает контекст.
+- Сравнения: защищённая разность только двух проверенных measurements с совпадающими metric/geography/unit/period/vintage/type; несовместимость показывается явно.
+
+Примеры:
+
+```text
+Что EIA в отчёте за октябрь 2025 прогнозировало для Brent в первом полугодии 2026?
+Какие последние новости EIA о природном газе?
+Рассчитай Brent на 3 месяца по состоянию на 2026-10-01, история 2016-01-01…2026-09-30.
+А теперь на полгода?
+Оцени сокращение на 2 млн б/с: цена 70 USD/bbl, добыча 100 млн б/с,
+эластичность спроса [-0.3,-0.1], предложения [0,0.1], прочие условия неизменны.
 ```
 
-Будут выполнены routing и отдельный critic. Это ещё не авторство кандидата LLM: smoke отправляет заранее заданную policy, чтобы проверить интерфейс. Успешный живой прогон сохранён; полный author-прогон дошёл до загрузки схем и получил HTTP 422, подробности — в docs/LIVE_INTEGRATION.md.
+Analyst MCP: `health`, `answer_question(question, session_id="")`, `forecast_brent`, `supply_cut`, `market_quote`, `submit_feedback`, `search_reports`, `search_web_sources`. Native Main получает общий `answer_question`; его финальный ответ программно передаёт canonical core result, а не повторный пересказ.
 
-## Два сервиса
+## Самоулучшение и два Git
+
+`core/` и соседний `evolution/` — самостоятельные репозитории. Путь evolution задаётся `EVOLUTION_REPO_PATH`; пустая папка/unborn Git подготавливается автоматически. Core, evaluator и schemas защищены; кандидат меняет только `policies/retrieval.json`.
+
+Policy задаёт bounded strategy/top-k, reranker/вес и query-context той же PDF-страницы. Serving читает developer seed либо проверенный release bundle, **не незакоммиченные правки и не candidate branch**. Начальный serving сохраняет прежнее per-publisher поведение, baseline не ухудшался ради демонстрации.
+
+Evolution MCP: `propose_change`, `get_diff`, `run_checks`, `request_review`, `get_status`. Нужен существующий request trace; число кандидатов ограничено. `run_checks` сравнивает настоящий PDF retrieval на замороженных development/validation случаях, требует роста и отсутствия регрессий. Critic доступен после PASS. Ни approval, ни merge/release, ни shell через MCP нет.
 
 ```bash
-python -m analyst.mcp_server analyst --port 8011
-python -m analyst.mcp_server evolution --port 8012
+python scripts/release.py status
+python scripts/release.py approve CANDIDATE_ID --sha FULL_CANDIDATE_SHA --operator YOUR_NAME
+python scripts/release.py rollback PREVIOUS_RELEASE_ID
+# Возврат к исходному поведению:
+python scripts/release.py rollback developer-seed
 ```
 
-У каждого endpoint `/mcp` и свой `Authorization: Bearer <token>` из `.env`. По умолчанию слушают только `127.0.0.1`.
+CLI принимает только актуальные checks, APPROVE того же SHA и eval/code/corpus bindings. Bundle имеет hash, activation атомарна; interruption reconcile, tampering и rollback покрыты тестами. Нативный автор реально создал кандидата: score 5/19 → 7/19, но одна регрессия привела к **REJECTED**, без critic и активации. Это демонстрация работающего quality gate, не успешный production release. [Свидетельства](docs/evolution-run-evidence.json).
 
-| Analyst MCP | Evolution MCP |
-|---|---|
-| `health`, `answer_question` | `propose_change`, `get_diff`, `run_checks`, `request_review`, `get_status` |
+## Проверки и воспроизведение
 
-`get_status` без ID возвращает baseline SHA. Изменять можно только `policies/retrieval.json` по строгой Pydantic schema; неизвестные поля и пути отклоняются. Кандидат — отдельный Git commit/branch в соседнем `../evolution`, без изменения его main и developer core. `EVOLUTION_REPO_PATH` задаёт Git checkout, `WORKSPACE_PATH` — ignored state/logs вне него. Git запускается списком аргументов без shell. `propose_change` идемпотентен по ключу, конфликт аргументов отклоняется. Состояния persisted, операции сериализованы lock.
-
-`run_checks` использует фиксированную **синтетическую** ranked-list fixture: переход pooled → per_publisher повышает покрытие издателей с 0.5 до 1.0. Это проверка работающей ветви policy, не blind eval и не доказательство качества retrieval. Отсутствие улучшения отклоняется. Без модели critic получает `REVIEW_BLOCKED`. Даже при critic APPROVE остаётся `REVIEWED_UNRELEASED`: release/approval/merge endpoint отсутствует.
-
-Прототип не исполняет candidate Python и не предоставляет shell tools. OS-изоляция автора Ouroboros от trusted runner пока не продемонстрирована; разные bearer-токены сами по себе её не обеспечивают. Пока нет production security или денежных гарантий. Есть request timeouts, ограничение входа structured requests и отключённые retries модели. **Лимита output по умолчанию нет**: LLM_MAX_OUTPUT_TOKENS не задан / пуст / None означает, что max_tokens не передаётся. Положительное число включает явный лимит. Проверено для GigaChat и OpenAI-совместимого клиента на уровне сформированного payload; пределы самого провайдера сохраняются.
-
-## Контейнеры
+Для запуска без Docker используйте Python 3.11+; проверены Python 3.13/macOS ARM64 и Linux ARM64 в контейнере:
 
 ```bash
-docker compose up --build
-```
-
-Поднимает только два MCP-процесса. Токены берутся из `.env`; upstream Ouroboros и UI в compose не включены. Порты опубликованы только на localhost. Для RAG сначала выполните индексацию на хосте: Analyst монтирует `workspace/rag` с записью для Chroma, `workspace/models` и evolution только для чтения, `workspace/prices` с записью для кеша исторического ряда. Загрузка PDF и модели в контейнерном startup не выполняется. Evolution service монтирует `../evolution` в `/evolution`; runtime statuses находятся в отдельном named volume. UID контейнера должен иметь write-доступ к этому checkout; не меняйте права всего core ради доступа. В профиле local endpoint относится к контейнеру; для модели на macOS host используйте `http://host.docker.internal:<port>/v1`. Docker build/run ещё не проверены: в текущем окружении daemon недоступен.
-
-## Проверки и объём
-
-```bash
+python -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.lock
+pip install --no-deps -e .
+python scripts/bootstrap.py
+python scripts/index_reports.py --download
+pytest -q
 ruff check src scripts tests
 ruff format --check src scripts tests
-pytest -q
-find src scripts tests -name '*.py' -type f -exec wc -l {} +
+python scripts/eval_acceptance.py
+python scripts/smoke_ouroboros.py
 ```
 
-Тесты проверяют защищённые пути/schema, Git isolation main/candidate, повторные proposal/conflicts после рестарта, no-improvement reject, fail-closed critic, отсутствие вымышленных ответов и конфигурацию трёх провайдеров. Успех этих тестов не заменяет eval на публичном корпусе и полноценный Ouroboros agent run.
+Последние две команды не вызывают модель. `smoke_ouroboros.py --live` требует явного разрешения на платные вызовы. Для host native runtime отдельное окружение и штатный review/enable: [LIVE_INTEGRATION](docs/LIVE_INTEGRATION.md). Traces: `TRACE_PATH`, очистка по `TRACE_RETENTION_DAYS`; `submit_feedback` сохраняет мнение отдельно от market evidence. `python scripts/replay.py REQUEST_ID` проверяет сохранённые цитаты без сети/LLM.
 
-## Полный Ouroboros и экономия токенов
+## Известные ограничения
 
-Профиль провайдера: `LLM_PROVIDER=gigachat|openai|local`, как у core. Runtime использует отдельные checkout/data/venv, `blocking` review и отключённые auto-grants. Он не обновляет upstream и не выпускает domain candidate. Подробные команды, расход и неподтверждённые gates: [docs/LIVE_INTEGRATION.md](docs/LIVE_INTEGRATION.md).
+Функциональные guards не делают аналитика безошибочным. В serving baseline фиксированный acceptance-набор даёт 25/30; пять retrieval-промахов сохраняются. Это не answer accuracy и не blind benchmark. ETS intervals имеют недостаточное фактическое coverage, naive на текущем backtest немного лучше. Web и provider могут быть недоступны; quote delayed, месячная EIA история имеет публикационный лаг. OCR, произвольный Python evolution, торговля, private banking data и enterprise SSO/RBAC в задачу не входят.
 
-Новые live-запуски не входят в pytest. Успешное review того же content hash переиспользуется без повторного запроса. Core сохраняет provider usage в route/critic result; это не глобальная квота на API-аккаунт. Полный Ouroboros имеет большой постоянный контекст: подтверждённый расход review + первого неуспешного author task — 120556 токенов, плюс короткий core smoke и записи без usage. Не запускать этот тяжёлый цикл на каждый пользовательский вопрос.
+Глобальный остаток квоты не выводится из суммы локальных usage. Native context дорогой: отдельный author run израсходовал 145537 prompt + 839 completion токенов. Отдельно учитываются cached tokens, review и прямые core-пробы. Денежная admission reservation требует заданных цен и явного output bound; при default None строгая денежная гарантия не заявляется.
 
-Текущий объём собственного Python: 2575 строк приложения/скриптов + 1188 строк тестов = 3763. С обязательным расчётным модулем общий объём превысил исходный ориентир 3000; upstream и данные в эту цифру не входят.
+Публикация GitHub/GitLab не выполнена: remote/целевой URL не задан, подключённый GitHub при read-only проверке не ответил. Локальные изменения версионируются в обоих Git; секреты и runtime state в Git не включаются.

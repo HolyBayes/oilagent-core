@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-02",
+  "tested_source_identity": {
+    "core_source_sha256": "f11f8757c9f8b306713a52aef3604fb20159a7c6d30e040e2148233b541a2ce5",
+    "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+    "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+  },
+  "pytest_passed": 133,
+  "ruff_lint": "passed",
+  "ruff_format": "passed",
+  "live_provider": "gigachat",
+  "openai_local_live": "skipped by user",
+  "acceptance": {
+    "passed": 25,
+    "total": 30,
+    "scope": "retrieval + deterministic contracts, not answer accuracy"
+  },
+  "native_delivery": {
+    "transport": "real Chromium → native Main → HTTP MCP",
+    "task_id": "f3f6f732",
+    "request_id": "a19536da-e4f6-467b-9967-5e6aad6689ba",
+    "exact_core_answer_delivered": true,
+    "core_answer_sha256": "29e0919148bbe1c35e12681616e687c125e93815914f24498102344c0705b465",
+    "source_attribution_correct": true,
+    "models": [
+      "ARIMA",
+      "ETS"
+    ],
+    "interval_level": 0.8
+  },
+  "native_author_task": "14e9a5e43ccd42ad",
+  "candidate_status": "REJECTED",
+  "showcase_cases": [
+    {
+      "name": "report",
+      "title": "Ответ по отчёту",
+      "status": "answered"
+    },
+    {
+      "name": "web_corrected",
+      "title": "Ответ по web",
+      "status": "answered"
+    },
+    {
+      "name": "hybrid_release_verification",
+      "title": "Комбинированный ответ",
+      "status": "answered"
+    },
+    {
+      "name": "forecast",
+      "title": "Расчётный прогноз",
+      "status": "partial"
+    },
+    {
+      "name": "out_of_scope",
+      "title": "Запрос вне компетенции",
+      "status": "out_of_scope"
+    },
+    {
+      "name": "scenario_corrected",
+      "title": "Сценарный расчёт",
+      "status": "scenario_calculated"
+    },
+    {
+      "name": "quote",
+      "title": "Последняя доступная котировка",
+      "status": "quoted"
+    },
+    {
+      "name": "forecast_followup",
+      "title": "Follow-up в одной сессии",
+      "status": "partial"
+    }
+  ],
+  "observed_dialogue_attempts": 19,
+  "reported_dialogue_usage": {
+    "input_tokens": 74692,
+    "output_tokens": 10612
+  },
+  "usage_scope": "Stored dialogue attempts only; excludes native context, review, frozen diagnostic syntheses and responses without usage. Not account quota accounting.",
+  "hosted_repository": "not published: target remote not supplied and GitHub connector read failed",
+  "production_policy_release": "none; rejected candidate was not activated",
+  "final_http_smoke": "passed",
+  "docker_final_start": "passed",
+  "evolution_head": "bd9f630d42a6e56b1e7a481b11396c20f8e5b397"
+}

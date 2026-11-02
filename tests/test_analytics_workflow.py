@@ -198,3 +198,57 @@ def test_hybrid_preserves_report_answer_when_web_model_is_unavailable(sources, m
     )
     assert result["status"] == "partial" and result["claims"][0]["source_id"] == "R1"
     assert "private transport message" not in json.dumps(result)
+
+
+def test_qa_model_outage_returns_checked_excerpt(sources, monkeypatch):
+    report, _ = sources
+    monkeypatch.setattr(pipeline, "model_ready", lambda: True)
+    monkeypatch.setattr(
+        pipeline, "ReportIndex", lambda: SimpleNamespace(search=lambda *a, **k: [report])
+    )
+
+    def invoke(schema, messages):
+        if schema is Route:
+            return Route(intent="domain_qa", freshness_required=False), {}
+        raise TimeoutError("private failed request")
+
+    monkeypatch.setattr(pipeline, "invoke_structured", invoke)
+    result = pipeline.answer_question("Исторический факт из отчёта")
+    assert result["status"] == "partial"
+    assert result["claims"][0]["kind"] == "excerpt"
+    assert result["claims"][0]["source_id"] == "R1"
+    assert "private failed request" not in json.dumps(result)
+
+
+def test_comparison_normalizes_units_periods_and_monthly_vintages():
+    common = dict(
+        kind="fact",
+        metric="oil demand growth",
+        geography="global",
+        period="2026-H1",
+        vintage="2025-10",
+        observation_type="forecast",
+    )
+    a = {**common, "source_id": "R1", "value": "1.3", "unit": "mb/d"}
+    b = {
+        **common,
+        "source_id": "R2",
+        "value": "900",
+        "unit": "thousand barrels per day",
+        "geography": "world",
+        "period": "H1 2026",
+        "vintage": "2025-10-07",
+    }
+    result, warning = compare_claims([a, b])
+    assert not warning and result["value"] == "0.400" and result["unit"] == "mb/d"
+
+
+def test_numeric_verifier_preserves_negative_sign():
+    from analyst.evidence import validate_claims
+
+    source = {"source_id": "R1", "text": "Growth was 1.3 in 2026.", "numeric_verified": True}
+    draft = ReportDraft(
+        abstain=False,
+        claims=[ReportClaim(text="Growth was -1.3 in 2026", source_id="R1", quote=source["text"])],
+    )
+    assert validate_claims(draft, [source]) == ([], ["unverified_number"])

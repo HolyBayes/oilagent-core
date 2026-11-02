@@ -154,3 +154,22 @@ def test_native_adapter_guards_tools_and_delivers_exact_mcp_answer(monkeypatch):
     assert payload["answer"] in text and "incorrect" not in text
     assert trace["canonical_analyst_delivery"] == [payload["request_id"]]
     assert calls[0][1]["session_id"].startswith("native-")
+
+
+def test_unknown_provider_cost_stays_reserved(monkeypatch):
+    monkeypatch.setenv("REQUEST_MAX_COST", ".00025")
+    monkeypatch.setenv("LLM_MAX_OUTPUT_TOKENS", "100")
+    monkeypatch.setenv("LLM_INPUT_PRICE_PER_MILLION", "1")
+    monkeypatch.setenv("LLM_OUTPUT_PRICE_PER_MILLION", "1")
+    b = Budget()
+    b.reserve_llm([("human", "a" * 100)])
+    with pytest.raises(BudgetExceeded, match="money_reservation"):
+        b.reserve_llm([("human", "a" * 100)])
+    assert b.held_cost > 0 and b.llm_calls == 1
+
+
+def test_one_repair_per_request():
+    b = Budget()
+    b.repair()
+    with pytest.raises(BudgetExceeded, match="repair_limit"):
+        b.repair()

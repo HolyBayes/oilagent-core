@@ -9,6 +9,7 @@
         "answer_question",
         "forecast_brent",
         "supply_cut",
+        "submit_feedback",
         "market_quote",
         "search_web_sources",
         "search_reports"

@@ -1,36 +1,15 @@
-# Штатный UI Ouroboros
+# Native UI
 
-Используется UI закреплённого Ouroboros 7.9.0, без отдельного Streamlit-приложения. Путь запроса: браузер → Main с instruction skill → `mcp_analyst__answer_question` → общий LangGraph → результат → пересказ Main. Исторические PDF и цены уже подготовлены; загрузка файлов пользователем для этих примеров не нужна.
+Из core запускается `./run.sh -d`, UI по умолчанию <http://127.0.0.1:8765>. В текущем workspace host UI уже работает на 8765, контейнерная проверочная установка — на 8875. Изменение портов и конфигурация — в README.
 
-## Запуск
+При новой установке skill `oilgas_analyst` из evolution регистрируется штатно, затем требует обычных review/enable. Они не обходятся и не выполняются скрыто на startup. Для host runtime доступны команды `scripts/ouroboros_runtime.py review`, `enable`, `serve`. Clean review тех же байтов в той же установке переиспользуется. Background consciousness/evolution выключены.
 
-Подготовка isolated runtime и штатный skill review/enable описаны в [LIVE_INTEGRATION.md](LIVE_INTEGRATION.md). Два MCP должны работать в отдельных терминалах по README. Затем:
+Путь: браузер → Main → `mcp_analyst__answer_question` → общий core. Host adapter закрепляет session ID по chat ID и после реального успешного MCP-вызова доставляет canonical answer, source links, таблицы, ограничения и request ID. Свободный финальный пересказ не заменяет результат core.
 
-```bash
-python scripts/ouroboros_runtime.py serve
-```
+Реальный Chromium-прогон подтвердил новый forecast: обе модели, единицы, 80% интервалы и «исторический дневной ряд» переданы без прежней подмены на ежемесячный отчёт. [Evidence](native-delivery-evidence.json). Старые неуспехи сохранены в ui-evidence.json, а не переписаны в успешные.
 
-Открыть <http://127.0.0.1:8765>, выбрать проект OilAgent либо создать отдельный проект для чистой истории. В текущем workspace OilAgent уже создан. Проверенные формулировки:
+Upstream checkout на pin не меняется на диске. Наш launcher адаптирует native GigaChat union schema, стартовые MCP schemas в Nano, сериализацию provider calls, ограничения tools и canonical delivery в процессе запуска. Это адаптированный runtime. Native review/host validation не заменены собственным approval.
 
-- «Что EIA прогнозировало для Brent в отчёте за октябрь 2025?»
-- «Рассчитай новый прогноз Brent на следующие 3 месяца методами ARIMA и ETS с интервалами 80%.»
+Авторский ToolRegistry допускает analytic/Evolution MCP и необходимые discovery/completion tools; shell и произвольное изменение файлов отклоняются. В контейнере core/evolution read-only, eval и Docker socket не смонтированы. Это конкретная демонстрационная граница, не enterprise security certificate.
 
-Профиль включает Analyst `answer_question` в стартовый каталог; Evolution остаётся загружаемым по запросу. Фоновое сознание/самоулучшение отключено. Instruction skill постоянно включён в контекст и прошёл штатные review/enable для своих точных байтов. После изменения skill потребуется новое review; повторять его без изменений не нужно.
-
-## Совместимость и проверка
-
-Upstream checkout на закреплённом SHA не редактируется. Наш launcher [native_ouroboros.py](../scripts/native_ouroboros.py) меняет два метода **в процессе запуска**: для native GigaChat сужает неподдержанную альтернативу object|string до уже разрешённой string-ссылки; сохраняет явно разрешённые стартовые MCP schemas в Nano-контексте. Host validation и skill review остаются штатными. Это адаптированный запуск, не доказательство работы совершенно неизменённого runtime.
-
-Проверка выполнена настоящим Chromium через интерфейс, с реальными Main worker и HTTP MCP. [Сводка с task IDs и расходом](ui-evidence.json):
-
-- PDF: MCP вызван, ответ с оценкой EIA подкреплён PDF-страницей 5.
-- Forecast: MCP вызван, таблицы обоих методов, единицы и номинальные 80% интервалы переданы.
-- **Открытая ошибка:** Main называет дневной исторический ряд «ежемесячным отчётом EIA», хотя core правильно возвращает происхождение данных. Числа совпадают, атрибуция источника в UI неверна. Поэтому проверка UI частичная; гарантия корректности core не переносится автоматически на финальный пересказ Main.
-
-Начальные попытки также показали HTTP 422 и ответы без MCP. Это сохранено как неуспешные проверки; статус task completed сам по себе не означает качество ответа. Полный автономный цикл автора Evolution с выпуском релиза этим прогоном не проверялся.
-
-## Расход
-
-Native UI имеет большой постоянный контекст. По `task_done` восьми UI-попыток известны 227043 prompt + 2812 completion токенов; отдельно skill review — 44124 + 6, диагностика schema — 1433 суммарно. В `llm_round` отдельно указаны 264128 cached prompt tokens; складывать их с fresh prompt без учёта правил провайдера нельзя. Не у всех HTTP 422 есть usage; вложенные core-вызовы также не входят в native task totals. Это не точный остаток бесплатной квоты. Старые 120556 native токенов из LIVE_INTEGRATION — другой, более ранний прогон.
-
-Повторять платные UI-пробы автоматически не нужно. Проверка кеша истории через MCP и offline-тесты не вызывают GigaChat.
+Native контекст дорогой; повторять платные browser/author пробы на каждый edit не нужно. Повседневные проверки — pytest, fixed acceptance и HTTP smoke без модели. Измеренные расходы и ограничения: INTEGRATION_STATUS.md.

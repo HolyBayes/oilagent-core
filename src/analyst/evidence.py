@@ -3,6 +3,7 @@ import re
 from decimal import Decimal
 
 from analyst.contracts import ReportDraft
+from analyst.measurements import comparable
 
 
 def fit_context(rows, question):
@@ -18,7 +19,8 @@ def fit_context(rows, question):
 
 def numbers(text):
     return {
-        str(Decimal(m.replace(",", ".")).normalize()) for m in re.findall(r"\d+(?:[.,]\d+)?", text)
+        str(Decimal(m.replace(",", ".")).normalize())
+        for m in re.findall(r"(?<!\d)[-+]\d+(?:[.,]\d+)?|\d+(?:[.,]\d+)?", text.replace("−", "-"))
     }
 
 
@@ -72,12 +74,15 @@ def compare_claims(claims):
         return None, "comparison_missing_two_measurements"
     a, b = measured
     fields = ("metric", "geography", "unit", "period", "vintage", "observation_type")
-    if a["source_id"] == b["source_id"] or any(not a.get(k) or a[k] != b[k] for k in fields):
+    if a["source_id"] == b["source_id"] or any(not a.get(k) or not b.get(k) for k in fields):
         return None, "comparison_incompatible_definitions"
     if a["observation_type"] == "unspecified":
         return None, "comparison_unspecified_observation_type"
     try:
-        difference = Decimal(a["value"].replace(",", ".")) - Decimal(b["value"].replace(",", "."))
+        normalized_a, normalized_b = comparable(a), comparable(b)
+        if any(normalized_a[k] != normalized_b[k] for k in fields):
+            return None, "comparison_incompatible_definitions"
+        difference = normalized_a["value"] - normalized_b["value"]
         if not difference.is_finite():
             raise ValueError("Nonfinite difference")
     except Exception:
@@ -87,8 +92,12 @@ def compare_claims(claims):
         "formula": "a-b",
         "inputs": [a, b],
         "value": str(difference),
-        "unit": a["unit"],
-        "period": a["period"],
+        "unit": "percentage points" if normalized_a["unit"] == "percent" else normalized_a["unit"],
+        "period": normalized_a["period"],
+        "normalized_inputs": [
+            {**normalized_a, "value": str(normalized_a["value"])},
+            {**normalized_b, "value": str(normalized_b["value"])},
+        ],
     }, ""
 
 

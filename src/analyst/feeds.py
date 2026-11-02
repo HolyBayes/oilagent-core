@@ -11,7 +11,19 @@ FEEDS = ("https://www.eia.gov/rss/todayinenergy.xml", "https://www.eia.gov/rss/p
 
 
 def official_news(query):
-    words = set(re.findall(r"[a-z]{3,}", query.lower()))
+    words = set(re.findall(r"[a-z]{3,}", query.lower())) - {
+        "eia",
+        "latest",
+        "recent",
+        "last",
+        "past",
+        "days",
+        "news",
+        "for",
+        "the",
+        "and",
+        "about",
+    }
     for ru, en in [
         ("нефт", "oil"),
         ("добыч", "production"),

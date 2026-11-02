@@ -58,7 +58,7 @@ class ReportClaim(BaseModel):
     text: str
     source_id: str
     quote: str
-    kind: Literal["fact", "assumption"] = "fact"
+    kind: Literal["fact", "assumption", "excerpt"] = "fact"
     value: str = ""
     unit: str = ""
     period: str = ""

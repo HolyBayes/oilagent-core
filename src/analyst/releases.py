@@ -168,6 +168,7 @@ def rollback(release_id):
     import fcntl
 
     root = release_directory()
+    root.mkdir(parents=True, exist_ok=True)
     with (root / "release.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         activate(release_id)

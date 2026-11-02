@@ -53,5 +53,9 @@ def render_scenario(result):
     return (
         f"При заданных допущениях диапазон цены: {lo:.2f}–{hi:.2f} USD/bbl.\n\n"
         f"Формула: `{result['formula']}`.\n\n"
+        f"Входы: P0={result['inputs']['initial_price']} USD/bbl; "
+        f"Q0={result['inputs']['supply_mbd']}, cut={result['inputs']['cut_mbd']} млн б/с; "
+        f"eps_d={result['inputs']['demand_elasticity']}, "
+        f"eps_s={result['inputs']['supply_elasticity']}.\n\n"
         f"Допущения: {result['inputs']['assumptions']}\n\n" + " ".join(result["limitations"])
     )

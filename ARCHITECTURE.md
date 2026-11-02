@@ -1,7 +1,7 @@
 # AI-агент «Нефтегазовый аналитик»: архитектура недельного MVP
 
-Дата: 1 ноября 2026. Статус: **целевая архитектура; интеграционный прототип реализован частично**. Фактические проверки и незакрытые gates: [docs/INTEGRATION_STATUS.md](docs/INTEGRATION_STATUS.md).
-Ориентир: ≤3000 физических строк собственного Python, включая тесты и скрипты, с обычным читаемым форматированием.
+Обновлено: 2 ноября 2026. Статус: **функциональные пути реализованы; качество и внешние проверки имеют явно отмеченные ограничения**. Фактические проверки и незакрытые gates: [docs/INTEGRATION_STATUS.md](docs/INTEGRATION_STATUS.md).
+Ограничение по строкам снято пользователем 1 ноября 2026. Приоритет — читаемость, полный функционал и проверяемые результаты. Актуальная реализация: README.md и docs/INTEGRATION_STATUS.md; таблицы раннего бюджета ниже сохранены как история планирования.
 Исходный набросок: [сохранённая версия](docs/ARCHITECTURE.original.md). Обоснование изменений: [ревью](docs/ARCHITECTURE_REVIEW.md).
 
 ## 1. Цель и происхождение требований
@@ -68,9 +68,9 @@ Ouroboros участвует и в аналитике через MCP, и в ав
 
 Инструкции и материалы:
 
-- `prompts/analyst.md`: роль старшего аналитика, Upstream/Midstream/Downstream, Brent/WTI/Urals, ОПЕК+, спрос/предложение, санкции; краткий вывод, источники, неопределённость.
-- `prompts/route.md`: typed intent, сущности, период, freshness, необходимость уточнения.
-- `prompts/synthesize.md`: claims только из evidence/расчётов, факт отдельно от допущения.
+- Роль в `evolution/ouroboros_skills/oilgas_analyst/SKILL.md`, synthesis prompt в `src/analyst/graph.py`: роль старшего аналитика, Upstream/Midstream/Downstream, Brent/WTI/Urals, ОПЕК+, спрос/предложение, санкции; краткий вывод, источники, неопределённость.
+- Route prompt в `src/analyst/graph.py`: typed intent, сущности, период, freshness, необходимость уточнения.
+- Structured contracts/validator в `src/analyst/contracts.py` и `evidence.py`: claims только из evidence/расчётов, факт отдельно от допущения.
 - `policies/`: декларативные стратегии retrieval, без исполняемого кода и команд.
 - `ouroboros_skills/oilgas_analyst/SKILL.md`: instruction skill с методом работы через Analyst MCP; штатный lifecycle установки/review/enable.
 - `evals/`: случаи, rubric и эталоны вне прав автора кандидата. PDF/web передаются отдельно как недоверенные данные.
@@ -102,7 +102,7 @@ flowchart LR
 
 LLM выбирает `domain_qa|forecast|scenario|out_of_scope|clarify` по Pydantic-схеме. Код проверяет параметры, права и бюджет. Явное «сейчас/сегодня/последние» требует freshness-пути независимо от уверенности модели. Для профильного вопроса сначала RAG; web нужен при актуальности/пробелах. Достаточность RAG определяется покрытием запрошенных сущностей/периода и supporting evidence; cosine similarity не является вероятностью истинности и не даёт универсального sufficient threshold.
 
-Сессионная память: до 6 последних сообщений и структурированные сущности/параметры. «А теперь на полгода?» наследует Brent из предыдущего запроса. Старый ответ модели не evidence: поиск и freshness проверяются заново. Неясное «а у них?» ведёт к уточнению. ID выдаёт сервер, сессии не смешиваются. MVP хранит память в процессе; после рестарта новый диалог, durable resume не обещается. Release закреплён на сессию, новый bundle действует в новой.
+Сессионная память реализована в SQLite: до 6 последних пользовательских вопросов и structured route/параметры, с TTL и сериализацией одной сессии. «А теперь на полгода?» наследует Brent из предыдущего запроса. Старый ответ модели не evidence: поиск и freshness проверяются заново. Неясное «а у них?» ведёт к уточнению. ID выдаёт сервер, сессии не смешиваются. Контекст сохраняется при рестарте; несовместимое обновление core сбрасывает сессию. Незавершённое вычисление автоматически не возобновляется. Release закреплён на сессию, новый bundle действует в новой.
 
 Out-of-scope → краткое пояснение роли без tools. Ошибка источника → partial с пробелами. Ошибка синтеза после одного repair → шаблонный ответ из проверенных evidence/tool results. Уточнение возвращается пользователю без фонового исполнения неясного запроса.
 
@@ -122,7 +122,7 @@ Retrieval: top-k=6 по умолчанию, hard cap 12; дедупликаци�
 
 ## 6. Web, claims и финальный ответ
 
-Один search adapter, например Tavily. Приоритет: официальные агентства/регуляторы → проверенные новостные агентства. Allowlist parsed hostnames с точной границей поддомена; строковый `endswith("eia.gov")` без точки недостаточен. Неподтверждённые СМИ исключаются из доказательной базы. Доверенный домен не гарантирует поддержку конкретного тезиса.
+DDGS/DuckDuckGo и фиксированный официальный RSS EIA, без платного API-ключа. Приоритет: официальные агентства/регуляторы → проверенные новостные агентства. Allowlist parsed hostnames с точной границей поддомена; строковый `endswith("eia.gov")` без точки недостаточен. Неподтверждённые СМИ исключаются из доказательной базы. Доверенный домен не гарантирует поддержку конкретного тезиса.
 
 Базовый MVP использует **snippets поискового API**, явно помечает их и не заявляет чтение полной статьи. Собственного arbitrary URL fetch нет. Если fetch станет необходим, до соединения проверять DNS/IP, каждый redirect, loopback/private/link-local/metadata, byte/time limits. Проверка конечного URL после загрузки не предотвращает SSRF.
 
@@ -154,7 +154,7 @@ Forecast output: instrument/price_type/unit, data_end/as_of, frequency/horizon, 
 
 Улучшение — изменение поведения, подтверждённое новыми случаями. Serving сохраняет trace/feedback; не меняет себя. Evolution запускает оператор по воспроизводимому дефекту. Текст пользователя/PDF не разрешает изменение программы. Автономность Ouroboros ограничена авторством кандидата, последняя граница выпуска — человек.
 
-Первый объект: typed retrieval policy `comparison_strategy=pooled|per_publisher`, `top_k_per_publisher=2..4`. Это реально исполняемые параметры, общий cap 12 сохраняется. Freshness/citations/permissions/budgets зашиты вне policy. До разработки измерить обе стратегии; если baseline уже проходит случаи и улучшения нет, фиксируется no-op/reject. Искусственно портить baseline ради демонстрации нельзя.
+Объект: typed retrieval policy `comparison_strategy=pooled|per_publisher`, `top_k_per_publisher=2..4`, bounded BM25 reranker/вес и query-context той же страницы. Это реально исполняемые параметры, общий cap 12 сохраняется. Freshness/citations/permissions/budgets зашиты вне policy. До разработки измерить обе стратегии; если baseline уже проходит случаи и улучшения нет, фиксируется no-op/reject. Искусственно портить baseline ради демонстрации нельзя.
 
 Цикл:
 
@@ -232,7 +232,7 @@ Traces: route/tool args, evidence IDs/hashes, model/release ID, timings, usage/c
 | Security | Injection не меняет права; candidate не меняет protected files; auth; bounds |
 | Evolution | Paired before/after, fixed holdout, hashes, unsafe/no-improvement reject, rollback |
 | Operations | Чистый Docker startup, partial при outages, budgets, отсутствие secrets в trace |
-| Readability | ≤3000 Python lines, обычное форматирование, воспроизводимые команды |
+| Readability | Обычное форматирование, ясные модули и воспроизводимые команды; лимит строк снят |
 
 Hard gates **на фиксированном тестовом наборе**: 0 неизвестных IDs/страниц, 0 незаявленных подмен даты/цены, 0 обходов protected-policy/release, 2 модели реально исполнены. Это не гарантия для всех возможных входов. Faithfulness, recall, latency, стоимость и forecast errors измерить; проценты до замеров не придумывать.
 
@@ -325,3 +325,12 @@ OilAgent/                         # workspace, без общей .git
 - [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence): thread memory/checkpoints/store; in-memory не переживает restart.
 
 Статус готовности: транспортный прототип с двумя MCP проверен через pinned MCPManager Ouroboros. Полный агентный прогон, качество аналитики и остальные gates не продемонстрированы; см. актуальный INTEGRATION_STATUS.md. Фактически проверенный runtime Python — 3.13.2; 3.11 остаётся целевым вариантом до отдельной проверки.
+
+
+## 16. Фактическая реализация на 2 ноября 2026
+
+Реализованы hybrid с независимыми source contexts и общим renderer, scenario, delayed quotes, SQLite sessions, typed claims/сравнения, один repair и extractive partial fallback, budgets/provider slot, traces/feedback/replay, serving policy и операторский release/rollback. Полная контейнерная поставка запускается `./run.sh -d`; первый native skill review остаётся штатным и явным.
+
+Quality gate выполнен настоящим Ouroboros: кандидат 5/19 → 7/19 отклонён за регрессию одного validation-case. Ни critic, ни release не обходились; активная policy прежняя. Positive release/rollback проверены на контролируемых fixtures, не заявлены как production release. Новые validation cases после просмотра считаются regression-набором; следующий эксперимент требует новых случаев.
+
+Фиксированный acceptance-набор: 25/30, пять retrieval-промахов остаются. Это не точность готовых ответов. OpenAI/local live пропущены пользователем; GitHub/GitLab публикация требует целевого remote. Подробности и evidence — в INTEGRATION_STATUS.md.

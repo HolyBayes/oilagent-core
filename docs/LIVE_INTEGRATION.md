@@ -71,3 +71,13 @@ Default native profile задаёт 3 раунда, 300 секунд и 1 review
 ## Последующая проверка штатного UI
 
 Аналитический Main worker теперь проверен через браузер: report и forecast вызывают реальный Analyst MCP. Для запуска добавлен узкий schema/Nano adapter, upstream-файлы не изменены. Проверка частичная: Main неверно пересказывает происхождение forecast. Это не повтор полного author/check/critic цикла. Актуальные ограничения и дополнительный расход — в [UI.md](UI.md); прежние расходы и неуспехи выше относятся к ранним прогонам.
+
+## Обновление 2 ноября 2026
+
+Этот документ выше сохраняет историю ранних попыток. Актуальные capabilities — в INTEGRATION_STATUS.md.
+
+Skill 0.3.0 прошёл новый штатный exact-hash review/enable. Полный native Main task `14e9a5e43ccd42ad` создал настоящий policy-кандидат `a4caa61c56448c93f4e040eae1140e9781319d77` и выполнил real PDF checks. Development 4/9 → 5/9, отдельный validation 1/10 → 2/10; regression `h_brent_q4` привела к REJECTED. Critic не вызывался после FAIL, release не выполнялся. Это подтверждение авторства/проверки/отказа, не positive production improvement.
+
+Новый native task сообщил 145537 prompt + 839 completion tokens. Это отдельный расход поверх ранних таблиц; cached tokens и вызовы core/review не следует молча смешивать. Настройки временного author run восстановлены: обычные round limits и on-demand Evolution schemas. Сохранённое evidence: evolution-run-evidence.json.
+
+Браузерный forecast `f3f6f732` подтвердил canonical доставку core answer. Полная CPU Docker-поставка собрана и запущена с новым Linux-индексом и проверенным public asset cache. Docker-only network download ранее дал TLS timeout; этот факт не скрывается. Author write probes/read isolation проверены отдельно. OpenAI/local live пользователь попросил не выполнять.

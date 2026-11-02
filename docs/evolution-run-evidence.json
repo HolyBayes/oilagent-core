@@ -1,0 +1,81 @@
+{
+  "candidate_id": "f07c6de17652d446cdefd6b219f339b7",
+  "candidate_sha": "a4caa61c56448c93f4e040eae1140e9781319d77",
+  "base_sha": "aa210bd4202e63ec55d941a955762e202c41aabe",
+  "status": "REJECTED",
+  "policy": {
+    "comparison_strategy": "per_publisher",
+    "top_k_per_publisher": 4,
+    "reranker": "bm25",
+    "lexical_weight": 1.0,
+    "page_expansion": "query"
+  },
+  "quality_checks": {
+    "passed": false,
+    "scope": "paired PDF retrieval support; not answer faithfulness or unseen-market accuracy",
+    "splits": {
+      "development": {
+        "before": 4,
+        "after": 5,
+        "total": 9
+      },
+      "holdout": {
+        "before": 1,
+        "after": 2,
+        "total": 10
+      }
+    },
+    "total": 19,
+    "before": 5,
+    "after": 7,
+    "regressions": [
+      "h_brent_q4"
+    ],
+    "gain": 0.10526315789473684,
+    "eval_sha256": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+    "identity": {
+      "core_source_sha256": "85e88424d8daa0266feb04337f9138f23439ecfc844baa2cb7f5fd6eb48cf09f",
+      "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+      "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955"
+    },
+    "active_release_id": "developer-seed",
+    "baseline_policy": {
+      "comparison_strategy": "per_publisher",
+      "top_k_per_publisher": 4
+    },
+    "candidate_policy": {
+      "comparison_strategy": "per_publisher",
+      "top_k_per_publisher": 4,
+      "reranker": "bm25",
+      "lexical_weight": 1.0,
+      "page_expansion": "query"
+    },
+    "model": {
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+    },
+    "threshold": 0.01,
+    "candidate_sha": "a4caa61c56448c93f4e040eae1140e9781319d77"
+  },
+  "critic": null,
+  "native_task_id": "14e9a5e43ccd42ad",
+  "native_usage": {
+    "task_id": "14e9a5e43ccd42ad",
+    "status": "completed",
+    "prompt_tokens": 145537,
+    "completion_tokens": 839,
+    "ts": "2026-11-02T05:44:20.285634+00:00"
+  },
+  "active_policy_changed": false,
+  "production_release_performed": false,
+  "conclusion": "Rejected for h_brent_q4 regression; no critic or release after failed checks.",
+  "host_verified_diff": {
+    "candidate_id": "f07c6de17652d446cdefd6b219f339b7",
+    "base_sha": "aa210bd4202e63ec55d941a955762e202c41aabe",
+    "candidate_sha": "a4caa61c56448c93f4e040eae1140e9781319d77",
+    "diff": "diff --git a/policies/retrieval.json b/policies/retrieval.json\nindex eca59c0..f56a531 100644\n--- a/policies/retrieval.json\n+++ b/policies/retrieval.json\n@@ -1,4 +1,7 @@\n {\n-  \"comparison_strategy\": \"pooled\",\n-  \"top_k_per_publisher\": 2\n+  \"comparison_strategy\": \"per_publisher\",\n+  \"lexical_weight\": 1.0,\n+  \"page_expansion\": \"query\",\n+  \"reranker\": \"bm25\",\n+  \"top_k_per_publisher\": 4\n }",
+    "diff_sha256": "abf2e8552ade0466289e72c2f269790c2012eacad23dc70d0c1b5acdee71c1da"
+  },
+  "failed_checks_block_review_over_http": true,
+  "host_verification_llm_calls": 0
+}

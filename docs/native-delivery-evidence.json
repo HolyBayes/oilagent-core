@@ -1,0 +1,13 @@
+{
+  "transport": "real Chromium → native Main → HTTP MCP",
+  "task_id": "f3f6f732",
+  "request_id": "a19536da-e4f6-467b-9967-5e6aad6689ba",
+  "exact_core_answer_delivered": true,
+  "core_answer_sha256": "29e0919148bbe1c35e12681616e687c125e93815914f24498102344c0705b465",
+  "source_attribution_correct": true,
+  "models": [
+    "ARIMA",
+    "ETS"
+  ],
+  "interval_level": 0.8
+}

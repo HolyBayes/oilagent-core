@@ -1,46 +1,45 @@
-# Интеграционный прототип: фактический статус
+# Фактический статус
 
-Дата: 1 ноября 2026. Это отчёт о проверках конкретного прототипа, не заключение о готовности аналитика.
+Обновлено 2 ноября 2026. Это демонстрационная реализация на публичных данных, не заключение о production readiness. Предыдущий аудит сохранён в [REQUIREMENTS_AUDIT](REQUIREMENTS_AUDIT.md) и относится к указанным там старым коммитам.
 
-## Подтверждено выполнением
+## Реализовано
 
-- Ouroboros upstream 7.9.0 закреплён на полном SHA `add0ce3296c722ef99a536c52f8dcddf36494b36`.
-- Два отдельных процесса FastMCP по HTTP, у каждого свой bearer-токен. Без токена — 401; токен Analyst не подходит Evolution.
-- Немодифицированный `ouroboros.mcp_client.MCPManager` обнаружил и вызвал оба сервиса. Не использовались monkeypatch transport или mock MCP-клиент.
-- Analyst MCP вызывает настоящий общий LangGraph graph; результат содержит request ID, evidence, claims и явный статус. Без модели/индекса — `insufficient_evidence`; реальный PDF-ответ проверен отдельно.
-- Evolution MCP предоставляет пять методов. Предложение создаёт настоящий Git commit/branch; baseline main не меняется. Повтор proposal с тем же ключом возвращает прежний candidate. Изменённые аргументы с тем же ключом отклоняются.
-- Exact diff и SHA256 получены через MCP. Защищённый путь `../core.py` отвергнут через реальный MCP-вызов.
-- Fixed check исполняет реальную ветвь retrieval-policy на синтетической ranked-list fixture: publisher coverage 0.5 → 1.0. Это только интеграционный пример, не метрика на реальном корпусе.
-- Без LLM critic возвращает `REVIEW_BLOCKED`, approval не создаётся. Во всём прототипе `release_available=false`; merge/release tools отсутствуют.
-- Полный Ouroboros server запущен на pin. Local-source skill зарегистрирован штатно (для него copy/install не нужен), прошёл clean review exact hash и enable без owner-attestation. Подробности: [LIVE_INTEGRATION.md](LIVE_INTEGRATION.md).
-- 103 offline-теста проходят. Покрыты отсутствующая/пустая папка, unborn Git main/master, повторный запуск, сохранение существующей policy и приоритет system env над .env. Ruff lint/format и `pip check` проходят. `docker compose config --quiet` проходит без раскрытия secrets.
-- В коде поддержаны GigaChat, внешний OpenAI-compatible API и локальный OpenAI-compatible endpoint без обязательного ключа. Живые structured routing и domain critic проверены на GigaChat-2-Max; другие провайдеры пока проверены offline.
+- Native UI Ouroboros 7.9.0 на полном pin, общий Analyst MCP/LangGraph, штатный hash-bound review/enable instruction skill 0.3.0. UI отдаёт canonical ответ core; новая реальная браузерная проверка исправленной атрибуции прошла.
+- Локальный OPEC/EIA PDF RAG: 154 страницы, 475 E5/Chroma chunks. Web через DDGS и официальный RSS EIA, домены из committed evolution main, отдельные даты, captions/snippets без притворного чтения полного текста.
+- Hybrid: поиск в отчётах и web, независимые вопросы/контексты и программное объединение с citations. Живой сквозной ответ с report/web получен. Невалидные quotes, wrong source IDs и stale report parameters разобраны и покрыты проверками; provider outage сохраняет partial/подтверждённые выдержки.
+- ARIMA + ETS + naive, 80% prediction intervals и rolling calibration/test, MCP history dates и incremental coverage cache без TTL. Два метода проверены также в Linux-контейнере.
+- Supply-cut sensitivity по явным допущениям, проверка знаков/единиц/границ; missing inputs → clarify. Последняя delayed Brent/WTI futures quote с timestamp и типом; не EIA spot и не real-time feed.
+- SQLite session context, последние шесть вопросов, server IDs, follow-up horizon, release pin; reset при несовместимом коде. Core не считает прошлый ответ evidence.
+- Typed facts/assumptions/excerpts, protected measurement comparison, один repair на запрос, программный renderer/fallback, общий бюджет LLM/tools/input/time, shared GigaChat slot и optional monetary admission reservation.
+- Private traces, retention, explicit unverified feedback и offline replay. Отдельные bearer-токены MCP, bounded policy, scope/path checks, idempotent proposals и persisted artifacts.
+- Serving действительно читает release policy. Evolution checks используют настоящий PDF retrieval на frozen cases, затем critic при PASS; операторские immutable bundles, exact bindings, atomic activation/reconcile и rollback. Release отсутствует в MCP.
+- `./run.sh -d`: CPU Docker build, init, два MCP и native UI. Порты localhost, protected read-only mounts, eval и Docker socket не видны автору. Secrets не включены в образы/Git; managed model settings обновляются из env при рестарте контейнера.
 
-Сохранённый результат HTTP-прогона: [integration-evidence.json](integration-evidence.json). Генератор: [smoke_ouroboros.py](../scripts/smoke_ouroboros.py). Сырые логи и полный runtime state — в ignored workspace, без публикации tokens.
+## Проверки
 
-Реальный корпус: 154 PDF-страницы, 475 фрагментов. Успешный cited EIA answer и неудачные попытки, development diagnostics и расход 7192 токена (включая compact schema probe) сохранены в [RAG.md](RAG.md).
+| Проверка | Результат / предел |
+|---|---|
+| Pytest | 133 тестов прошли; сторонние deprecation warnings сохранены |
+| Ruff lint/format | Проходят |
+| Fixed acceptance | 25/30; 13 реальных retrieval cases + 17 deterministic contracts; LLM не вызывается |
+| PDF/web/hybrid/scenario/quote/forecast/follow-up | Живые GigaChat/публичные данные, примеры и неуспехи сохранены; это выбранные cases, не blind answer benchmark |
+| Native UI | Реальный Chromium → Main → HTTP MCP; обе таблицы и provenance переданы canonical renderer |
+| Native author | Реальный Main создал candidate и вызвал real checks; REJECTED за validation regression |
+| Release/rollback | Positive/negative fixtures, stale SHA/check bindings, tamper и interrupted write/reconcile; production bundle не выпускался |
+| Docker/Linux ARM64 | Оба образа, init нового Linux-индекса, MCP каталог/auth, два forecast-метода и UI HTTP прошли; assets переиспользованы из проверенного cache |
+| Author isolation | Write probes к core/evolution отклонены; holdout и Docker socket не видны в контейнере; это конкретные probes, не полное security-аудирование |
+| Providers openai/local | Offline configuration/schema checks; live пропущен пользователем |
 
-Политика web-источников находится в committed main evolution (`eedd606`); core содержит валидатор и bootstrap seed. Прямой MCP web-tool и ограниченный web-fallback graph реализованы без API-ключа. На web-этапе GigaChat не вызывался; последующие проверки PDF/forecast заняли 4424 токена. Native GigaChat сам выбрал MCP forecast tool, общий graph вернул forecasted.
+Свидетельства: [реальные диалоги](../examples/demo_dialogues.md), [deployment](deployment-evidence.json), [native author](evolution-run-evidence.json), [completion](completion-evidence.json), [acceptance](acceptance-evidence.json), [forecast/cache](FORECAST.md).
 
-Диапазоны истории передаются в MCP как `start_date`/`end_date`. Кеш по покрытию скачивает только недостающие интервалы, без TTL. Реальная HTTP MCP проверка с публичным FRED/EIA прошла без LLM: [history-cache-evidence.json](history-cache-evidence.json).
+## Что остаётся ограничением
 
-## Не подтверждено / не реализовано
+Пять исходных retrieval-промахов не исчезли от наличия новых tools. Выбранные live-ответы не доказывают полноту по всем отраслевым темам, смысловую поддержку каждого claim и отсутствие галлюцинаций. Exact quote/number checks — структурная проверка; quality rubric и raw evidence прилагаются.
 
-- Полный autonomous Evolution author run остаётся неподтверждённым. Аналитические Main worker вызовы через native UI уже проверены: отчёт и расчёт выполняют настоящий Analyst MCP; финальный пересказ forecast неверно называет источник. UI принят только частично: [UI.md](UI.md).
-- Полный author task получил HTTP 422 после enable MCP schemas; candidate не создан. Исправление inline schemas проверено offline и компактным native GigaChat probe (715 токенов); повтор полного Main worker не выполнен ради экономии.
-- OS-изоляция и полный успешный model-authored цикл proposal/check/critic/release ещё не подтверждены; native skill review/enable и settings blocking проверены.
-- Стабильный живой web-ответ через LLM: бесплатный DDGS backend ответил, но два adapter-запроса дали ошибку; граф проверен offline. [Свидетельства и ограничения](WEB.md). Сценарный расчёт и blind eval; исправление атрибуции источника в native UI. Расчётный forecast ARIMA/ETS реализован и проверен через MCP/GigaChat: [FORECAST.md](FORECAST.md). PDF corpus, локальные embeddings/Chroma и первый cited answer реализованы; ограничения и известный промах — в [RAG.md](RAG.md).
-- Ручной release/approval/rollback, trust manifest, Developer Git release SHA и межверсионная совместимость. Core и evolution теперь оформлены отдельными соседними Git-репозиториями с коммитами; утверждённого production release ещё нет. Подробности: [VERSIONING.md](VERSIONING.md).
-- OS/container sandbox автора Ouroboros и trusted runner. Раздельные токены/процессы сами по себе это не доказывают.
-- Полные request budgets/cost accounting. В прототипе — model timeout, необязательный max output (по умолчанию None) и отключённые автоматические retries модели.
-- Docker build/run: Docker daemon недоступен. Синтаксическая проверка compose не заменяет запуск контейнеров.
-- Python 3.11, Linux и другие платформы: текущий успешный прогон — Python 3.13.2/macOS ARM64. Dockerfile использует Python 3.13.
+Новый policy-кандидат дал development 4/9 → 5/9 и validation 1/10 → 2/10, но потерял `h_brent_q4`. Gate отклонил его. Действующая policy не изменена; это **не успешная активация самоулучшения**. Positive release/critic path на реальном улучшившемся без регрессий кандидате ещё не продемонстрирован; автоматического обхода этого gate нет.
 
-## Следующие gates
+ETS backtest coverage ниже nominal 80%, naive немного лучше на текущем срезе. Publication lag EIA может оставить history tail неполным; forecast показывает настоящие data_end/даты. Yahoo quote задержанная, Urals feed отсутствует. DDGS и GigaChat иногда дают ошибки/timeout; retries не маскируют это. Network-only cold asset download в Docker получил TLS timeout; bootstrap с проверенным кешем работает.
 
-1. Промах OPEC исправлен; отложенные вопросы показывают 4/9 вместо 3/9 без регрессий. Разобрать пять оставшихся промахов и расширить оценку на другие выпуски. Текущее присутствие издателей не доказывает фактическую полноту ответа. [Результаты](RETRIEVAL_EVAL.md).
-2. Проверить живой web-answer при доступном бесплатном провайдере; подключить сценарный расчёт и закрыть ошибку источника в UI. Два forecast-метода с backtest уже проверены по HTTP MCP.
-3. Связать кандидат retrieval-policy с реальной оценкой на корпусе; добавить human release/rollback и подтвердить isolation.
-4. Не повторять тяжёлые платные Main worker пробы до устранения известных причин. Аналитические MCP-вызовы в UI подтверждены, авторский цикл Evolution и достоверный финальный пересказ остаются отдельными gates. Сохранить текущее hash-bound skill review.
+Денежная гарантия не обещается без актуального тарифа и output bound; default `LLM_MAX_OUTPUT_TOKENS=None` сохранён. Unknown usage/reservations отмечаются. Native context дорогой: один новый author task — 145537 prompt + 839 completion токенов; его не нужно повторять при каждом изменении.
 
-Первичные источники интерфейсов: [Ouroboros MCP client на pin](https://github.com/razzant/ouroboros/blob/add0ce3296c722ef99a536c52f8dcddf36494b36/ouroboros/mcp_client.py), [skill loader на pin](https://github.com/razzant/ouroboros/blob/add0ce3296c722ef99a536c52f8dcddf36494b36/ouroboros/skill_loader.py), [официальная GigaChat интеграция](https://github.com/ai-forever/langchain-gigachat/blob/master/libs/gigachat/README.md).
+GitHub/GitLab URL не предоставлен, remote не настроен; read-only GitHub connector не ответил. Публикация не выполнена. x86/Linux и Python 3.11 отдельно не проверены. OCR, private data, enterprise SSO, торговля и arbitrary Python evolution вне принятой области.

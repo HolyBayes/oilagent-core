@@ -1,43 +1,25 @@
-# Нефтегазовый аналитик: решение для недельного MVP
+# Нефтегазовый аналитик: реализованное решение
 
-Архитектурное предложение • 1 ноября 2026 • до реализации
+2 ноября 2026. Два самостоятельных Git: core с доверенным кодом и evolution с policies/instruction skill. Ориентир по строкам снят; приоритет — читаемость и проверяемое поведение.
 
-## Цель и обязательный результат
+## Решения и причины
 
-Дать руководителю краткий отраслевой ответ с проверяемыми цифрами, датами и источниками. LangGraph управляет поиском в PDF, дополнением из web и вызовом расчётного инструмента. Ouroboros реально использует аналитический MCP и создаёт проверяемые предложения улучшений. Прогноз MVP: средняя месячная Brent spot, USD/bbl; два метода — ARIMA и ETS, дополнительно naive baseline.
+Native UI закреплённого Ouroboros вызывает один Analyst MCP/LangGraph. Это сохраняет обязательную платформу и единую аналитику. Выбран GigaChat-2-Max: доступен в Sber API и прошёл русскоязычные structured/tool проверки. OpenAI-compatible и local поддержаны, живые проверки по решению пользователя пропущены.
 
-## Основной путь
+RAG использует E5/Chroma и два фиксированных публичных PDF OPEC/EIA. Manifest содержит даты, URL и hashes; numeric claims допускаются только с проверенных страниц. Web без платного ключа: DDGS и официальный RSS EIA, allowlist из committed main evolution. Hybrid отдельно обрабатывает report/web контексты и программно объединяет ссылки. Typed claims проверяются по IDs, точным цитатам и числам; это не доказательство смысла. При проблемах — один repair, затем partial или явно помеченная выдержка.
 
-Контекст диалога → структурированный маршрут → RAG → web при актуальности или пробелах → forecast/scenario при необходимости → синтез claims → проверка → ответ. Только один repair, далее частичный результат с причиной. Один core вызывается из Streamlit и через Analyst MCP. Отдельные аналитические реализации и свободный coding loop на каждый вопрос не нужны.
+Forecast — реальные ARIMA и ETS, дополнительно naive. Есть rolling calibration/test по горизонту, nominal 80% prediction intervals, срез и source hashes. История EIA/FRED кешируется по покрытым датам, догружаются только пробелы. Supply-cut сценарий использует только явные пользовательские P0/Q0/cut/эластичности. Последняя биржевая котировка имеет timestamp/type и пометку delayed futures; она не подменяет spot.
 
-Корпус: публичные OPEC/EIA и доступная выдержка IEA, frozen manifest с hashes. Provenance сохраняется до PDF-страницы. Различаются дата публикации, период показателя и дата обращения. Табличные факты берутся только с предварительно проверенных страниц. Web snippets помечаются как выдержки поискового сервиса; их получение не означает чтение полной статьи.
+SQLite хранит bounded context и release pin сессии. Request guards ограничивают время, input, tool/LLM calls и repair; shared provider slot предотвращает конкурирующие GigaChat-запросы. Output cap по умолчанию None. Traces/feedback/replay отделены от источников истины.
 
-## Надёжность ответа и прогноза
+## Самоулучшение и поставка
 
-Claims связываются с evidence IDs, точными supporting spans, единицами и периодом. Код проверяет структуру, ссылки и расчёты; смысловое соответствие проверяется отдельной ручной оценкой. Наличие ссылки само по себе не доказывает достоверность. Старый CSV даёт прогноз от старого среза; даты нельзя переносить на «следующие месяцы».
+Ouroboros предлагает только bounded retrieval-policy, через отдельный Evolution MCP. Реальные paired checks на frozen development/validation требуют роста без регрессий. После PASS возможен critic; exact approval и atomic bundle activation доступны только оператору. Есть rollback и interruption reconcile. Автор не получает write к core/evaluator/release; контейнерные probes проверили read-only paths, отсутствие holdout и Docker socket.
 
-ARIMA/ETS сравниваются с naive на rolling-origin backtest по каждому поддерживаемому горизонту. Подбор параметров не видит test. Прогнозные интервалы сопровождаются методом, уровнем и оценкой фактического покрытия. Сокращение добычи — отдельный условный sensitivity analysis с явными эластичностями; без предположений агент уточняет параметры, а не придумывает коэффициенты.
+`./run.sh -d` собирает CPU-образы, готовит индекс и запускает два MCP/native UI. Secrets через env/private state. Первый skill review/enable остаётся явным штатным шагом; hidden paid startup отсутствует. Public asset cache переиспользуется с hash-проверкой PDF; network-only загрузка зависит от доступности внешних сайтов.
 
-## Реалистичный объём
+## Проверки и пределы
 
-Сохраняются два MCP, две Git-истории и manifest. Ouroboros через Evolution MCP сам предлагает policy, запускает fixed checks, запрашивает critic и получает статус. Человек утверждает выпуск. Сокращается универсальность backend: первая поверхность — узкая retrieval-policy; автоматическое исполнение Python patches отложено. Лимит собственного Python, включая scripts/tests: 3000 физических строк. Это бюджет, а не доказательство реализуемости; читаемость не жертвуется ради счётчика.
+133 тестов и lint/format прошли; fixed acceptance — 25/30, это не answer accuracy. Есть реальные PDF/web/hybrid/forecast/scenario/quote диалоги и Chromium UI-check. Native author создал candidate: 5/19 → 7/19, но validation regression вызвала REJECTED. Active policy не менялась; production release не заявлен.
 
-<!-- pagebreak -->
-
-# Контуры выполнения и допуска изменений
-
-Схема контейнеров/компонентов. Сплошные связи показывают вызовы и поток артефактов; core и выпущенная policy доступны автору только для чтения.
-
-<!-- diagram -->
-
-## Что считается самоулучшением
-
-Воспроизводимая ошибка → policy от Ouroboros через Evolution MCP → фиксированные paired baseline/candidate eval → независимый read-only critic → человек утверждает точные hashes → атомарный release. Development-cases открыты автору, holdout остаётся вне его среды. Нет роста целевой метрики, есть регрессия или ошибка checks/critic — выпуска нет. Изменение после review обнуляет допуск. Rollback возвращает прежний совместимый bundle.
-
-## Проверки и незакрытые решения
-
-День 1: pinned Ouroboros SHA, реальный MCP tool call, skill lifecycle, живой structured output модели и данные. Затем: gold PDF pages, 25–30 eval cases, два реальных forecast-метода, пять живых диалогов, unsafe/no-op candidate и rollback. Offline mocks не выдаются за live integration. Текущий upstream отдельно отмечает inert review env keys: старые настройки требуют проверки по pin.
-
-Стартовые лимиты serving предложены: 120 секунд, 4 LLM calls, 6 tool calls, суммарно 24000/5000 input/output tokens. Денежный cap требует актуального price config выбранного провайдера. При остановке — проверенные факты и пробелы; candidate остаётся UNRELEASED. Выбор провайдера, допустимые расходы и совместимость версий открыты. Production readiness и нулевые галлюцинации не заявляются.
-
-Полная спецификация: ARCHITECTURE.md. Обоснование изменений и первичные источники: docs/ARCHITECTURE_REVIEW.md. Исходный набросок сохранён отдельно. Изменения объёма — предложения перед реализацией.
+Пять retrieval-промахов, смысловая faithfulness, недостаточное ETS coverage, delayed quotes, неполный EIA tail и внешние outages остаются ограничениями. Нет опубликованного GitHub/GitLab URL. Следующие улучшения: новые закрытые корпуса/кейсы, качество retrieval/сопоставления, ручная оценка фактов, свежие данные и эксплуатационные проверки на других платформах. Детали и evidence: INTEGRATION_STATUS.md и examples/demo_dialogues.md.

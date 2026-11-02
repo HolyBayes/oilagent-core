@@ -159,8 +159,25 @@ def test_graph_web_once_and_report_priority(freshness, abstain, monkeypatch):
     assert len(calls) == int(freshness or abstain)
     assert len(invocations) <= 3
     if abstain:
-        assert result["status"] == "insufficient_evidence"
+        assert result["status"] == "partial"
+        assert "extractive_fallback" in result["warnings"]
         assert result["usage"]["web_synthesis"]["total_tokens"] == 20
     else:
         assert result["status"] == "answered"
         assert ("W1" if freshness else "R1") in result["answer"]
+
+
+def test_official_rss_topic_filter_does_not_match_publisher_boilerplate(monkeypatch):
+    from contextlib import nullcontext
+
+    from analyst.feeds import official_news
+
+    xml = b"""<rss><channel><item><title>Solar storage</title>
+    <description>EIA reports solar battery additions.</description>
+    <pubDate>Thu, 29 Oct 2026 09:00:00 -0500</pubDate></item>
+    <item><title>LNG imports</title><description>Natural gas imports increased.</description>
+    <pubDate>Thu, 29 Oct 2026 09:00:00 -0500</pubDate></item></channel></rss>"""
+    response = SimpleNamespace(raise_for_status=lambda: None, iter_bytes=lambda: iter([xml]))
+    monkeypatch.setattr("analyst.feeds.httpx.stream", lambda *a, **k: nullcontext(response))
+    rows = official_news("EIA latest natural gas news")
+    assert rows and {r["title"] for r in rows} == {"LNG imports"}

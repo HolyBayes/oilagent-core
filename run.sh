@@ -27,8 +27,11 @@ for name in ['reports','models']:
     cached=Path('workspace')/name
     target=deploy/name
     if cached.is_dir() and cached.resolve()!=target.resolve():
-        shutil.copytree(cached,target,dirs_exist_ok=True,symlinks=True,
-                        ignore=shutil.ignore_patterns('.locks','*.incomplete'))
+        def missing_only(source,names):
+            destination=target/Path(source).relative_to(cached)
+            return [n for n in names if n=='.locks' or n.endswith('.incomplete')
+                    or (destination/n).is_file() or (destination/n).is_symlink()]
+        shutil.copytree(cached,target,dirs_exist_ok=True,symlinks=True,ignore=missing_only)
 values=dict(line.split('=',1) for line in p.read_text().splitlines() if '=' in line and not line.startswith('#'))
 ca=os.getenv('GIGACHAT_CA_BUNDLE_FILE') or values.get('GIGACHAT_CA_BUNDLE_FILE','').strip('"\'')
 container_ca=''
