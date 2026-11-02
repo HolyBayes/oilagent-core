@@ -6,9 +6,12 @@ from datetime import datetime, timezone
 
 import httpx
 
+from analyst.capabilities import requires_skill
+
 SYMBOLS = {"Brent": "BZ=F", "WTI": "CL=F"}
 
 
+@requires_skill("web_research")
 def latest_quote(instrument="Brent"):
     instrument = next(
         (name for name in SYMBOLS if name.casefold() == instrument.casefold()), instrument

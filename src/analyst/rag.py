@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from functools import lru_cache
 from itertools import zip_longest
 
+from analyst.capabilities import requires_skill
 from analyst.config import CORE_ROOT, configured_path, user_files
 from analyst.ranking import query_passages
 
@@ -192,6 +193,7 @@ class ReportIndex:
         temp.replace(pointer)
         return result
 
+    @requires_skill("report_rag")
     def search(self, query, top_k=4, *, include_context=True, policy=None, publishers=None):
         if not 1 <= top_k <= 12:
             raise ValueError("top_k must be between 1 and 12")

@@ -11,7 +11,7 @@ from analyst.code_packages import SLOTS, artifact, repository_files, seed_source
 from analyst.evolution import atomic_json, fingerprint
 from analyst.method_runtime import code_root
 from analyst.releases import canonical, sha
-from analyst.skill_release import native_skill, toggle
+from analyst.skill_release import native_skill
 
 
 def package_hash(files, name):
@@ -225,12 +225,7 @@ def enable(backend, client, release_id, operator):
                 or skill.get("review_stale")
             ):
                 raise ValueError("Native exact-package review required: " + name)
-        # Keep admission blocked if a native toggle times out. Retrying reads
-        # exact hashes/state before making the same idempotent enable request.
-        for name in names:
-            skill = native_skill(client, name)
-            if not skill["enabled"]:
-                toggle(client, skill, True)
+        # Content activation never changes the owner's native skill switches.
         if (
             bundle["kind"] == "evolved"
             and backend.baseline()["base_sha"] != bundle["source_commit"]

@@ -75,3 +75,9 @@ python -m scripts.code_release rollback PREVIOUS_RELEASE_ID --operator NAME
 Stage временно закрывает аналитические вызовы. При обновлении core/executor сначала на старой версии выполните `RAG_INDEX_PATH=workspace/container/rag python -m scripts.qualify_runtime capture --operator NAME`. После обновления: `./run.sh -d executor`, затем `RAG_INDEX_PATH=workspace/container/rag python -m scripts.qualify_runtime qualify RECEIPT_ID --operator NAME`, `./run.sh -d`, review/enable нового release. Это проверяет неизменные skills на новом runtime, без заявления об улучшении. Active pointer для обхода проверки удалять нельзя.
 
 GitHub/GitLab remote пока не настроен. Перед сдачей нужны публикация, улучшение retrieval и более широкий набор живых проверок Lite.
+
+Переключатель Skills управляет доступом к методам в backend, включая прямые MCP-вызовы, `answer_question` и subagents. Состояние проверяется при вызове; при недоступном UI или устаревшем review выполнение запрещено. Обновление пакета не включает выключенные навыки.
+
+Новый MCP-инструмент обязательно получает владельца в `config/capabilities.json`; без него регистрация запрещена. Внутренние методы используют `requires_skill`, Python slots — владельца из `SLOTS`. Проверки работают для sync и async. Служебные bootstrap/fixed evaluation используют внутренний контекст; передать его через MCP или env нельзя.
+
+`code_release enable` активирует содержимое пакета, но не включает навыки: переключатели меняются только явным действием в UI.

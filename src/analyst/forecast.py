@@ -4,6 +4,7 @@ from datetime import date, datetime, timezone
 import numpy as np
 import pandas as pd
 
+from analyst.capabilities import requires_skill
 from analyst.config import configured_path
 from analyst.prices import history_snapshot
 from analyst.rag import digest
@@ -276,6 +277,7 @@ def render_forecast(result):
     return "\n\n".join(paragraphs)
 
 
+@requires_skill("oil_forecast")
 def forecast_brent(horizon_months=3, as_of="", start_date="", end_date="", *, path=None):
     from analyst.method_runtime import method_session
 

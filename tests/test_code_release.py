@@ -96,7 +96,7 @@ def test_seed_requires_whole_package_review_and_blocks_execution(installation):
         releases.enable(backend, client, release_id, "test-operator")
     assert active_bundle()["release_id"] == release_id
     assert not (code_root() / "maintenance.json").exists()
-    assert all(c["enabled"] for c in cards.values())
+    assert not any(c["enabled"] for c in cards.values())
 
 
 def test_release_pins_methods_and_rollback_restores_main_preserving_other_files(installation):
@@ -226,3 +226,23 @@ def test_runtime_qualification_cannot_smuggle_changed_methods(installation, monk
     backend.git("commit", "-m", "Changed method")
     with pytest.raises(ValueError, match="cannot change skill"):
         qualifier.qualify(backend, receipt, "operator")
+
+
+def test_package_updates_preserve_disabled_skill_switches(installation):
+    backend, _ = installation
+    initial = activate_seed(backend)
+    updated = releases.freeze(
+        releases.read_bundle(initial)["files"],
+        {
+            "kind": "runtime-requalified",
+            "source_commit": backend.baseline()["base_sha"],
+            "previous_release_id": initial,
+        },
+    )
+    client, cards = native_client(updated)
+    for name, card in cards.items():
+        card["enabled"] = name != "oil_forecast"
+    before = {name: card["enabled"] for name, card in cards.items()}
+    with client:
+        releases.enable(backend, client, updated, "operator")
+    assert before == {name: card["enabled"] for name, card in cards.items()}

@@ -1,0 +1,35 @@
+{
+  "checks": {
+    "forecast": {
+      "blocked": true,
+      "message": "Error executing tool forecast: Навык oil_forecast отключён или не имеет действующего review."
+    },
+    "supply_cut": {
+      "blocked": true,
+      "message": "Error executing tool supply_cut: Навык oil_forecast отключён или не имеет действующего review."
+    },
+    "health": {
+      "service": "analyst",
+      "stage": "report_rag",
+      "langgraph": true,
+      "rag": true,
+      "web": true,
+      "forecast": false
+    },
+    "enabled_rag_still_works": true
+  },
+  "model_calls": 0,
+  "release_id": "9102563f0a322d987782d90b12308613147da2e50e41f5eb7056cbe72d9c390e",
+  "toggles_before": {
+    "oil_forecast": false,
+    "oilgas_analyst": true,
+    "report_rag": true,
+    "web_research": true
+  },
+  "toggles_after": {
+    "oil_forecast": false,
+    "oilgas_analyst": true,
+    "report_rag": true,
+    "web_research": true
+  }
+}

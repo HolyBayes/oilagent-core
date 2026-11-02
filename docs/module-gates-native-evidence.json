@@ -1,0 +1,7 @@
+{
+  "task_id": "abf3f40389834070",
+  "status": "completed",
+  "result": "Навык oil_forecast отключён или не имеет действующего review.\n\nЗапрос: `70027db5-07b9-48e9-984e-d65e374525d5`; статус: `capability_disabled`.",
+  "prompt_tokens": 100716,
+  "completion_tokens": 174
+}

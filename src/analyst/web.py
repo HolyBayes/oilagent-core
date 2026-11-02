@@ -7,6 +7,7 @@ from urllib.parse import quote, urlsplit, urlunsplit
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from analyst.capabilities import requires_skill
 from analyst.config import CORE_ROOT, evolution_repo
 from analyst.evolution import SEED_WEB, WEB_ARTIFACT
 from analyst.feeds import official_news
@@ -136,6 +137,7 @@ def normalize_results(items, *, freshness, now, policy, today=False, query=""):
     return [{**e, "source_id": f"W{i}"} for i, e in enumerate(evidence[:5], 1)], sorted(warnings)
 
 
+@requires_skill("web_research")
 def search_web(query, freshness=True, publishers=None):
     if not 1 <= len(query) <= 4000:
         raise ValueError("Web query must contain 1..4000 characters")

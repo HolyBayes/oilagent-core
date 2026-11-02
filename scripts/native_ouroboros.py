@@ -225,6 +225,19 @@ def install_delivery_adapter():
                 "skill manifest reads and read-only specialist delegation. "
                 "Children cannot mutate Evolution; shell/file writes are disabled.",
             )
+        from analyst.capabilities import CapabilityDisabled, require_skill, tool_owner
+
+        try:
+            if name.startswith(("mcp_analyst__", "mcp_evolution__")):
+                kind, method = name.removeprefix("mcp_").split("__", 1)
+                owner = tool_owner(kind, method)
+                if owner:
+                    require_skill(owner)
+            if name == "schedule_subagent":
+                actor = args.get("subagent_id", "").split("~")[-1]
+                require_skill(tool_owner("specialists", actor))
+        except CapabilityDisabled as exc:
+            return ToolResult(status="blocked", code="MODULE_DISABLED", text=str(exc))
         if name == "mcp_analyst__answer_question":
             chat_id = getattr(self._ctx, "current_chat_id", None)
             if chat_id is not None:
@@ -233,6 +246,8 @@ def install_delivery_adapter():
         result = original_execute(self, name, args)
         if name.startswith(("mcp_analyst__", "mcp_evolution__")) and result.status == "ok":
             self._ctx._oilagent_tool_observed = True
+            if name.startswith("mcp_evolution__"):
+                self._ctx._oilagent_evolution_observed = True
         if name.startswith("mcp_analyst__") and result.status == "ok":
             payload = analyst_result(result.text)
             if payload:
@@ -261,9 +276,10 @@ def install_delivery_adapter():
         tools._ctx._oilagent_results = []
         tools._ctx._oilagent_joined = set()
         tools._ctx._oilagent_tool_observed = False
+        tools._ctx._oilagent_evolution_observed = False
         text, usage, trace = original_loop(*args, **kwargs)
         results = tools._ctx._oilagent_results
-        if not results and not tools._ctx._oilagent_tool_observed:
+        if not results and not tools._ctx._oilagent_evolution_observed:
             from ouroboros.task_status import load_effective_task_result
             from ouroboros.tool_access_paths import canonical_data_root
 
@@ -276,7 +292,7 @@ def install_delivery_adapter():
                 results = tools._ctx._oilagent_results
                 trace["oilagent_report_first_fallback"] = bool(results)
         delivered = final_delivery(tools._ctx, results, text)
-        if not results and not tools._ctx._oilagent_tool_observed:
+        if not results and not tools._ctx._oilagent_evolution_observed:
             delivered = (
                 "Не удалось подтвердить ответ по источникам. Непроверенные цифры не приводятся."
             )

@@ -7,6 +7,7 @@ from itertools import product
 
 import numpy as np
 
+from analyst.capabilities import trusted_evaluation
 from analyst.code_executor import runner_identity
 from analyst.code_packages import SLOTS, artifact, repository_files, validate_source
 from analyst.config import CORE_ROOT
@@ -35,6 +36,7 @@ def active_id():
     return json.loads(pointer.read_text())["release_id"] if pointer.exists() else "developer-seed"
 
 
+@trusted_evaluation()
 def score(slot, source, cases):
     from analyst.method_runtime import run_many
 

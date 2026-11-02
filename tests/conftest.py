@@ -21,3 +21,17 @@ def trusted_seed_executor(monkeypatch):
         return [scope["run"](request) for request in inputs], "sha256:" + "0" * 64
 
     monkeypatch.setattr(executor, "run_many", run)
+
+
+@pytest.fixture(autouse=True)
+def reviewed_native_skills(monkeypatch):
+    from analyst import capabilities
+
+    monkeypatch.setattr(
+        capabilities,
+        "native_states",
+        lambda: {
+            name: {"enabled": True, "executable_review": True, "review_stale": False}
+            for name in ["oilgas_analyst", "oil_forecast", "report_rag", "web_research"]
+        },
+    )

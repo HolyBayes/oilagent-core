@@ -9,6 +9,7 @@ RUN git init /opt/ouroboros \
 RUN pip install --no-cache-dir -r /opt/ouroboros/requirements-runtime.lock
 WORKDIR /opt/core
 COPY src ./src
+COPY config/capabilities.json ./config/capabilities.json
 COPY scripts/native_ouroboros.py scripts/native_worker.py scripts/native_bridge.py scripts/container_native.py ./scripts/
 ENV PYTHONPATH=/opt/core/src:/opt/ouroboros \
     OUROBOROS_APP_ROOT=/runtime \

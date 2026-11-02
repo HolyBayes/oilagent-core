@@ -42,7 +42,11 @@ def method_digest(slot):
 
 
 def run_many(slot, inputs, source=None):
+    from analyst.capabilities import require_skill
     from analyst.code_executor import run_many as execute
+    from analyst.code_packages import SLOTS
+
+    require_skill(SLOTS[slot])
 
     if (code_root() / "maintenance.json").exists():
         raise ValueError("Capability release is being activated")

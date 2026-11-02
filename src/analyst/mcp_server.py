@@ -12,6 +12,7 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 from starlette.responses import JSONResponse
 
+from analyst.capabilities import can_use
 from analyst.config import CORE_ROOT, configured_path, evolution_repo, workspace
 from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
@@ -29,6 +30,9 @@ def create_server(kind: str, host: str, port: int):
     server = FastMCP(
         f"oilagent-{kind}", host=host, port=port, stateless_http=True, json_response=True
     )
+    from analyst.capabilities import install_tool_gates
+
+    install_tool_gates(server, kind)
     if kind == "analyst":
 
         @server.tool()
@@ -38,9 +42,9 @@ def create_server(kind: str, host: str, port: int):
                 "service": "analyst",
                 "stage": "report_rag",
                 "langgraph": True,
-                "rag": (ReportIndex().directory / "index.json").exists(),
-                "web": web_enabled(),
-                "forecast": True,
+                "rag": can_use("report_rag") and (ReportIndex().directory / "index.json").exists(),
+                "web": can_use("web_research") and web_enabled(),
+                "forecast": can_use("oil_forecast"),
             }
 
         @server.tool(name="answer_question")

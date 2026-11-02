@@ -28,6 +28,7 @@ def identity():
     corpus = sha((CORE_ROOT / "data/reports.json").read_bytes())
     return {
         "core_source_sha256": code,
+        "capability_policy_sha256": sha((CORE_ROOT / "config/capabilities.json").read_bytes()),
         "corpus_manifest_sha256": corpus,
         "embedding_config_sha256": sha((CORE_ROOT / "config/embedding.json").read_bytes()),
     }

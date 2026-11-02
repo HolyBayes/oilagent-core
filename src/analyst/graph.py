@@ -8,6 +8,7 @@ from uuid import uuid4
 from langgraph.graph import END, START, StateGraph
 
 from analyst.budget import Budget, BudgetExceeded, current_budget, tool_call
+from analyst.capabilities import CapabilityDisabled, requires_skill
 from analyst.config import StructuredOutputError, invoke_structured, model_ready
 from analyst.contracts import ReportClaim, ReportDraft, Route
 from analyst.evidence import (
@@ -310,6 +311,8 @@ def respond(state: State) -> dict:
                 request.get("start_date", ""),
                 request.get("end_date", ""),
             )
+        except CapabilityDisabled as exc:
+            return {"status": "capability_disabled", "answer": str(exc)}
         except BudgetExceeded:
             raise
         except Exception as exc:
@@ -369,6 +372,8 @@ def respond(state: State) -> dict:
         try:
             tool_call("scenario")
             result = supply_cut_scenario(params)
+        except CapabilityDisabled as exc:
+            return {"status": "capability_disabled", "answer": str(exc)}
         except (ValueError, OverflowError) as exc:
             return {
                 "status": "clarify",
@@ -391,6 +396,8 @@ def respond(state: State) -> dict:
                 "answer": render_quote(quote),
                 "warnings": ["stale_quote"] if quote["stale"] else [],
             }
+        except CapabilityDisabled as exc:
+            return {"status": "capability_disabled", "answer": str(exc)}
         except BudgetExceeded:
             raise
         except Exception as exc:
@@ -643,6 +650,12 @@ def _answer_question(question: str, session_id: str = "") -> dict:
             for update in graph.stream(state, stream_mode="values"):
                 state = update
                 budget.check()
+        except CapabilityDisabled as exc:
+            state.update(
+                status="capability_disabled",
+                answer=str(exc),
+                warnings=[*state.get("warnings", []), "module_disabled"],
+            )
         except BudgetExceeded as exc:
             state.update(
                 status="partial" if state.get("claims") else "insufficient_evidence",
@@ -691,6 +704,7 @@ def _answer_question(question: str, session_id: str = "") -> dict:
         return state
 
 
+@requires_skill("oilgas_analyst")
 def answer_question(question, session_id=""):
     from analyst.method_runtime import method_session
 

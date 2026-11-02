@@ -1,5 +1,6 @@
 """Idempotent preparation of the domain Git and public report index."""
 
+from analyst.capabilities import trusted_evaluation
 from analyst.code_packages import SLOTS, artifact
 from analyst.code_releases import read_bundle
 from analyst.config import evolution_repo, workspace
@@ -16,9 +17,10 @@ if prepared.exists():
     bundle = read_bundle(json.loads(prepared.read_text())["release_id"])
     token = method_pin.set({slot: bundle["files"][artifact(slot)] for slot in SLOTS})
 try:
-    index = ReportIndex()
-    index.download()
-    index.ingest()
+    with trusted_evaluation():
+        index = ReportIndex()
+        index.download()
+        index.ingest()
 finally:
     if token is not None:
         method_pin.reset(token)

@@ -1,0 +1,28 @@
+{
+  "analyst": {
+    "health": null,
+    "answer_question": "oilgas_analyst",
+    "forecast": "oil_forecast",
+    "supply_cut": "oil_forecast",
+    "market_quote": "web_research",
+    "search_web_sources": "web_research",
+    "search_reports": "report_rag",
+    "submit_feedback": "oilgas_analyst"
+  },
+  "evolution": {
+    "get_status": null,
+    "read_code": "oilgas_analyst",
+    "propose_code": "oilgas_analyst",
+    "read_skill": "oilgas_analyst",
+    "propose_skill": "oilgas_analyst",
+    "propose_change": "oilgas_analyst",
+    "get_diff": "oilgas_analyst",
+    "run_checks": "oilgas_analyst",
+    "request_review": "oilgas_analyst"
+  },
+  "specialists": {
+    "report-analyst": "report_rag",
+    "web-analyst": "web_research",
+    "forecast-analyst": "oil_forecast"
+  }
+}

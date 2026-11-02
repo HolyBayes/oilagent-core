@@ -1,4 +1,5 @@
 x-model-environment: &model-environment
+  NATIVE_UI_URL: http://ouroboros:8765
   LLM_PROVIDER: ${LLM_PROVIDER:-gigachat}
   LLM_LOCK_PATH: /provider-lock/gigachat.lock
   REQUEST_TIMEOUT_SEC: ${REQUEST_TIMEOUT_SEC:-120}

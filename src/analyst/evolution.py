@@ -9,6 +9,7 @@ import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 
+from analyst.capabilities import trusted_evaluation
 from analyst.config import invoke_structured
 from analyst.contracts import CriticVerdict, RetrievalPolicy
 from analyst.retrieval import select_evidence
@@ -250,6 +251,7 @@ class Evolution:
             "diff_sha256": hashlib.sha256(diff.encode()).hexdigest(),
         }
 
+    @trusted_evaluation()
     def checks(self, candidate_id, *, real=False):
         with self.lock():
             state = self.load(candidate_id)

@@ -3,6 +3,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from analyst.capabilities import requires_skill
+
 
 class SupplyScenario(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
@@ -23,6 +25,7 @@ class SupplyScenario(BaseModel):
         return self
 
 
+@requires_skill("oil_forecast")
 def supply_cut_scenario(inputs: dict) -> dict:
     params = SupplyScenario.model_validate(inputs)
     from analyst.method_contracts import validate
