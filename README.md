@@ -4,27 +4,70 @@
 
 Фактический статус и ограничения: [INTEGRATION_STATUS](docs/INTEGRATION_STATUS.md). Краткий отчёт: [ARCHITECTURE_SUMMARY](docs/ARCHITECTURE_SUMMARY.md). Архитектура: [ARCHITECTURE.md](ARCHITECTURE.md). Реальные примеры: [demo_dialogues](examples/demo_dialogues.md).
 
-## Запуск одной командой
+## Развёртывание и вход в UI
 
-Нужны Docker Desktop/Engine и Python 3 для подготовки локальных каталогов. Из `core/`:
+Нужны запущенный Docker Desktop/Engine с Compose v2, Python 3 и доступ к выбранной модели. Все команды ниже выполняются из `OilAgent/core/`.
 
-```bash
-./run.sh -d
-```
+1. Подготовьте конфигурацию, сохранив существующую, если она уже есть:
 
-Первый запуск создаёт приватный `.env` из `.env.example` с разными случайными MCP-токенами. Заполните в нём доступ к модели и повторите команду. Для локальной модели API-ключ необязателен. Откройте <http://127.0.0.1:8765>. При первой установке instruction skill проходит штатные review/enable в Ouroboros; этот платный шаг не запускается скрыто при старте. Предыдущий review тех же байтов в той же установке переиспользуется.
+   ```bash
+   cd /path/to/OilAgent/core
+   if [ ! -f .env ]; then cp .env.example .env; fi
+   chmod 600 .env
+   ```
+
+   В `.env` задайте `LLM_PROVIDER=gigachat`, `GIGACHAT_MODEL=GigaChat-2-Max`, `GIGACHAT_CREDENTIALS` (Authorization key) и соответствующий `GIGACHAT_SCOPE`. При необходимости укажите `GIGACHAT_CA_BUNDLE_FILE`. Профили OpenAI/local описаны ниже. Секреты остаются в локальном `.env`.
+
+2. Соберите и запустите сервисы:
+
+   ```bash
+   ./run.sh -d
+   docker compose ps -a
+   docker compose logs --tail 50 init analyst evolution ouroboros
+   ```
+
+   `run.sh` заполнит пустые MCP-токены разными случайными значениями. Если `.env` отсутствует, скрипт создаст его сам; доступ к модели всё равно нужно настроить. Дождитесь успешного завершения `init`, healthy у `analyst`/`evolution` и запуска `ouroboros`. Первая сборка и индексация могут занять заметное время.
+
+3. Откройте **<http://127.0.0.1:8765>** в браузере на машине запуска. Это native UI Ouroboros. В **Skills** найдите `oilgas_analyst`, выполните штатный **Review**, дождитесь результата и включите skill. Review вызывает модель; скрытого платного review при старте нет. Результат для тех же байтов в той же установке переиспользуется.
+
+4. В чате **Main** отправьте, например: «Построй прогноз Brent на 3 месяца методами ARIMA и ETS, покажи интервалы и источник исторических данных». Текущий путь: Main → `answer_question` → расчётный модуль. Ответ должен содержать обе модели, источник и request ID. Один лишь доступный UI ещё не подтверждает доступ к модели или успешное выполнение MCP.
+
+По умолчанию UI слушает только loopback хоста; MCP доступны на `http://127.0.0.1:8011/mcp` и `http://127.0.0.1:8012/mcp` с Bearer-токенами из `.env`. MCP URL не является адресом UI. Для удалённого сервера можно пробросить UI по SSH: `ssh -L 8765:127.0.0.1:8765 user@server`, затем открыть тот же адрес в локальном браузере.
 
 Команда собирает CPU-образы, готовит независимый evolution Git, проверяет/загружает PDF и индексирует их, затем поднимает два MCP и native UI. Данные контейнерной установки находятся в `workspace/container/`; публичные PDF/веса из имеющегося локального кеша переиспользуются. Загрузка с нуля зависит от доступности OPEC/EIA/Hugging Face. Первичная попытка download из Docker получила TLS timeout; запуск с проверенным кешем и новым Linux-индексом подтверждён. Повторный запуск сохраняет Git, индекс, диалоги, review и кеш цен.
 
-Порты можно изменить: `UI_PORT=8875 ANALYST_PORT=8811 EVOLUTION_PORT=8812 ./run.sh -d`. `DEPLOY_WORKSPACE` задаёт каталог deployment state. В текущем workspace проверочная контейнерная установка доступна на 8875, ранее подготовленный host UI — на 8765.
+Если порты заняты, используйте `UI_PORT=8875 ANALYST_PORT=8811 EVOLUTION_PORT=8812 ./run.sh -d` и откройте **<http://127.0.0.1:8875>**. Для постоянной настройки запишите эти переменные в `.env`. `DEPLOY_WORKSPACE` задаёт каталог deployment state, `EVOLUTION_REPO_PATH` — путь к независимому evolution Git (по умолчанию `../evolution`). В данном рабочем каталоге ранее проверены две отдельные установки: контейнерная на 8875 и host UI на 8765; их диалоги и review хранятся отдельно.
 
 ```bash
 docker compose ps
 docker compose logs --tail 30 analyst evolution ouroboros
 docker compose down
+# После изменения .env или обновления кода:
+./run.sh -d
 ```
 
 `down` останавливает сервисы, сохранённые данные остаются. UI авторского контура имеет read-only core/evolution, не видит eval-набор и Docker socket. Выпуск разрешён только операторскому CLI на хосте. [Проверка контейнеров](docs/deployment-evidence.json).
+
+Если UI не открывается, проверьте `docker compose ps -a` и логи: ошибка `init` блокирует зависимые сервисы. Ошибки модели смотрите в логах `analyst`/`ouroboros`; после исправления `.env` повторите `./run.sh -d`. Первый запуск без готового кеша требует сетевого доступа к источникам PDF и моделей.
+
+## Skills, subagents и границы текущей интеграции
+
+Сейчас в UI установлен **один instruction skill `oilgas_analyst`**. RAG, web и forecast реализованы в core как MCP-инструменты/аналитические маршруты, а не как отдельные native skills. Профиль Ouroboros открывает Analyst MCP только через `answer_question`; прямой `forecast_brent` в этом профиле модели недоступен. Проверенный UI-прогноз ARIMA/ETS получен через общий вход, а не через самостоятельный выбор native Main инструмента `forecast_brent`. [Сохранённое подтверждение](docs/native-delivery-evidence.json).
+
+Аналитические subagents выключены (`OUROBOROS_SUBAGENTS_MODE=off`). Настроенный `oilagent-reviewer` предназначен для review и не является аналитическим специалистом. Launcher дополнительно запрещает delegation/file-write tools. Evolution MCP меняет только `policies/retrieval.json`: он **не создаёт и не улучшает native skills**. Наличие папки skills в evolution Git само по себе этого не обеспечивает.
+
+Совместить архитектуру со штатными skills/subagents Ouroboros можно. Следующее разделение — план доработки, ещё не реализованный функционал:
+
+| Native skill | Назначение | Существующая опора в core |
+|---|---|---|
+| `oilgas_analyst` | Координация и итоговый ответ | Общий аналитический маршрут |
+| `report_rag` | Поиск и сопоставление отчётов | Report retrieval и проверка цитат |
+| `web_research` | Свежие публикации и источники | Web/RSS и проверка дат |
+| `oil_forecast` | ARIMA/ETS и сценарии | `forecast_brent`, `supply_cut`, кеш истории |
+
+Skill и subagent — разные сущности: skill задаёт инструкции/возможности, subagent выполняет выделенную задачу в отдельной сессии. Простой прогноз может выполнять Main с forecast skill и прямым MCP-вызовом; сложное исследование — штатные specialist subagents через `schedule_subagent`. Для этого нужны изменение профиля, разрешений launcher и grants дочерних сессий, а также сквозные проверки. Одного переключения subagents в настройках недостаточно.
+
+Создание/изменение skills требует отдельного пути: native authoring → кандидат в evolution Git → оценка поведения → штатный review точных байтов → включение принятой версии. Текущая оценка retrieval-policy не оценивает изменения skill-инструкций или делегирования. Эти возможности нельзя считать реализованными до интеграции и проверки такого цикла.
 
 ## Модель и конфигурация
 
