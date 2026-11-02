@@ -151,7 +151,14 @@ class Evolution:
     ):
         from analyst.skill_evolution import validate_skill
 
-        if artifact != ARTIFACT:
+        if "code_slot" in extra:
+            from analyst.code_packages import artifact as code_artifact
+            from analyst.code_packages import validate_source
+
+            if artifact != code_artifact(extra["code_slot"]):
+                raise ValueError("Executable capability path mismatch")
+            validate_source(extra["code_slot"], content)
+        elif artifact != ARTIFACT:
             validate_skill(artifact, content)
         if not re.fullmatch(r"[0-9a-f]{40}", base_sha):
             raise ValueError("Full Git SHA required")
@@ -218,6 +225,12 @@ class Evolution:
     def checks(self, candidate_id, *, real=False):
         with self.lock():
             state = self.load(candidate_id)
+            if state.get("code_slot"):
+                state["status"] = "CODE_EVALUATION_UNAVAILABLE"
+                state["evaluation_error"] = (
+                    "Protected executable evaluator is not connected; no approval or activation"
+                )
+                return self.save(state)
             if state["artifact"] != ARTIFACT:
                 from analyst.skill_evolution import check_skill, evaluation_identity
 
