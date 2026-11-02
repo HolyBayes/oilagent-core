@@ -11,11 +11,11 @@ from pathlib import Path
 
 from analyst.capabilities import trusted_evaluation
 from analyst.config import invoke_structured
-from analyst.contracts import CriticVerdict, RetrievalPolicy
+from analyst.contracts import DEFAULT_RETRIEVAL_POLICY, CriticVerdict, RetrievalPolicy
 from analyst.retrieval import select_evidence
 
 ARTIFACT = "policies/retrieval.json"
-SEED = RetrievalPolicy().model_dump()
+SEED = RetrievalPolicy.model_validate(DEFAULT_RETRIEVAL_POLICY).model_dump()
 SKILL_ARTIFACT = "ouroboros_skills/oilgas_analyst/SKILL.md"
 SEED_SKILL = Path(__file__).parent / "seeds/oilgas_analyst/SKILL.md"
 WEB_ARTIFACT = "policies/web_sources.json"

@@ -14,6 +14,15 @@ class RetrievalPolicy(BaseModel):
     page_expansion: Literal["intro", "query"] = "intro"
 
 
+DEFAULT_RETRIEVAL_POLICY = {
+    "comparison_strategy": "per_publisher",
+    "top_k_per_publisher": 4,
+    "reranker": "bm25",
+    "lexical_weight": 1.0,
+    "page_expansion": "query",
+}
+
+
 class Route(BaseModel):
     """Classify an oil/gas request and whether it needs fresh evidence."""
 

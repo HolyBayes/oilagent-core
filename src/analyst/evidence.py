@@ -6,10 +6,36 @@ from analyst.contracts import ReportDraft
 from analyst.measurements import comparable
 
 
+def model_source(row):
+    """Prompt projection; full provenance stays in the original evidence rows."""
+    fields = (
+        "source_id",
+        "kind",
+        "publisher",
+        "title",
+        "published_at",
+        "page",
+        "numeric_verified",
+        "text",
+        "page_intro",
+    )
+    result = {key: row[key] for key in fields if key in row}
+    text, intro = row.get("text", ""), row.get("page_intro", "")
+    if intro and intro in text:
+        result.pop("page_intro", None)
+    spans = []
+    for span in row.get("support_spans", []):
+        if span and span not in text and span not in intro and span not in spans:
+            spans.append(span)
+    if spans:
+        result["support_spans"] = spans
+    return result
+
+
 def fit_context(rows, question):
     selected, size = [], 0
     for row in rows:
-        length = len(json.dumps(row, ensure_ascii=False))
+        length = len(json.dumps(model_source(row), ensure_ascii=False))
         if size + length > 10000 - len(question):
             break
         selected.append(row)

@@ -97,7 +97,15 @@ def test_neighboring_chunks_do_not_crowd_out_other_pages(index):
             metadata | {"page": 2, "offset": 0},
         ],
     )
-    rows = index.search(query, 2)
+    rows = index.search(
+        query,
+        2,
+        policy={
+            "comparison_strategy": "per_publisher",
+            "top_k_per_publisher": 2,
+            "page_expansion": "intro",
+        },
+    )
     assert {r["page"] for r in rows} == {1, 2}
     assert rows[0]["page_intro"] == "neighbor two"
     assert rows[0]["intro_chunk_id"] == "neighbor2"
@@ -156,8 +164,8 @@ def test_intro_quotes_keep_numeric_gate_and_source_identity():
 
 
 def test_intro_is_included_in_context_budget():
-    first = {"source_id": "R1", "text": "x" * 4000, "page_intro": "x" * 800}
-    second = {"source_id": "R2", "text": "x" * 4000, "page_intro": "x" * 800}
+    first = {"source_id": "R1", "text": "x" * 4000, "page_intro": "i" * 800}
+    second = {"source_id": "R2", "text": "x" * 4000, "page_intro": "i" * 800}
     third = {"source_id": "R3", "text": "x" * 300}
     assert fit_context([first, second, third], "x" * 100) == [first, second]
 
@@ -248,3 +256,35 @@ def test_query_page_context_is_exact_and_bound_to_source(index):
     }
     draft.claims[0].source_id = "R9"
     assert validate_claims(draft, [foreign])[1] == ["invalid_citation"]
+
+
+def test_production_group_is_not_mistaken_for_report_publisher():
+    from analyst.rag import report_publishers
+
+    assert report_publishers("According to EIA, what is non-OPEC+ production?") == ["EIA"]
+    assert report_publishers("По EIA: как изменится добыча ОПЕК+?") == ["EIA"]
+    assert report_publishers("Compare OPEC and EIA reports") == ["OPEC", "EIA"]
+
+
+def test_prompt_projection_preserves_provenance_and_exact_quotes():
+    from analyst.evidence import model_source
+
+    row = {
+        "source_id": "R1",
+        "text": "Original passage",
+        "page_intro": "Original",
+        "support_spans": ["Original passage", "Another sentence", "Another sentence"],
+        "url": "https://example.org/report",
+        "sha256": "a" * 64,
+        "numeric_verified": True,
+    }
+    view = model_source(row)
+    assert view["support_spans"] == ["Another sentence"]
+    assert "page_intro" not in view and "sha256" not in view and "url" not in view
+    assert row["url"] and len(row["support_spans"]) == 3
+    claim = ReportClaim(text="Another sentence", source_id="R1", quote="Another sentence")
+    assert validate_claims(ReportDraft(claims=[claim], abstain=False), [row])[0]
+    claim.quote = "Original passage Another sentence"
+    assert validate_claims(ReportDraft(claims=[claim], abstain=False), [row])[1] == [
+        "invalid_citation"
+    ]

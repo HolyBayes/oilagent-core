@@ -1,112 +1,920 @@
 {
-  "date": "2026-11-01",
-  "provider": "gigachat",
-  "model": "GigaChat-2-Max",
-  "corpus": {
-    "collection": "reports_05f766f8eba656d0eacb",
-    "corpus_hash": "05f766f8eba656d0eacb017e4f0dfe7c604f606d495d11a8a4f5b4d9c0922ea6",
-    "embedding": {
-      "model": "intfloat/multilingual-e5-small",
-      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
-    },
-    "chunks": 475,
-    "warnings": [],
-    "indexed_at": "2026-11-01T15:34:07.215913+00:00"
+  "scope": "Fixed seen queries, not a blind benchmark; generated text is never evidence",
+  "acceptance": {
+    "dataset_sha256": "cb76ddb19932780148eef668a85f8e970e6894050ca1652b6fd8004acf5d2971",
+    "scope": "Fixed regression/contract cases, not a blind benchmark. Retrieval is real local PDF search; workflow routes are fixtures, not real LLM decisions.",
+    "llm_calls": 0,
+    "passed": 30,
+    "total": 30,
+    "cases": [
+      {
+        "case_id": "brent_h1",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "inventory",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "opec_growth",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "compare",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "eia_september",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "eia_q4_stock",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "eia_supply",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "eia_opec_2026",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "opec_basket",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "opec_2026",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "opec_2024",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "opec_china",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "compare_2026",
+        "kind": "retrieval",
+        "passed": true
+      },
+      {
+        "case_id": "scenario_valid",
+        "kind": "scenario",
+        "passed": true
+      },
+      {
+        "case_id": "scenario_zero_cut",
+        "kind": "scenario",
+        "passed": true
+      },
+      {
+        "case_id": "scenario_cut_exceeds",
+        "kind": "scenario",
+        "passed": true
+      },
+      {
+        "case_id": "scenario_negative_price",
+        "kind": "scenario",
+        "passed": true
+      },
+      {
+        "case_id": "scenario_positive_demand",
+        "kind": "scenario",
+        "passed": true
+      },
+      {
+        "case_id": "scenario_negative_supply",
+        "kind": "scenario",
+        "passed": true
+      },
+      {
+        "case_id": "comparison_same",
+        "kind": "comparison",
+        "passed": true
+      },
+      {
+        "case_id": "comparison_unit",
+        "kind": "comparison",
+        "passed": true
+      },
+      {
+        "case_id": "comparison_period",
+        "kind": "comparison",
+        "passed": true
+      },
+      {
+        "case_id": "comparison_vintage",
+        "kind": "comparison",
+        "passed": true
+      },
+      {
+        "case_id": "claim_supported",
+        "kind": "claim",
+        "passed": true
+      },
+      {
+        "case_id": "claim_invented_number",
+        "kind": "claim",
+        "passed": true
+      },
+      {
+        "case_id": "claim_unknown_source",
+        "kind": "claim",
+        "passed": true
+      },
+      {
+        "case_id": "claim_invented_quote",
+        "kind": "claim",
+        "passed": true
+      },
+      {
+        "case_id": "out_of_scope",
+        "kind": "workflow",
+        "passed": true
+      },
+      {
+        "case_id": "clarify",
+        "kind": "workflow",
+        "passed": true
+      },
+      {
+        "case_id": "budget_before_tool",
+        "kind": "budget",
+        "passed": true
+      }
+    ]
   },
-  "runs": [
+  "benchmark": {
+    "scope": "Fixed seen queries, not a blind benchmark; generated text is never evidence",
+    "method_release_id": "5e0060b6510c7eac2a29060561fa55b7e5fade89f54c07079e18b5c77b9a43d1",
+    "summary": {
+      "vector": {
+        "retrieved": 9,
+        "in_context": 9,
+        "total": 13,
+        "seconds": 1.16
+      },
+      "hybrid": {
+        "retrieved": 13,
+        "in_context": 13,
+        "total": 13,
+        "seconds": 1.29
+      },
+      "multiquery_vector": {
+        "retrieved": 8,
+        "in_context": 8,
+        "total": 13,
+        "seconds": 2.51
+      },
+      "multiquery_hybrid": {
+        "retrieved": 13,
+        "in_context": 12,
+        "total": 13,
+        "seconds": 3.89
+      },
+      "hyde_vector": {
+        "retrieved": 11,
+        "in_context": 10,
+        "total": 13,
+        "seconds": 0.94
+      },
+      "hyde_hybrid": {
+        "retrieved": 13,
+        "in_context": 13,
+        "total": 13,
+        "seconds": 1.36
+      }
+    },
+    "cases": [
+      {
+        "case": "brent_h1",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.3761758749897126
+      },
+      {
+        "case": "brent_h1",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.08638537497608922
+      },
+      {
+        "case": "brent_h1",
+        "strategy": "multiquery_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.18187033300637268
+      },
+      {
+        "case": "brent_h1",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.24431229097535834
+      },
+      {
+        "case": "brent_h1",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06464191700797528
+      },
+      {
+        "case": "brent_h1",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.08790516600129195
+      },
+      {
+        "case": "inventory",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06274145899806172
+      },
+      {
+        "case": "inventory",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.07835024999803863
+      },
+      {
+        "case": "inventory",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.17309462500270456
+      },
+      {
+        "case": "inventory",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.24402095802361146
+      },
+      {
+        "case": "inventory",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06447587499860674
+      },
+      {
+        "case": "inventory",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.0868426249944605
+      },
+      {
+        "case": "opec_growth",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.05898100000922568
+      },
+      {
+        "case": "opec_growth",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.0917772920220159
+      },
+      {
+        "case": "opec_growth",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.17035712499637157
+      },
+      {
+        "case": "opec_growth",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.3029801660159137
+      },
+      {
+        "case": "opec_growth",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.07181258400669321
+      },
+      {
+        "case": "opec_growth",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.10354212499805726
+      },
+      {
+        "case": "compare",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09622908401070163
+      },
+      {
+        "case": "compare",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.1591235410014633
+      },
+      {
+        "case": "compare",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.28192466698237695
+      },
+      {
+        "case": "compare",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.4472502499993425
+      },
+      {
+        "case": "compare",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.10228104199632071
+      },
+      {
+        "case": "compare",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.15969487497932278
+      },
+      {
+        "case": "eia_september",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.057208499987609684
+      },
+      {
+        "case": "eia_september",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.07780691699008457
+      },
+      {
+        "case": "eia_september",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.170961083000293
+      },
+      {
+        "case": "eia_september",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.24742708299891092
+      },
+      {
+        "case": "eia_september",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.07658633397659287
+      },
+      {
+        "case": "eia_september",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09390662499936298
+      },
+      {
+        "case": "eia_q4_stock",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.060649292019661516
+      },
+      {
+        "case": "eia_q4_stock",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.08204012500937097
+      },
+      {
+        "case": "eia_q4_stock",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.17298791598295793
+      },
+      {
+        "case": "eia_q4_stock",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.2401770839933306
+      },
+      {
+        "case": "eia_q4_stock",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.0651749579992611
+      },
+      {
+        "case": "eia_q4_stock",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09041991698904894
+      },
+      {
+        "case": "eia_supply",
+        "strategy": "vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.05968562499037944
+      },
+      {
+        "case": "eia_supply",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.07951954199234024
+      },
+      {
+        "case": "eia_supply",
+        "strategy": "multiquery_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.17302908399142325
+      },
+      {
+        "case": "eia_supply",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": false,
+        "seconds": 0.24217108398443088
+      },
+      {
+        "case": "eia_supply",
+        "strategy": "hyde_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.0689751660102047
+      },
+      {
+        "case": "eia_supply",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09004670902504586
+      },
+      {
+        "case": "eia_opec_2026",
+        "strategy": "vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.059813833999214694
+      },
+      {
+        "case": "eia_opec_2026",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.11337812501005828
+      },
+      {
+        "case": "eia_opec_2026",
+        "strategy": "multiquery_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.1955793749948498
+      },
+      {
+        "case": "eia_opec_2026",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.32109929202124476
+      },
+      {
+        "case": "eia_opec_2026",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": false,
+        "seconds": 0.0685981250135228
+      },
+      {
+        "case": "eia_opec_2026",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09094216700759716
+      },
+      {
+        "case": "opec_basket",
+        "strategy": "vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.056981958012329414
+      },
+      {
+        "case": "opec_basket",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09049033399787731
+      },
+      {
+        "case": "opec_basket",
+        "strategy": "multiquery_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.17527624999638647
+      },
+      {
+        "case": "opec_basket",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.27771866699913517
+      },
+      {
+        "case": "opec_basket",
+        "strategy": "hyde_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.06078358297236264
+      },
+      {
+        "case": "opec_basket",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09729912498733029
+      },
+      {
+        "case": "opec_2026",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.05494141700910404
+      },
+      {
+        "case": "opec_2026",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09169104101601988
+      },
+      {
+        "case": "opec_2026",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.16972962499130517
+      },
+      {
+        "case": "opec_2026",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.27758645798894577
+      },
+      {
+        "case": "opec_2026",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06659924998530187
+      },
+      {
+        "case": "opec_2026",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.10663625001325272
+      },
+      {
+        "case": "opec_2024",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06335045900777914
+      },
+      {
+        "case": "opec_2024",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09875908400863409
+      },
+      {
+        "case": "opec_2024",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.1896414169750642
+      },
+      {
+        "case": "opec_2024",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.2816318339901045
+      },
+      {
+        "case": "opec_2024",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06687204199261032
+      },
+      {
+        "case": "opec_2024",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09885037498315796
+      },
+      {
+        "case": "opec_china",
+        "strategy": "vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.05881141699501313
+      },
+      {
+        "case": "opec_china",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09312537498772144
+      },
+      {
+        "case": "opec_china",
+        "strategy": "multiquery_vector",
+        "retrieved": false,
+        "in_context": false,
+        "seconds": 0.17406095800106414
+      },
+      {
+        "case": "opec_china",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.27693316698423587
+      },
+      {
+        "case": "opec_china",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.06377649999922141
+      },
+      {
+        "case": "opec_china",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.10059833398554474
+      },
+      {
+        "case": "compare_2026",
+        "strategy": "vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.09000641701277345
+      },
+      {
+        "case": "compare_2026",
+        "strategy": "hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.1512817909824662
+      },
+      {
+        "case": "compare_2026",
+        "strategy": "multiquery_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.28569987500668503
+      },
+      {
+        "case": "compare_2026",
+        "strategy": "multiquery_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.48285191698232666
+      },
+      {
+        "case": "compare_2026",
+        "strategy": "hyde_vector",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.10176504199625924
+      },
+      {
+        "case": "compare_2026",
+        "strategy": "hyde_hybrid",
+        "retrieved": true,
+        "in_context": true,
+        "seconds": 0.15779608400771394
+      }
+    ],
+    "generation_usage": {
+      "input_tokens": 1633,
+      "output_tokens": 2043,
+      "total_tokens": 3676
+    }
+  },
+  "prompt_support": [
     {
-      "request_id": "e32aeb00-8ca4-41d6-80be-ef47804229b0",
-      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
-      "status": "insufficient_evidence",
-      "route": {
-        "intent": "domain_qa",
-        "freshness_required": false
-      },
-      "answer": "В выбранных фрагментах недостаточно подтверждённых данных для ответа.",
-      "warnings": [
-        "insufficient_evidence"
-      ],
-      "usage": {
-        "route": {
-          "output_tokens": 44,
-          "input_tokens": 204,
-          "total_tokens": 248,
-          "input_token_details": {
-            "cache_read": 3
-          }
-        },
-        "synthesis": {
-          "output_tokens": 139,
-          "input_tokens": 2698,
-          "total_tokens": 2837,
-          "input_token_details": {
-            "cache_read": 4
-          }
-        }
-      },
-      "claims": []
+      "case": "brent_h1",
+      "passed": true,
+      "chars": 10555,
+      "omitted": false
     },
     {
-      "request_id": "443eaed9-a936-4de7-b863-442f5627324b",
-      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
-      "status": "needs_web",
-      "route": {
-        "intent": "domain_qa",
-        "freshness_required": true
-      },
-      "answer": "Для текущих данных нужен web-поиск, который пока не подключён. Доступный корпус содержит исторические отчёты.",
-      "warnings": [
-        "web_not_configured"
-      ],
-      "usage": {
-        "output_tokens": 44,
-        "input_tokens": 204,
-        "total_tokens": 248,
-        "input_token_details": {
-          "cache_read": 3
-        }
-      },
-      "claims": null
+      "case": "inventory",
+      "passed": true,
+      "chars": 10052,
+      "omitted": false
     },
     {
-      "request_id": "9643a69e-3f87-4513-9d98-c927e470425a",
-      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
-      "status": "answered",
-      "route": {
-        "intent": "domain_qa",
-        "freshness_required": false
-      },
-      "answer": "EIA прогнозирует, что цена Brent в первом полугодии 2026 года составит в среднем $52 за баррель. [R4]\n\n\nИсточники:\n\n[R4] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 5: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=5",
-      "warnings": [],
-      "usage": {
-        "route": {
-          "output_tokens": 44,
-          "input_tokens": 260,
-          "total_tokens": 304,
-          "input_token_details": {
-            "cache_read": 3
-          }
-        },
-        "synthesis": {
-          "output_tokens": 148,
-          "input_tokens": 2692,
-          "total_tokens": 2840,
-          "input_token_details": {
-            "cache_read": 4
-          }
-        }
-      },
-      "claims": [
-        {
-          "text": "EIA прогнозирует, что цена Brent в первом полугодии 2026 года составит в среднем $52 за баррель.",
-          "source_id": "R4",
-          "quote": "We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26)."
-        }
-      ]
+      "case": "opec_growth",
+      "passed": true,
+      "chars": 10338,
+      "omitted": false
+    },
+    {
+      "case": "compare",
+      "passed": true,
+      "chars": 9778,
+      "omitted": false
+    },
+    {
+      "case": "eia_september",
+      "passed": true,
+      "chars": 9991,
+      "omitted": false
+    },
+    {
+      "case": "eia_q4_stock",
+      "passed": true,
+      "chars": 9991,
+      "omitted": false
+    },
+    {
+      "case": "eia_supply",
+      "passed": true,
+      "chars": 10953,
+      "omitted": false
+    },
+    {
+      "case": "eia_opec_2026",
+      "passed": true,
+      "chars": 10231,
+      "omitted": false
+    },
+    {
+      "case": "opec_basket",
+      "passed": true,
+      "chars": 8122,
+      "omitted": false
+    },
+    {
+      "case": "opec_2026",
+      "passed": true,
+      "chars": 10764,
+      "omitted": false
+    },
+    {
+      "case": "opec_2024",
+      "passed": true,
+      "chars": 9489,
+      "omitted": false
+    },
+    {
+      "case": "opec_china",
+      "passed": true,
+      "chars": 8618,
+      "omitted": false
+    },
+    {
+      "case": "compare_2026",
+      "passed": true,
+      "chars": 11156,
+      "omitted": false
     }
   ],
-  "rag_usage_total_tokens": 6477,
-  "compact_schema_usage_tokens": 715,
-  "phase_usage_total_tokens": 7192,
-  "full_ouroboros_runtime": false
+  "runtime_qualification": {
+    "release_id": "5e0060b6510c7eac2a29060561fa55b7e5fade89f54c07079e18b5c77b9a43d1",
+    "receipt": "8a252fcbeb3940e1b5a4a6eed45339ed61b768a9f52e8e3f6b1b7870d46fdc33",
+    "identity": {
+      "capability_policy_sha256": "bdaeee5c33d6f1d38ff656bd6033927e9491f678036c39d70a9d8422d7df66e8",
+      "core_source_sha256": "9bca0c27b9b88e4ea81f64b554dd3cfd06f6050f81243fa0f48073626024c2f8",
+      "corpus_manifest_sha256": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab",
+      "datasets": {
+        "brent_daily.csv": "94406f7550858cd4cd8f0f653e196e77336f6da21bbebfc0d97d4d46d9784473",
+        "brent_daily.json": "cce162bed4a4e28818fc6b4b206549bdca51a9e94cade6c01ea51aa036708c2d",
+        "code_eval.json": "5afc76b999112a5d168aa820d9605dcdceebefff20bcd26075d65acb25cb649c",
+        "evolution_eval.json": "fdda4bd501fbffa06d3a365c28a15d228b8bece94a0d48a33e0f0efb61f6817f",
+        "reports.json": "f3e98fa285a81a21c5016223d1889471231386b1c8456aa8eb989be5c43e61ab"
+      },
+      "embedding_config_sha256": "3390383753d17c9ebe1f540e0ff0bb2de69fd4d8fdb7f5137c5bb4131e498955",
+      "runner": {
+        "abi": 2,
+        "confinement": "chroot+uid+seccomp",
+        "image": "sha256:9e9a61d2f7d0817126ff6c5100b3e9ca314b17b381b07f5fdaa455f1df1ba010"
+      }
+    },
+    "retrieval": {
+      "after": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "before": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "gain": 0.3684210526315789,
+      "passed": true,
+      "regressions": [],
+      "threshold": 0.01
+    }
+  },
+  "limitations": [
+    "All fixed cases were seen during debugging, including the split named holdout.",
+    "Retrieval support is not live answer completeness.",
+    "Seven of nineteen additional cases remain unsupported.",
+    "MultiQuery keeps the first representation of a duplicate page."
+  ],
+  "policy": {
+    "comparison_strategy": "per_publisher",
+    "top_k_per_publisher": 4,
+    "reranker": "bm25",
+    "lexical_weight": 1.0,
+    "page_expansion": "query"
+  }
 }

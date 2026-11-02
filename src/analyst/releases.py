@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime, timezone
 
 from analyst.config import CORE_ROOT, configured_path
-from analyst.contracts import RetrievalPolicy
+from analyst.contracts import DEFAULT_RETRIEVAL_POLICY, RetrievalPolicy
 
 SCHEMA_VERSION = 1
 
@@ -67,7 +67,7 @@ def active_release():
         # merely to manufacture an apparent evolution improvement.
         return {
             "release_id": "developer-seed",
-            "policy": {"comparison_strategy": "per_publisher", "top_k_per_publisher": 4},
+            "policy": RetrievalPolicy.model_validate(DEFAULT_RETRIEVAL_POLICY).model_dump(),
             "identity": identity(),
         }
     release_id = json.loads(pointer.read_text())["release_id"]

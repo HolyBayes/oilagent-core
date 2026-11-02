@@ -5,6 +5,11 @@ import re
 from collections import Counter
 
 ALIASES = {
+    "четвёрт": "fourth",
+    "четверт": "fourth",
+    "втор": "second",
+    "трет": "third",
+    "квартал": "quarter",
     "спрос": "demand",
     "миров": "global",
     "world": "global",

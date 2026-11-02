@@ -7,7 +7,12 @@ from itertools import zip_longest
 
 from analyst.capabilities import requires_skill
 from analyst.config import CORE_ROOT, configured_path, user_files
-from analyst.ranking import query_passages
+from analyst.ranking import query_passages, tokens
+
+
+def report_publishers(query):
+    patterns = [("OPEC", r"\bOPEC\b(?!\+)|ОПЕК(?!\+)"), ("EIA", r"\bEIA\b")]
+    return [publisher for publisher, pattern in patterns if re.search(pattern, query, re.I)]
 
 
 def digest(data):
@@ -211,15 +216,7 @@ class ReportIndex:
             .encode(["query: " + query], normalize_embeddings=True, show_progress_bar=False)
             .tolist()
         )
-        publishers = (
-            publishers
-            or [
-                p
-                for p, pattern in [("OPEC", r"\bOPEC\b|ОПЕК"), ("EIA", r"\bEIA\b")]
-                if re.search(pattern, query, re.I)
-            ]
-            or [None]
-        )
+        publishers = publishers or report_publishers(query) or [None]
         if policy is None:
             from analyst.releases import active_release
 
@@ -254,7 +251,8 @@ class ReportIndex:
 
             request = {
                 "rows": [{"text": r["text"]} for r in candidates],
-                "query": query,
+                "query": " ".join(tokens(query)),
+                "original_query": query,
                 "mode": policy.reranker,
                 "weight": policy.lexical_weight,
             }

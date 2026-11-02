@@ -52,6 +52,10 @@ def test_money_reservation_rejects_unbounded_output_before_call(monkeypatch):
 
 
 def test_real_check_binds_case_hash_and_rejects_regressions(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        "analyst.quality.active_release",
+        lambda: {"release_id": "fixture-vector", "policy": {"reranker": "vector"}},
+    )
     cases = [
         {
             "case_id": "a",

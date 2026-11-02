@@ -10,7 +10,13 @@ from analyst.graph import answer_question
 
 @pytest.fixture
 def backend(tmp_path):
-    return Evolution(tmp_path)
+    backend = Evolution(tmp_path)
+    # Synthetic gate tests use a deliberately incomplete fixture, never serving defaults.
+    path = backend.repo / ARTIFACT
+    path.write_text(RetrievalPolicy().model_dump_json())
+    backend.git("add", ARTIFACT)
+    backend.git("commit", "-m", "Set synthetic pooled fixture")
+    return backend
 
 
 def propose(backend, policy=None, key="test-1", artifact=ARTIFACT):
