@@ -1,0 +1,217 @@
+{
+  "transport": "native UI /api/tasks -> Main -> HTTP MCP",
+  "model": "GigaChat-2",
+  "attempts_per_case": 1,
+  "cases": [
+    {
+      "case": "report",
+      "question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026?",
+      "task_id": "28915ebde89142cb",
+      "status": "completed",
+      "result": "We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. [R2]\n\n\nИсточники:\n\n[R2] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6\n\nЗапрос: `3a5ceb6a-8663-453c-8812-948b6e802963`; статус: `answered`.",
+      "prompt_tokens": 45823,
+      "completion_tokens": 72,
+      "total_rounds": 2,
+      "analyst_traces": [
+        {
+          "request_id": "3a5ceb6a-8663-453c-8812-948b6e802963",
+          "status": "answered",
+          "answer": "We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. [R2]\n\n\nИсточники:\n\n[R2] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6",
+          "warnings": [
+            "session_reset_incompatible_core"
+          ],
+          "missing": [],
+          "usage": {
+            "route": {
+              "output_tokens": 337,
+              "input_tokens": 875,
+              "total_tokens": 1212,
+              "input_token_details": {
+                "cache_read": 0
+              }
+            },
+            "synthesis": {
+              "output_tokens": 158,
+              "input_tokens": 3301,
+              "total_tokens": 3459,
+              "input_token_details": {
+                "cache_read": 0
+              }
+            }
+          }
+        }
+      ],
+      "observed_models": [
+        "gigachat::GigaChat-2"
+      ],
+      "structural_checks_passed": true,
+      "review_note": "Report answer cites the full 2026 year rather than explicitly H1; answer completeness remains a RAG limitation."
+    },
+    {
+      "case": "web",
+      "question": "Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?",
+      "task_id": "eed0e6c98a044940",
+      "status": "completed",
+      "result": "LNG imports make up increasing share of Colombia's natural gas supply. [W1]\n\nColombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. [W1]\n\nA potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. [W1]\n\nColombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño. [W1]\n\n\nИсточники:\n\n[W1] web, eia.gov: LNG imports make up increasing share of Colombia's natural gas supply, публикация 2026-10-29T09:00:00-05:00, получено 2026-11-02T15:32:14.237921+00:00: https://www.eia.gov/todayinenergy/detail.php?id=68364\n\nЗапрос: `2415c285-4526-46f6-a5ad-4893c847b5c1`; статус: `answered`.",
+      "prompt_tokens": 45815,
+      "completion_tokens": 69,
+      "total_rounds": 2,
+      "analyst_traces": [
+        {
+          "request_id": "2415c285-4526-46f6-a5ad-4893c847b5c1",
+          "status": "answered",
+          "answer": "LNG imports make up increasing share of Colombia's natural gas supply. [W1]\n\nColombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. [W1]\n\nA potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. [W1]\n\nColombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño. [W1]\n\n\nИсточники:\n\n[W1] web, eia.gov: LNG imports make up increasing share of Colombia's natural gas supply, публикация 2026-10-29T09:00:00-05:00, получено 2026-11-02T15:32:14.237921+00:00: https://www.eia.gov/todayinenergy/detail.php?id=68364",
+          "warnings": [
+            "web_official_rss",
+            "web_missing_or_old_date",
+            "web_untrusted_source",
+            "web_search_snippets"
+          ],
+          "missing": [],
+          "usage": {
+            "route": {
+              "output_tokens": 289,
+              "input_tokens": 1147,
+              "total_tokens": 1436,
+              "input_token_details": {
+                "cache_read": 0
+              }
+            },
+            "synthesis": {
+              "output_tokens": 381,
+              "input_tokens": 1237,
+              "total_tokens": 1618,
+              "input_token_details": {
+                "cache_read": 0
+              }
+            }
+          }
+        }
+      ],
+      "observed_models": [
+        "gigachat::GigaChat-2"
+      ],
+      "structural_checks_passed": true
+    },
+    {
+      "case": "hybrid",
+      "question": "Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026; а затем добавь последние новости EIA о природном газе за 7 дней. Раздели источники.",
+      "task_id": "e604947066724439",
+      "status": "completed",
+      "result": "EIA прогнозировало, что цена Brent в первом полугодии 2026 года составит $52 за баррель. [R2]\n\nLNG imports make up increasing share of Colombia's natural gas supply. [W1]\n\nColombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. [W1]\n\nA potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. [W1]\n\nColombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño. [W1]\n\n\nИсточники:\n\n[R2] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6\n\n[W1] web, eia.gov: LNG imports make up increasing share of Colombia's natural gas supply, публикация 2026-10-29T09:00:00-05:00, получено 2026-11-02T15:32:27.163689+00:00: https://www.eia.gov/todayinenergy/detail.php?id=68364\n\nЗапрос: `266d39aa-56bf-4b1d-a310-50ca1aa09d94`; статус: `answered`.",
+      "prompt_tokens": 15737,
+      "completion_tokens": 128,
+      "total_rounds": 2,
+      "analyst_traces": [
+        {
+          "request_id": "266d39aa-56bf-4b1d-a310-50ca1aa09d94",
+          "status": "answered",
+          "answer": "EIA прогнозировало, что цена Brent в первом полугодии 2026 года составит $52 за баррель. [R2]\n\nLNG imports make up increasing share of Colombia's natural gas supply. [W1]\n\nColombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. [W1]\n\nA potential drought this fall and winter could limit the availability of hydroelectric generation and boost the country's demand for natural gas power generation. [W1]\n\nColombia's government has declared a national disaster in anticipation of a drought resulting from an expected strong El Niño. [W1]\n\n\nИсточники:\n\n[R2] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/archives/oct25.pdf#page=6\n\n[W1] web, eia.gov: LNG imports make up increasing share of Colombia's natural gas supply, публикация 2026-10-29T09:00:00-05:00, получено 2026-11-02T15:32:27.163689+00:00: https://www.eia.gov/todayinenergy/detail.php?id=68364",
+          "warnings": [
+            "web_official_rss",
+            "web_missing_or_old_date",
+            "web_untrusted_source",
+            "web_search_snippets"
+          ],
+          "missing": [],
+          "usage": {
+            "route": {
+              "output_tokens": 340,
+              "input_tokens": 1160,
+              "total_tokens": 1500,
+              "input_token_details": {
+                "cache_read": 0
+              }
+            },
+            "report_synthesis": {
+              "output_tokens": 198,
+              "input_tokens": 2919,
+              "total_tokens": 3117,
+              "input_token_details": {
+                "cache_read": 621
+              }
+            },
+            "web_synthesis": {
+              "output_tokens": 380,
+              "input_tokens": 444,
+              "total_tokens": 824,
+              "input_token_details": {
+                "cache_read": 621
+              }
+            }
+          }
+        }
+      ],
+      "observed_models": [
+        "gigachat::GigaChat-2"
+      ],
+      "structural_checks_passed": true
+    },
+    {
+      "case": "forecast",
+      "question": "Рассчитай новый прогноз Brent на 3 месяца с интервалами 80%, as_of 2026-10-01, история 2016-10-01 — 2026-09-30.",
+      "task_id": "3a8bd764e1e1483e",
+      "status": "completed",
+      "result": "Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2026-09. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.\n\nARIMA [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-10 | 121.33 | 104.15 | 141.34 |\n| 2026-11 | 123.34 | 96.37 | 157.86 |\n| 2026-12 | 123.89 | 89.90 | 170.75 |\n\nETS [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-10 | 114.28 | 105.43 | 123.88 |\n| 2026-11 | 114.41 | 104.70 | 125.01 |\n| 2026-12 | 114.53 | 102.56 | 127.89 |\n\nARIMA и ETS рассчитаны отдельно; выбор сделан на calibration, не на test.\n\nОграничения: Интервалы не охватывают все структурные и геополитические шоки. Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются. Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде.\n\n[F1] Исторический дневной ряд: EIA Europe Brent Spot Price FOB — daily historical observations, USD/bbl; средние по доступным наблюдениям месяца. Последнее дневное наблюдение: 2026-09-30. https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls\n\nЗапрос: `74ec04fe-2562-4fb2-9f74-c093972fee09`; статус: `forecasted`.",
+      "prompt_tokens": 93358,
+      "completion_tokens": 490,
+      "total_rounds": 3,
+      "analyst_traces": [
+        {
+          "request_id": "74ec04fe-2562-4fb2-9f74-c093972fee09",
+          "status": "forecasted",
+          "answer": "Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2026-09. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.\n\nARIMA [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-10 | 121.33 | 104.15 | 141.34 |\n| 2026-11 | 123.34 | 96.37 | 157.86 |\n| 2026-12 | 123.89 | 89.90 | 170.75 |\n\nETS [F1]\n\n| Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% |\n|---|---:|---:|---:|\n| 2026-10 | 114.28 | 105.43 | 123.88 |\n| 2026-11 | 114.41 | 104.70 | 125.01 |\n| 2026-12 | 114.53 | 102.56 | 127.89 |\n\nARIMA и ETS рассчитаны отдельно; выбор сделан на calibration, не на test.\n\nОграничения: Интервалы не охватывают все структурные и геополитические шоки. Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются. Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде.\n\n[F1] Исторический дневной ряд: EIA Europe Brent Spot Price FOB — daily historical observations, USD/bbl; средние по доступным наблюдениям месяца. Последнее дневное наблюдение: 2026-09-30. https://www.eia.gov/dnav/pet/hist_xls/RBRTEd.xls",
+          "warnings": [
+            "Интервалы не охватывают все структурные и геополитические шоки.",
+            "Кеш может содержать загрузки разных дат; исторические версии публикаций не восстанавливаются.",
+            "Naive лучше выбранной модели по средней MAE для h=1..6 на отложенном периоде."
+          ],
+          "missing": null,
+          "usage": null
+        }
+      ],
+      "observed_models": [
+        "gigachat::GigaChat-2"
+      ],
+      "structural_checks_passed": true
+    },
+    {
+      "case": "out_of_scope",
+      "question": "Напиши рецепт борща.",
+      "task_id": "38f2bae8e3bc4206",
+      "status": "completed",
+      "result": "Я отвечаю на вопросы нефтегазового рынка.\n\nЗапрос: `bb505a9f-bc19-4eb3-917c-e8b1d8dc85d3`; статус: `out_of_scope`.",
+      "prompt_tokens": 13789,
+      "completion_tokens": 353,
+      "total_rounds": 2,
+      "analyst_traces": [
+        {
+          "request_id": "bb505a9f-bc19-4eb3-917c-e8b1d8dc85d3",
+          "status": "out_of_scope",
+          "answer": "Я отвечаю на вопросы нефтегазового рынка.",
+          "warnings": [],
+          "missing": null,
+          "usage": {
+            "route": {
+              "output_tokens": 339,
+              "input_tokens": 488,
+              "total_tokens": 827,
+              "input_token_details": {
+                "cache_read": 749
+              }
+            }
+          }
+        }
+      ],
+      "observed_models": [
+        "gigachat::GigaChat-2"
+      ],
+      "structural_checks_passed": true
+    }
+  ],
+  "scope": "Real native gateway tasks and canonical MCP delivery; structural checks, not a blind semantic benchmark",
+  "native_usage": {
+    "prompt_tokens": 214522,
+    "completion_tokens": 1112
+  }
+}

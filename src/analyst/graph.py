@@ -151,12 +151,22 @@ def web(state: State) -> dict:
             rows.append(result["evidence"][i])
     return {
         "web_attempted": True,
-        "evidence": fit_context(rows, state["question"]),
+        "evidence": fit_context(
+            result["evidence"] if route["freshness_required"] and not route.get("hybrid") else rows,
+            state["question"],
+        ),
         "warnings": [*state.get("warnings", []), *result["warnings"]],
     }
 
 
 def synthesize(messages):
+    # Count the complete prompt, including instructions and routing metadata.
+    messages = list(messages)
+    payload = json.loads(messages[-1][1])
+    while sum(len(text) for _, text in messages) > 12000 and len(payload.get("reports", [])) > 1:
+        payload["reports"].pop()
+        payload["context_incomplete"] = True
+        messages[-1] = ("human", json.dumps(payload, ensure_ascii=False))
     try:
         draft, usage = invoke_structured(ReportDraft, messages)
         return draft, usage, False
@@ -176,10 +186,10 @@ def report_question(state):
     question = state.get("resolved_question", state["question"])
     extracted = state["route"].get("report_query", "")
     if extracted and extracted.casefold() in question.casefold():
-        return extracted
+        return extracted.strip(" ;?.")
     return re.split(r"а затем|а также|и добавь|and add|then add", question, maxsplit=1, flags=re.I)[
         0
-    ].strip(" ;")
+    ].strip(" ;?.")
 
 
 def extractive_fallback(state, reason):
@@ -570,12 +580,7 @@ def retrieve(state: State) -> dict:
             kwargs["policy"] = state["release"]["policy"]
         if state["route"].get("publishers"):
             kwargs["publishers"] = state["route"]["publishers"]
-        question = state.get("resolved_question", state["question"])
-        report_query = state["route"].get("report_query", "")
-        if not report_query or report_query.casefold() not in question.casefold():
-            report_query = re.split(
-                r"а затем|а также|и добавь|and add|then add", question, maxsplit=1, flags=re.I
-            )[0]
+        report_query = report_question(state)
         rows = ReportIndex().search(
             report_query,
             **kwargs,

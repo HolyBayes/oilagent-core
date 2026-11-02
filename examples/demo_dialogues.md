@@ -1,43 +1,45 @@
-# Пять сценариев Lite
+# Пять native-сценариев Lite
 
-Реальные HTTP MCP вызовы, не UI-диалоги. Полные ответы, источники и usage: [JSON](../docs/lite-delivery-evidence.json). Partial сохранён.
+Задачи созданы через API штатного UI и выполнены Main. Источники и request ID сверены с Analyst traces. Полные данные: [JSON](../docs/native-lite-delivery-evidence.json). Проверка структурная, не оценка общей точности.
 
 ## report
 
-Вопрос: Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026?
+Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026?
 
-Статус: `answered`. Request ID: `ab4e5d15-c1b3-422e-871a-5f1997a8a29b`.
+Task `28915ebde89142cb` → `answered`, request `3a5ceb6a-8663-453c-8812-948b6e802963`.
 
-Фрагмент ответа: We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. [R2]  We forecast that oil prices will fall to an average of $62/b in the fourth quarter of 2025 (4Q25) and $52/b in the first half of 2026 (1H26). [R3]   Источники:  [R…
+Фрагмент: We forecast that Brent crude oil prices will average $52/b in 2026, compared with an average of $69/b in 2025. [R2]   Источники:  [R2] EIA Short-Term Energy Outlook — October 2025, выпуск 2025-10-07, PDF стр. 6: https://www.eia.gov/outlooks/steo/arch…
 
 ## web
 
-Вопрос: Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?
+Какие свежие новости о природном газе опубликовало EIA за последние 7 дней?
 
-Статус: `partial`. Request ID: `31aa5928-f4d6-4caa-b6d8-9a1068dc41de`.
+Task `eed0e6c98a044940` → `answered`, request `2415c285-4526-46f6-a5ad-4893c847b5c1`.
 
-Фрагмент ответа: Выдержка источника, не полный ответ: «LNG imports make up increasing share of Colombia's natural gas supply. Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. A potential drought this fall and winter could limit the availability of h…
+Фрагмент: LNG imports make up increasing share of Colombia's natural gas supply. [W1]  Colombia is importing more liquefied natural gas (LNG) as domestic production continues to fall. [W1]  A potential drought this fall and winter could limit the availability …
 
 ## hybrid
 
-Вопрос: Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026; а затем добавь последние новости EIA о природном газе за 7 дней. Раздели источники.
+Что EIA в отчёте за октябрь 2025 прогнозировало для цены Brent в первом полугодии 2026; а затем добавь последние новости EIA о природном газе за 7 дней. Раздели источники.
 
-Статус: `partial`. Request ID: `2cf3aa0b-56ce-41f0-b1bd-83c1c1804ae8`.
+Task `e604947066724439` → `answered`, request `266d39aa-56bf-4b1d-a310-50ca1aa09d94`.
 
-Фрагмент ответа: Выдержка источника, не полный ответ: «will average $52/b in 2026, compared with an average of $69/b in 2025. The pace at which China continues to purchase oil to fill inventory is a key uncertainty in our forecast. If China’s builds continue at the pace estimated in recent months…
+Фрагмент: EIA прогнозировало, что цена Brent в первом полугодии 2026 года составит $52 за баррель. [R2]  LNG imports make up increasing share of Colombia's natural gas supply. [W1]  Colombia is importing more liquefied natural gas (LNG) as domestic production …
 
 ## forecast
 
-Вопрос: Рассчитай новый прогноз Brent на 3 месяца с интервалами 80%, as_of 2026-10-01, история 2016-10-01 — 2026-09-30.
+Рассчитай новый прогноз Brent на 3 месяца с интервалами 80%, as_of 2026-10-01, история 2016-10-01 — 2026-09-30.
 
-Статус: `forecasted`. Request ID: `226271d4-6115-4722-9322-9eab0358e426`.
+Task `3a8bd764e1e1483e` → `forecasted`, request `74ec04fe-2562-4fb2-9f74-c093972fee09`.
 
-Фрагмент ответа: Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2026-09. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.  ARIMA [F1]  | Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% | |---|---:|---:|---:| | 2026-10 | 121.33 | 104.15 | 141.34 | | 2026-11 | 123.34…
+Фрагмент: Расчётный прогноз Brent spot, USD/bbl; ETS. Данные по 2026-09. Точки — условные медианы среднемесячной цены; прогнозный интервал 80%.  ARIMA [F1]  | Месяц | Оценка, USD/bbl | Нижняя 80% | Верхняя 80% | |---|---:|---:|---:| | 2026-10 | 121.33 | 104.15…
 
 ## out_of_scope
 
-Вопрос: Напиши рецепт борща.
+Напиши рецепт борща.
 
-Статус: `out_of_scope`. Request ID: `c6deeb80-6797-438e-8200-9b4472d8ed65`.
+Task `38f2bae8e3bc4206` → `out_of_scope`, request `bb505a9f-bc19-4eb3-917c-e8b1d8dc85d3`.
 
-Фрагмент ответа: Я отвечаю на вопросы нефтегазового рынка.…
+Фрагмент: Я отвечаю на вопросы нефтегазового рынка.…
+
+Отчётный ответ цитирует 2026 год целиком вместо явного H1; полнота этого ответа остаётся ограничением RAG.
