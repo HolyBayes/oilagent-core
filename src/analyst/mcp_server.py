@@ -2,20 +2,25 @@
 
 import argparse
 import hmac
+import json
 import os
 from typing import Annotated
+from uuid import UUID
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 from starlette.responses import JSONResponse
 
-from analyst.config import CORE_ROOT, evolution_repo, workspace
+from analyst.config import CORE_ROOT, configured_path, evolution_repo, workspace
 from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
 from analyst.forecast import forecast_brent
 from analyst.graph import answer_question
+from analyst.quotes import latest_quote
 from analyst.rag import ReportIndex
+from analyst.scenario import SupplyScenario, supply_cut_scenario
+from analyst.traces import record_feedback
 from analyst.web import search_web, web_enabled
 
 
@@ -38,14 +43,16 @@ def create_server(kind: str, host: str, port: int):
             }
 
         @server.tool(name="answer_question")
-        def answer(question: Annotated[str, Field(min_length=1, max_length=4000)]) -> dict:
+        def answer(
+            question: Annotated[str, Field(min_length=1, max_length=4000)], session_id: str = ""
+        ) -> dict:
             """Answer oil/gas questions using loaded OPEC/EIA reports and web sources.
 
             Calculate new Brent forecasts with ARIMA and ETS from prepared EIA history.
             Reports and price data are already loaded; no user upload is required.
             Returns the answer with sources, prediction intervals and limitations.
             """
-            return answer_question(question)
+            return answer_question(question, session_id)
 
         @server.tool(name="forecast_brent")
         def forecast_brent_prices(
@@ -61,6 +68,27 @@ def create_server(kind: str, host: str, port: int):
             as_of: calculation cutoff, no later than today. Horizon is in months.
             """
             return forecast_brent(horizon_months, as_of, start_date, end_date)
+
+        @server.tool()
+        def supply_cut(
+            inputs: Annotated[dict, Field(json_schema_extra=SupplyScenario.model_json_schema())],
+        ) -> dict:
+            """Conditional supply-cut sensitivity from explicit user assumptions, not ARIMA."""
+            return supply_cut_scenario(inputs)
+
+        @server.tool()
+        def submit_feedback(
+            request_id: str,
+            rating: Annotated[int, Field(ge=-1, le=1)],
+            comment: Annotated[str, Field(min_length=1, max_length=2000)],
+        ) -> dict:
+            """Store user feedback about a request; never treat it as verified market evidence."""
+            return record_feedback(request_id, rating, comment)
+
+        @server.tool()
+        def market_quote(instrument: str = "Brent") -> dict:
+            """Latest delayed Brent/WTI futures quote, timestamp and explicit price type."""
+            return latest_quote(instrument)
 
         @server.tool()
         def search_web_sources(
@@ -90,6 +118,13 @@ def create_server(kind: str, host: str, port: int):
             idempotency_key: str,
         ) -> dict:
             """Create a policy-only Git candidate. Cannot change code, tests or permissions."""
+            request_id = str(UUID(trace_id))
+            trace_path = configured_path("TRACE_PATH", "workspace/traces") / f"{request_id}.json"
+            if not trace_path.exists():
+                raise ValueError("A recorded failure/request trace is required")
+            recorded = json.loads(trace_path.read_text())
+            if recorded.get("request_id") != request_id:
+                raise ValueError("Trace identity mismatch")
             return backend.propose(
                 base_sha,
                 artifact,
@@ -106,8 +141,8 @@ def create_server(kind: str, host: str, port: int):
 
         @server.tool()
         def run_checks(candidate_id: str) -> dict:
-            """Run a fixed synthetic integration check, not a real market quality evaluation."""
-            return backend.checks(candidate_id)
+            """Compare retrieval policies on fixed operator-owned PDF cases without a model call."""
+            return backend.checks(candidate_id, real=True)
 
         @server.tool()
         def request_review(candidate_id: str) -> dict:

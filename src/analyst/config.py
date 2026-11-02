@@ -1,4 +1,6 @@
+import json
 import os
+from contextlib import nullcontext
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -35,6 +37,22 @@ def model_ready():
     raise ValueError("LLM_PROVIDER must be gigachat, openai or local")
 
 
+def model_timeout():
+    import time
+
+    from analyst.budget import current_budget
+
+    timeout = float(os.getenv("LLM_TIMEOUT_SEC", "20"))
+    budget = current_budget.get()
+    if budget:
+        budget.check()
+        remaining = float(os.getenv("REQUEST_TIMEOUT_SEC", "120")) - (
+            time.monotonic() - budget.started
+        )
+        timeout = min(timeout, max(0.1, remaining))
+    return timeout
+
+
 def chat_model():
     load_dotenv(CORE_ROOT / ".env", override=False)
     raw_limit = os.getenv("LLM_MAX_OUTPUT_TOKENS", "").strip()
@@ -55,7 +73,7 @@ def chat_model():
             verify_ssl_certs=True,
             temperature=0,
             **output_options,
-            timeout=float(os.getenv("LLM_TIMEOUT_SEC", "20")),
+            timeout=model_timeout(),
             max_retries=0,
         )
     from langchain_openai import ChatOpenAI
@@ -69,7 +87,7 @@ def chat_model():
         base_url=os.getenv("LLM_BASE_URL") or None,
         temperature=0,
         **output_options,
-        timeout=float(os.getenv("LLM_TIMEOUT_SEC", "20")),
+        timeout=model_timeout(),
         max_retries=0,
     )
 
@@ -81,11 +99,26 @@ def structured_model(schema, *, include_raw=False):
     return chat_model().with_structured_output(schema, method=method, include_raw=include_raw)
 
 
+class StructuredOutputError(ValueError):
+    pass
+
+
 def invoke_structured(schema, messages):
     """Keep provider-reported token counts; bound input size without another API call."""
     if sum(len(text) for _, text in messages) > 12000:
         raise ValueError("Structured request exceeds 12000 characters")
-    result = structured_model(schema, include_raw=True).invoke(messages)
+    from analyst.budget import current_budget
+    from analyst.provider_lock import provider_slot
+
+    budget = current_budget.get()
+    slot = provider_slot() if os.getenv("LLM_PROVIDER", "gigachat") == "gigachat" else nullcontext()
+    with slot:
+        if budget:
+            budget.reserve_llm([*messages, ("schema", json.dumps(schema.model_json_schema()))])
+        result = structured_model(schema, include_raw=True).invoke(messages)
+    usage = dict(result["raw"].usage_metadata or {})
+    if budget:
+        budget.account(usage)
     if result["parsed"] is None or result.get("parsing_error"):
-        raise ValueError("Model response does not satisfy the schema")
-    return result["parsed"], dict(result["raw"].usage_metadata or {})
+        raise StructuredOutputError("Model response does not satisfy the schema")
+    return result["parsed"], usage

@@ -150,6 +150,12 @@ class Evolution:
                 if state["payload_hash"] != fingerprint(payload):
                     raise ValueError("Idempotency key conflicts with previous arguments")
                 return state
+            attempts = sum(
+                json.loads(p.read_text()).get("trace_id") == trace_id
+                for p in self.states.glob("*.json")
+            )
+            if attempts >= int(os.getenv("EVOLUTION_MAX_CANDIDATES", "2")):
+                raise ValueError("Candidate limit for this failure trace reached")
             if base_sha != self.baseline()["base_sha"]:
                 raise ValueError("Candidate must target current trusted baseline")
             content = json.dumps(policy.model_dump(), sort_keys=True, indent=2) + "\n"
@@ -189,10 +195,10 @@ class Evolution:
             "diff_sha256": hashlib.sha256(diff.encode()).hexdigest(),
         }
 
-    def checks(self, candidate_id):
+    def checks(self, candidate_id, *, real=False):
         with self.lock():
             state = self.load(candidate_id)
-            if state.get("checks"):
+            if state.get("quality_checks" if real else "checks"):
                 return state
             content = self.git("show", f"{state['candidate_sha']}:{ARTIFACT}")
             policy = RetrievalPolicy.model_validate_json(content)
@@ -200,6 +206,19 @@ class Evolution:
                 self.git("show", f"{state['base_sha']}:{ARTIFACT}")
             )
             paths = self.git("diff", "--name-only", state["base_sha"], state["candidate_sha"])
+            if real:
+                from analyst.quality import evaluate
+
+                if paths != ARTIFACT:
+                    raise ValueError("Protected files changed")
+                state["quality_checks"] = {
+                    **evaluate(policy.model_dump()),
+                    "candidate_sha": state["candidate_sha"],
+                }
+                state["status"] = (
+                    "QUALITY_PASSED" if state["quality_checks"]["passed"] else "REJECTED"
+                )
+                return self.save(state)
             rows = [
                 {"id": "A1", "publisher": "A"},
                 {"id": "A2", "publisher": "A"},
@@ -225,9 +244,10 @@ class Evolution:
     def review(self, candidate_id):
         with self.lock():
             state = self.load(candidate_id)
-            if state.get("critic"):
+            reviewed_checks = state.get("quality_checks") or state.get("checks", {})
+            if state.get("critic", {}).get("checks_sha256") == fingerprint(reviewed_checks):
                 return state
-            if not state.get("checks", {}).get("passed"):
+            if not (state.get("quality_checks") or state.get("checks", {})).get("passed"):
                 raise ValueError("Checks must pass before review")
             try:
                 critic, usage = invoke_structured(
@@ -244,7 +264,10 @@ class Evolution:
                         (
                             "human",
                             json.dumps(
-                                {"diff": self.diff(candidate_id), "checks": state["checks"]}
+                                {
+                                    "diff": self.diff(candidate_id),
+                                    "checks": state.get("quality_checks") or state["checks"],
+                                }
                             ),
                         ),
                     ],
@@ -256,7 +279,11 @@ class Evolution:
                 )
                 state["review_error_type"] = type(exc).__name__
                 return self.save(state)
-            state["critic"] = {**critic.model_dump(), "candidate_sha": state["candidate_sha"]}
+            state["critic"] = {
+                **critic.model_dump(),
+                "candidate_sha": state["candidate_sha"],
+                "checks_sha256": fingerprint(reviewed_checks),
+            }
             state["critic_usage"] = usage
             state["status"] = "REVIEWED_UNRELEASED"
             return self.save(state)

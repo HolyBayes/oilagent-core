@@ -54,3 +54,19 @@ def test_pin_only_selects_currently_permitted_non_demand_mcp_schemas():
     assert pinned(registry) == {"mcp_analyst__answer_question"}
     registry.schemas = lambda: []
     assert pinned(registry) == set()
+
+
+def test_canonical_delivery_does_not_rewrite_sources_or_tables():
+    functions = runpy.run_path(str(Path(__file__).parents[1] / "scripts/native_ouroboros.py"))
+    result = {
+        "request_id": "b4c29b09-a359-45e4-b268-384d7042302c",
+        "status": "forecasted",
+        "answer": "Исторический дневной ряд [F1]\n| ARIMA | 70 |",
+    }
+    import json
+
+    assert functions["analyst_result"]("structuredContent: " + json.dumps(result)) == result
+    delivered = functions["canonical_delivery"]([result], "Неверный ежемесячный отчёт")
+    assert result["answer"] in delivered and "ежемесячный" not in delivered
+    assert result["request_id"] in delivered
+    assert functions["canonical_delivery"]([], "no tool result") == "no tool result"

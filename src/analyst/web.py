@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from analyst.config import CORE_ROOT, evolution_repo
 from analyst.evolution import SEED_WEB, WEB_ARTIFACT
+from analyst.feeds import official_news
 from analyst.rag import digest
 
 FRESH = r"\b(?:сейчас|сегодня|свеж\w*|последн\w*|актуальн\w*|today|latest|current|now)\b"
@@ -99,7 +100,7 @@ def normalize_results(items, *, freshness, now, policy, today=False):
                 continue
             if freshness and (
                 not published
-                or now - published > timedelta(days=7)
+                or now - published > timedelta(days=int(os.getenv("WEB_MAX_AGE_DAYS", "7")))
                 or (today and published.date() != now.date())
             ):
                 warnings.add("web_missing_or_old_date")
@@ -134,11 +135,19 @@ def search_web(query, freshness=True):
         from ddgs import DDGS
 
         policy, sha, policy_warnings = source_policy()
+        requested_eia = bool(re.search(r"\bEIA\b", query, re.I))
+        if requested_eia:
+            policy = {"official": [h for h in policy["official"] if h == "eia.gov"], "news": []}
         client = DDGS(timeout=10, verify=True)
         method = client.news if freshness else client.text
-        items = method(
-            query, backend="duckduckgo", max_results=20, timelimit="w" if freshness else None
-        )
+        backend_warnings = []
+        try:
+            items = method(
+                query, backend="duckduckgo", max_results=20, timelimit="w" if freshness else None
+            )
+        except Exception as exc:
+            items = []
+            backend_warnings.append(f"web_backend_error:{type(exc).__name__}")
         evidence, warnings = normalize_results(
             items,
             freshness=freshness,
@@ -146,9 +155,22 @@ def search_web(query, freshness=True):
             policy=policy,
             today=bool(re.search(r"\b(?:сегодня|today)\b", query, re.I)),
         )
+        if not evidence and freshness:
+            evidence, feed_warnings = normalize_results(
+                official_news(query),
+                freshness=True,
+                now=datetime.now(timezone.utc),
+                policy=policy,
+                today=bool(re.search(r"\b(?:сегодня|today)\b", query, re.I)),
+            )
+            warnings += feed_warnings
+            if evidence:
+                for e in evidence:
+                    e["date_origin"] = "official_rss"
+                backend_warnings.append("web_official_rss_fallback")
         return {
             "evidence": [{**e, "policy_revision": sha} for e in evidence],
-            "warnings": policy_warnings + warnings + ["web_search_snippets"],
+            "warnings": policy_warnings + backend_warnings + warnings + ["web_search_snippets"],
         }
     except Exception as exc:
         return {"evidence": [], "warnings": [f"web_error:{type(exc).__name__}"]}

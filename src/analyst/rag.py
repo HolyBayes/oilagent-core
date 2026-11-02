@@ -6,6 +6,7 @@ from functools import lru_cache
 from itertools import zip_longest
 
 from analyst.config import CORE_ROOT, configured_path
+from analyst.ranking import rerank
 
 
 def digest(data):
@@ -157,7 +158,7 @@ class ReportIndex:
         temp.replace(pointer)
         return result
 
-    def search(self, query, top_k=4, *, include_context=True):
+    def search(self, query, top_k=4, *, include_context=True, policy=None, publishers=None):
         if not 1 <= top_k <= 12:
             raise ValueError("top_k must be between 1 and 12")
         pointer = self.directory / "index.json"
@@ -174,29 +175,53 @@ class ReportIndex:
             .encode(["query: " + query], normalize_embeddings=True, show_progress_bar=False)
             .tolist()
         )
-        publishers = [
-            p
-            for p, pattern in [("OPEC", r"\bOPEC\b|ОПЕК"), ("EIA", r"\bEIA\b")]
-            if re.search(pattern, query, re.I)
-        ] or [None]
+        publishers = (
+            publishers
+            or [
+                p
+                for p, pattern in [("OPEC", r"\bOPEC\b|ОПЕК"), ("EIA", r"\bEIA\b")]
+                if re.search(pattern, query, re.I)
+            ]
+            or [None]
+        )
+        if policy is None:
+            from analyst.releases import active_release
+
+            policy = active_release()["policy"]
+        from analyst.contracts import RetrievalPolicy
+
+        policy = RetrievalPolicy.model_validate(policy)
+        if policy.comparison_strategy == "pooled":
+            publishers = [None]
+        selection_k = min(top_k, policy.top_k_per_publisher)
         ranked = []
         for publisher in publishers:
             where = {"publisher": publisher} if publisher else None
             result = collection.query(
-                query_embeddings=vector, n_results=min(top_k * 3, collection.count()), where=where
+                query_embeddings=vector,
+                n_results=collection.count()
+                if policy.reranker == "bm25"
+                else min(top_k * 3, collection.count()),
+                where=where,
             )
             pages, rows = set(), []
+            candidates = []
             for cid, text, meta, distance in zip(
                 result["ids"][0],
                 result["documents"][0],
                 result["metadatas"][0],
                 result["distances"][0],
             ):
+                candidates.append({**meta, "chunk_id": cid, "text": text, "distance": distance})
+            if policy.reranker == "bm25":
+                candidates = rerank(candidates, query)
+            for candidate in candidates:
+                meta = candidate
                 page = (meta["doc_id"], meta["page"])
                 if page not in pages:
-                    rows.append({**meta, "chunk_id": cid, "text": text, "distance": distance})
+                    rows.append(candidate)
                     pages.add(page)
-            ranked.append(rows[:top_k])
+            ranked.append(rows[:selection_k])
         # Interleave publishers before the shared context budget is applied.
         rows = [row for pair in zip_longest(*ranked) for row in pair if row is not None][:12]
         if include_context:

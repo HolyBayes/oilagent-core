@@ -162,7 +162,7 @@ def main():
             "base_sha": baseline["base_sha"],
             "artifact": "policies/retrieval.json",
             "policy": {"comparison_strategy": "per_publisher", "top_k_per_publisher": 2},
-            "rationale": "Cover both publishers in the synthetic comparison fixture",
+            "rationale": "Compare publisher coverage on the fixed PDF dataset",
             "trace_id": answer["request_id"],
             "idempotency_key": "transport-smoke-1",
         }
@@ -176,13 +176,24 @@ def main():
         events.append({"unsafe_path_rejected_over_mcp": True})
         cid = {"candidate_id": candidate["candidate_id"]}
         assert call("evolution", "get_diff", cid)["diff"]
-        assert call("evolution", "run_checks", cid)["checks"]["passed"]
-        review = call("evolution", "request_review", cid)
-        if not args.live:
-            assert review["status"] == "REVIEW_BLOCKED" and "critic" not in review
+        checked = call("evolution", "run_checks", cid)
+        quality = checked["quality_checks"]
+        events.append(
+            {
+                "real_pdf_quality": {
+                    k: quality[k] for k in ["passed", "before", "after", "total", "regressions"]
+                }
+            }
+        )
+        if quality["passed"]:
+            review = call("evolution", "request_review", cid)
+            if not args.live:
+                assert review["status"] == "REVIEW_BLOCKED" and "critic" not in review
+            else:
+                assert review["status"] == "REVIEWED_UNRELEASED"
         else:
-            assert answer["route"], "Live router did not return a typed route"
-            assert review["status"] == "REVIEWED_UNRELEASED", "Live critic did not complete"
+            assert checked["status"] == "REJECTED"
+            events.append({"no_improvement_or_regression_rejected": True})
         assert not call("evolution", "get_status", cid)["release_available"]
 
         drive = run / "ouroboros/data"

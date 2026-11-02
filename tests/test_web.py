@@ -140,7 +140,8 @@ def test_graph_web_once_and_report_priority(freshness, abstain, monkeypatch):
         invocations.append(schema)
         if schema is Route:
             return Route(intent="domain_qa", freshness_required=False), {"total_tokens": 10}
-        source = json.loads(messages[1][1])["reports"][0]
+        rows = json.loads(messages[1][1])["reports"]
+        source = next((r for r in rows if r["source_id"].startswith("W")), rows[0])
         return ReportDraft(
             abstain=abstain,
             claims=[

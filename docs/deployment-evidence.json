@@ -1,0 +1,41 @@
+{
+  "llm_calls": 0,
+  "container_build": "passed",
+  "public_assets": "reused verified local PDF/embedding cache; fresh Linux index",
+  "services": {
+    "analyst": {
+      "tools": [
+        "health",
+        "answer_question",
+        "forecast_brent",
+        "supply_cut",
+        "market_quote",
+        "search_web_sources",
+        "search_reports"
+      ],
+      "unauthorized_status": 401,
+      "forecast_methods": [
+        "ARIMA",
+        "ETS"
+      ]
+    },
+    "evolution": {
+      "tools": [
+        "propose_change",
+        "get_diff",
+        "run_checks",
+        "request_review",
+        "get_status"
+      ],
+      "unauthorized_status": 401
+    }
+  },
+  "native_ui_http_status": 200,
+  "author_isolation": {
+    "/opt/core/src/analyst": "OSError",
+    "/evolution/policies": "OSError",
+    "/releases": "FileNotFoundError",
+    "holdout_visible": false,
+    "docker_socket_visible": false
+  }
+}

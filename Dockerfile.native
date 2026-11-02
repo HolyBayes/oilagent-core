@@ -1,0 +1,21 @@
+FROM python:3.13-slim
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+RUN git init /opt/ouroboros \
+    && git -C /opt/ouroboros remote add origin https://github.com/razzant/ouroboros.git \
+    && git -C /opt/ouroboros fetch --depth 1 origin add0ce3296c722ef99a536c52f8dcddf36494b36 \
+    && git -C /opt/ouroboros checkout --detach FETCH_HEAD \
+    && git -C /opt/ouroboros remote remove origin
+RUN pip install --no-cache-dir -r /opt/ouroboros/requirements-runtime.lock
+WORKDIR /opt/core
+COPY src ./src
+COPY scripts/native_ouroboros.py scripts/container_native.py ./scripts/
+ENV PYTHONPATH=/opt/core/src:/opt/ouroboros \
+    OUROBOROS_APP_ROOT=/runtime \
+    OUROBOROS_DATA_DIR=/runtime/data \
+    OUROBOROS_REPO_DIR=/opt/ouroboros \
+    OUROBOROS_SETTINGS_PATH=/runtime/data/settings.json \
+    OUROBOROS_USER_FILES_ROOT=/runtime/user_files \
+    OUROBOROS_DELIVERABLES_ROOT=/runtime/user_files/Deliverables
+ENTRYPOINT ["python", "scripts/container_native.py"]
+CMD ["server", "--host", "0.0.0.0", "--port", "8765"]

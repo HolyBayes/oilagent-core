@@ -1,5 +1,6 @@
 import json
 import re
+from decimal import Decimal
 
 from analyst.contracts import ReportDraft
 
@@ -16,7 +17,9 @@ def fit_context(rows, question):
 
 
 def numbers(text):
-    return {m.replace(",", ".") for m in re.findall(r"\d+(?:[.,]\d+)?", text)}
+    return {
+        str(Decimal(m.replace(",", ".")).normalize()) for m in re.findall(r"\d+(?:[.,]\d+)?", text)
+    }
 
 
 def validate_claims(draft: ReportDraft, evidence):
@@ -48,8 +51,41 @@ def validate_claims(draft: ReportDraft, evidence):
         ):
             warnings.append("unverified_live_fact")
         else:
-            accepted.append(claim.model_dump())
+            if claim.value and (
+                not numbers(claim.value) <= numbers(claim.quote)
+                or not claim.unit
+                or not claim.period
+            ):
+                warnings.append("invalid_measurement")
+            else:
+                accepted.append(claim.model_dump())
     return accepted, sorted(set(warnings))
+
+
+def compare_claims(claims):
+    measured = [c for c in claims if c.get("value") and c.get("kind", "fact") == "fact"]
+    if len(measured) != 2:
+        return None, "comparison_missing_two_measurements"
+    a, b = measured
+    fields = ("metric", "geography", "unit", "period", "vintage", "observation_type")
+    if a["source_id"] == b["source_id"] or any(not a.get(k) or a[k] != b[k] for k in fields):
+        return None, "comparison_incompatible_definitions"
+    if a["observation_type"] == "unspecified":
+        return None, "comparison_unspecified_observation_type"
+    try:
+        difference = Decimal(a["value"].replace(",", ".")) - Decimal(b["value"].replace(",", "."))
+        if not difference.is_finite():
+            raise ValueError("Nonfinite difference")
+    except Exception:
+        return None, "comparison_invalid_values"
+    return {
+        "kind": "calculation",
+        "formula": "a-b",
+        "inputs": [a, b],
+        "value": str(difference),
+        "unit": a["unit"],
+        "period": a["period"],
+    }, ""
 
 
 def render_answer(claims, evidence):
@@ -71,3 +107,41 @@ def render_answer(claims, evidence):
         if s["source_id"] in used
     )
     return "\n\n".join(lines)
+
+
+def rejection_details(draft, evidence):
+    sources = {e["source_id"]: e for e in evidence}
+    details = []
+    for claim in draft.claims:
+        source = sources.get(claim.source_id)
+        if not source:
+            details.append({"source_id": claim.source_id, "reason": "unknown_source_id"})
+            continue
+        if not any(claim.quote in source.get(k, "") for k in ["text", "page_intro"]):
+            details.append(
+                {
+                    "source_id": claim.source_id,
+                    "reason": "quote_not_verbatim; copy a contiguous span exactly",
+                }
+            )
+        if re.search(r"https?://|\[(?:R|W)\d+\]", claim.text):
+            details.append(
+                {
+                    "source_id": claim.source_id,
+                    "reason": "remove URLs and [R/W] markers from text; renderer adds them",
+                }
+            )
+        missing = numbers(claim.text) - numbers(claim.quote)
+        if missing:
+            details.append(
+                {
+                    "source_id": claim.source_id,
+                    "reason": "numbers absent from quote",
+                    "unsupported_numbers": sorted(missing),
+                }
+            )
+        if numbers(claim.text) and not source.get("numeric_verified"):
+            details.append(
+                {"source_id": claim.source_id, "reason": "numeric claims prohibited on this page"}
+            )
+    return details

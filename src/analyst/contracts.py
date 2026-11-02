@@ -9,6 +9,7 @@ class RetrievalPolicy(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
     comparison_strategy: Literal["pooled", "per_publisher"] = "pooled"
     top_k_per_publisher: int = Field(default=2, ge=2, le=4)
+    reranker: Literal["vector", "bm25"] = "vector"
 
 
 class Route(BaseModel):
@@ -22,6 +23,23 @@ class Route(BaseModel):
     instrument: str = "Brent"
     start_date: str = ""
     end_date: str = ""
+    metric: str = ""
+    geography: str = ""
+    reference_period: str = ""
+    publishers: list[str] = Field(default_factory=list)
+    quote_requested: bool = False
+    hybrid: bool = False
+    report_query: str = ""
+    compare: bool = False
+    scenario_inputs: dict = Field(default_factory=dict)
+    scenario_price: float = 0
+    scenario_supply_mbd: float = 0
+    scenario_cut_mbd: float = 0
+    demand_elasticity_low: float = 0
+    demand_elasticity_high: float = 0
+    supply_elasticity_low: float = 0
+    supply_elasticity_high: float = 0
+    web_query: str = ""
 
 
 class CriticVerdict(BaseModel):
@@ -38,6 +56,14 @@ class ReportClaim(BaseModel):
     text: str
     source_id: str
     quote: str
+    kind: Literal["fact", "assumption"] = "fact"
+    value: str = ""
+    unit: str = ""
+    period: str = ""
+    metric: str = ""
+    geography: str = ""
+    vintage: str = ""
+    observation_type: Literal["actual", "estimate", "forecast", "unspecified"] = "unspecified"
 
 
 class ReportDraft(BaseModel):
@@ -45,3 +71,4 @@ class ReportDraft(BaseModel):
 
     claims: list[ReportClaim] = Field(max_length=5)
     abstain: bool
+    missing: list[str] = Field(default_factory=list)

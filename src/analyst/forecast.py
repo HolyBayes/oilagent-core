@@ -91,6 +91,11 @@ def monthly_data(as_of, path=None, *, start_date="", end_date=""):
 
 
 def predictions(values, horizon=6):
+    from analyst.budget import current_budget
+
+    budget = current_budget.get()
+    if budget:
+        budget.check()
     log = np.log(np.asarray(values, dtype=float))
     arima = ARIMA(log, order=(1, 1, 0), trend="n").fit()
     ets = ETSModel(log, error="add", trend="add", damped_trend=True).fit(disp=False, maxiter=1000)

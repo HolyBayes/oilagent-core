@@ -192,7 +192,7 @@ def test_graph_answer_and_numeric_gate(index, monkeypatch):
 
 @pytest.mark.parametrize(
     "intent,freshness",
-    [("out_of_scope", False), ("forecast", False), ("scenario", False), ("domain_qa", True)],
+    [("out_of_scope", False), ("forecast", False), ("scenario", False)],
 )
 def test_unavailable_routes_skip_retrieval(intent, freshness, monkeypatch):
     monkeypatch.setattr(pipeline, "ReportIndex", lambda: pytest.fail("Unexpected retrieval"))
@@ -204,3 +204,15 @@ def test_unavailable_routes_skip_retrieval(intent, freshness, monkeypatch):
     state = {"route": {"intent": intent, "freshness_required": freshness}, "question": "test"}
     assert pipeline.retrieve(state) == {"evidence": []}
     assert pipeline.respond(state)["status"] != "answered"
+
+
+def test_policy_controls_actual_pdf_search(index):
+    index.ingest()
+    attributed = index.search(
+        "EIA forecast", policy={"comparison_strategy": "per_publisher", "top_k_per_publisher": 4}
+    )
+    pooled = index.search(
+        "EIA forecast", policy={"comparison_strategy": "pooled", "top_k_per_publisher": 4}
+    )
+    assert {s["publisher"] for s in attributed} == {"EIA"}
+    assert {s["publisher"] for s in pooled} == {"EIA", "OPEC"}

@@ -1,0 +1,344 @@
+{
+  "scope": "Fixed regression/contract cases, not a blind benchmark. Retrieval is real local PDF search; workflow routes are fixtures, not real LLM decisions.",
+  "cases": [
+    {
+      "kind": "retrieval",
+      "case_id": "brent_h1",
+      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+      "expected_publisher": "EIA",
+      "expected_page": 5,
+      "supporting_text": "$52/b in the first half of 2026",
+      "check": "supporting_passage"
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "inventory",
+      "question": "What global oil inventory build does EIA forecast for 2026 in its October 2025 outlook?",
+      "expected_publisher": "EIA",
+      "expected_page": 6,
+      "supporting_text": "2.1 million b/d in 2026",
+      "check": "supporting_passage"
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_growth",
+      "question": "Какой рост мирового спроса на нефть в 2025 году прогнозирует ОПЕК в отчёте за октябрь 2025?",
+      "expected_publisher": "OPEC",
+      "expected_page": 7,
+      "supporting_text": "1.3 mb/d",
+      "check": "supporting_passage"
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "compare",
+      "question": "Compare OPEC and EIA October 2025 forecasts for global oil demand growth in 2025.",
+      "expected_publisher": null,
+      "expected_page": null,
+      "supporting_text": null,
+      "check": "publisher_coverage"
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_september",
+      "question": "Какую среднюю спотовую цену Brent за сентябрь приводит EIA в выпуске за октябрь 2025?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 5,
+          "quote": "averaged $68 per barrel"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_q4_stock",
+      "question": "According to EIA October 2025, how quickly will global inventories build in 4Q25?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 5,
+          "quote": "2.6 million barrels per day"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_supply",
+      "question": "Which countries lead EIA October 2025 non-OPEC+ production growth?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 6,
+          "quote": "United States, Brazil, Canada, and Guyana"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_opec_2026",
+      "question": "What increase in OPEC+ crude production does EIA October 2025 expect for 2026?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 7,
+          "quote": "0.6 million b/d in 2026"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_basket",
+      "question": "Какой была средняя цена корзины ОПЕК в сентябре по отчёту за октябрь 2025?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 5,
+          "quote": "$70.39/b"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_2026",
+      "question": "Какого уровня достигнет мировой спрос на нефть в 2026 году по прогнозу OPEC от октября 2025?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "to average 106.5 mb/d"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_2024",
+      "question": "What global oil demand growth in 2024 does OPEC October 2025 describe?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "a considerable 1.5 mb/d"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_china",
+      "question": "What oil demand growth for China in 2025 does OPEC October 2025 expect?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "increase of around 180 tb/d"
+        }
+      ]
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "compare_2026",
+      "question": "Compare OPEC and EIA October 2025 forecasts for global oil demand growth in 2026.",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "a healthy 1.4 mb/d"
+        },
+        {
+          "publisher": "EIA",
+          "page": 7,
+          "quote": "1.1 million b/d in both forecast years"
+        }
+      ]
+    },
+    {
+      "case_id": "scenario_valid",
+      "kind": "scenario",
+      "inputs": {
+        "initial_price": 70,
+        "supply_mbd": 100,
+        "cut_mbd": 2,
+        "demand_elasticity": [
+          -0.3,
+          -0.1
+        ],
+        "supply_elasticity": [
+          0,
+          0.1
+        ],
+        "assumptions": "Явные пользовательские допущения контрольного случая."
+      },
+      "valid": true
+    },
+    {
+      "case_id": "scenario_zero_cut",
+      "kind": "scenario",
+      "inputs": {
+        "initial_price": 70,
+        "supply_mbd": 100,
+        "cut_mbd": 0,
+        "demand_elasticity": [
+          -0.3,
+          -0.1
+        ],
+        "supply_elasticity": [
+          0,
+          0.1
+        ],
+        "assumptions": "Явные пользовательские допущения контрольного случая."
+      },
+      "valid": false
+    },
+    {
+      "case_id": "scenario_cut_exceeds",
+      "kind": "scenario",
+      "inputs": {
+        "initial_price": 70,
+        "supply_mbd": 100,
+        "cut_mbd": 101,
+        "demand_elasticity": [
+          -0.3,
+          -0.1
+        ],
+        "supply_elasticity": [
+          0,
+          0.1
+        ],
+        "assumptions": "Явные пользовательские допущения контрольного случая."
+      },
+      "valid": false
+    },
+    {
+      "case_id": "scenario_negative_price",
+      "kind": "scenario",
+      "inputs": {
+        "initial_price": -1,
+        "supply_mbd": 100,
+        "cut_mbd": 2,
+        "demand_elasticity": [
+          -0.3,
+          -0.1
+        ],
+        "supply_elasticity": [
+          0,
+          0.1
+        ],
+        "assumptions": "Явные пользовательские допущения контрольного случая."
+      },
+      "valid": false
+    },
+    {
+      "case_id": "scenario_positive_demand",
+      "kind": "scenario",
+      "inputs": {
+        "initial_price": 70,
+        "supply_mbd": 100,
+        "cut_mbd": 2,
+        "demand_elasticity": [
+          0.1,
+          0.2
+        ],
+        "supply_elasticity": [
+          0,
+          0.1
+        ],
+        "assumptions": "Явные пользовательские допущения контрольного случая."
+      },
+      "valid": false
+    },
+    {
+      "case_id": "scenario_negative_supply",
+      "kind": "scenario",
+      "inputs": {
+        "initial_price": 70,
+        "supply_mbd": 100,
+        "cut_mbd": 2,
+        "demand_elasticity": [
+          -0.3,
+          -0.1
+        ],
+        "supply_elasticity": [
+          -0.1,
+          0.1
+        ],
+        "assumptions": "Явные пользовательские допущения контрольного случая."
+      },
+      "valid": false
+    },
+    {
+      "case_id": "comparison_same",
+      "kind": "comparison",
+      "change": {},
+      "valid": true
+    },
+    {
+      "case_id": "comparison_unit",
+      "kind": "comparison",
+      "change": {
+        "unit": "USD/bbl"
+      },
+      "valid": false
+    },
+    {
+      "case_id": "comparison_period",
+      "kind": "comparison",
+      "change": {
+        "period": "2027"
+      },
+      "valid": false
+    },
+    {
+      "case_id": "comparison_vintage",
+      "kind": "comparison",
+      "change": {
+        "vintage": "2025-11"
+      },
+      "valid": false
+    },
+    {
+      "case_id": "claim_supported",
+      "kind": "claim",
+      "change": {},
+      "valid": true
+    },
+    {
+      "case_id": "claim_invented_number",
+      "kind": "claim",
+      "change": {
+        "text": "Price 99 in 2026"
+      },
+      "valid": false
+    },
+    {
+      "case_id": "claim_unknown_source",
+      "kind": "claim",
+      "change": {
+        "source_id": "R99"
+      },
+      "valid": false
+    },
+    {
+      "case_id": "claim_invented_quote",
+      "kind": "claim",
+      "change": {
+        "quote": "Invented passage"
+      },
+      "valid": false
+    },
+    {
+      "case_id": "out_of_scope",
+      "kind": "workflow",
+      "intent": "out_of_scope",
+      "expected_status": "out_of_scope"
+    },
+    {
+      "case_id": "clarify",
+      "kind": "workflow",
+      "intent": "clarify",
+      "expected_status": "clarify"
+    },
+    {
+      "case_id": "budget_before_tool",
+      "kind": "budget"
+    }
+  ]
+}

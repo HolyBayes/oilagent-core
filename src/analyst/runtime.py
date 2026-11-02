@@ -88,7 +88,7 @@ def settings_profile(env, model_keys, skill_source):
                     "schemas_at_start": kind == "analyst",
                     "allowed_tools": ["answer_question"] if kind == "analyst" else [],
                     "transport": "streamable_http",
-                    "url": f"http://127.0.0.1:{port}/mcp",
+                    "url": env.get(f"{kind.upper()}_MCP_URL", f"http://127.0.0.1:{port}/mcp"),
                     "auth_header": "Authorization",
                     "auth_token": f"Bearer {env.get(token, '')}",
                 }
@@ -128,6 +128,7 @@ def isolated_env(root, repo):
         {
             "PYTHONPATH": str(repo),
             "PYTHONUNBUFFERED": "1",
+            "LLM_LOCK_PATH": str(configured_path("LLM_LOCK_PATH", "workspace/llm/gigachat.lock")),
             "OUROBOROS_APP_ROOT": str(root),
             "OUROBOROS_REPO_DIR": str(repo),
             "OUROBOROS_DATA_DIR": str(root / "data"),
