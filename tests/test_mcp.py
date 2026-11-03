@@ -183,3 +183,24 @@ def test_rag_mcp_defaults_and_per_call_hyde_model(monkeypatch):
         ("EIA", {"top_k": 4, "hyde": True, "hyde_model": "small-custom"}),
         ("EIA", {"top_k": 4, "hyde": False, "hyde_model": None}),
     ]
+
+
+def test_direct_rag_installs_budget_and_enforces_llm_admission(monkeypatch):
+    import pytest
+
+    import analyst.mcp_server as module
+    from analyst.budget import BudgetExceeded, current_budget
+
+    class Index:
+        def search(self, *args, **kwargs):
+            budget = current_budget.get()
+            assert budget is not None
+            budget.reserve_llm([("human", "test")])
+            pytest.fail("Call must be stopped before a paid provider invocation")
+
+    monkeypatch.setattr(module, "ReportIndex", Index)
+    monkeypatch.setenv("REQUEST_MAX_LLM_CALLS", "0")
+    server = create_server("analyst", "127.0.0.1", 8011)
+    with pytest.raises(BudgetExceeded, match="llm_calls"):
+        server._tool_manager.get_tool("search_reports").fn("EIA")
+    assert current_budget.get() is None

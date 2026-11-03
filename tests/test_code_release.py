@@ -325,3 +325,17 @@ def test_explicit_query_extension_cannot_change_other_code_or_old_gold(
             old, "report_rag"
         )
         assert evaluation.active_id() == old_id
+
+
+def test_submitted_evolution_matches_bootstrap_seeds(tmp_path):
+    from analyst.code_packages import SLOTS, seed_source
+    from analyst.config import CORE_ROOT
+    from analyst.evolution import Evolution
+
+    submitted = CORE_ROOT.parent / "evolution"
+    if not submitted.exists():
+        pytest.skip("Independent checkout not present")
+    backend = Evolution(tmp_path / "runtime", tmp_path / "evolution")
+    for slot in SLOTS:
+        assert (submitted / artifact(slot)).read_text() == seed_source(slot)
+        assert (backend.repo / artifact(slot)).read_text() == seed_source(slot)

@@ -1,11 +1,12 @@
 # Проверки
 
-- Pytest: 226 тестов проходят, включая regression test стартовых MCP schemas. Unit tests исполняют только точные developer seeds; кандидаты запускаются отдельным executor.
+- Pytest: 230 тестов проходят, включая regression test стартовых MCP schemas. Unit tests исполняют только точные developer seeds; кандидаты запускаются отдельным executor.
 - Последний fixed acceptance в рабочем контейнере: 30/30; реальные retrieval-кейсы — 13/13 вместо 8/13. Дополнительный известный набор: 12/19 вместо 5/19, без регрессий. Это не точность ответов модели. [Результаты RAG](rag-evidence.json).
 - Чистый bootstrap: прошёл с отдельной копией исходников и пустыми данными, с кешированными Docker layers. PDF/веса скачаны заново. Проверены init и индекс, не полный новый UI с review: [cold-start-evidence.json](cold-start-evidence.json).
-- Пять native UI gateway задач на Lite: report/web/hybrid answered, forecast forecasted, out_of_scope. Каждая имеет реальный Analyst trace; модели проверены по native call records. [Результаты](native-lite-delivery-evidence.json), [диалоги](../examples/demo_dialogues.md).
+- Пять native UI gateway задач на Lite: report partial, web/hybrid answered, forecast forecasted, out_of_scope. Каждая имеет реальный Analyst trace; модели проверены по native call records. [Результаты](native-lite-delivery-evidence.json), [диалоги](../examples/demo_dialogues.md).
 - Исправлены переполнение полного synthesis prompt, примесь старых PDF в свежий web-контекст и различие report query в обычном/hybrid запросе. Цитаты и числа проверяются прежними контрактами. До исправления web/hybrid были partial: [история](lite-delivery-evidence.json).
-- Native delivery без инструментов вызывает один report-first pipeline; неподтверждённый текст модели не отдаётся. Structural checks не доказывают семантическую полноту: report ответ по H1 цитирует весь 2026 год. Поиск нужных фрагментов H1 исправлен; полнота нового ответа модели отдельно не перепроверялась.
+- Финальные report/hybrid-диалоги перепроверены: цитата относится к 1H26, а не только ко всему году. Report — partial из-за отфильтрованных дополнительных чисел; hybrid — answered. Семантическая проверка выполнена вручную для этих примеров и не доказывает общую полноту ответов.
+
 - OpenAI/local и Codex bridge живьём не проверены. Текущая установка — Lite; старые Max-прогоны не считаются проверками Lite.
 
 ## Воспроизведение
@@ -50,3 +51,5 @@ python scripts/benchmark_rag.py             # Только кеш, без LLM.
 Скриптам нужны пути WORKSPACE_PATH, RELEASE_PATH, RAG_INDEX_PATH работающей установки и доступ к локальному executor. Данные и эталоны при исправлении не менялись.
 
 Query strategy проверена отдельным executor на реальных PDF с 13 записанными генерациями Lite: 13/13 наборов цитат, средний reciprocal support rank 0.718. Кандидат без прироста и ухудшенное слияние отклонены; незнакомый prompt остановлен без LLM-вызова. Это replay полного поиска, не проверка новых генераций. Активированный HTTP MCP: 13/13, полный synthesis prompt: 13/13. Native review двух изменённых пакетов на Lite — clean; остальные reviews переиспользованы. Переключатели навыков сохранены. [Результаты](query-strategy-evidence.json).
+
+Developer baseline web-ranking синхронизирован с проверенным evolution: 3/3 fixed cases. Это перенос существующего результата, не новое самоулучшение. Тест подтверждает совпадение всех Python seeds с поставляемым evolution. Прямые аналитические MCP-вызовы имеют request budget; отдельный тест останавливает LLM admission при REQUEST_MAX_LLM_CALLS=0. Custom report manifest подключён к Compose и corpus identity.

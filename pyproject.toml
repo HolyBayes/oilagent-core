@@ -43,3 +43,10 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.ruff.format]
+# Preserve the exact native-reviewed seed payload.
+exclude = ["src/analyst/seeds/implementations/search_strategy.py"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/analyst/seeds/implementations/search_strategy.py" = ["I001"]

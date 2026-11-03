@@ -163,3 +163,26 @@ def test_openai_model_override_does_not_require_main_model(monkeypatch):
     monkeypatch.setenv("LLM_API_KEY", "test-only")
     client = chat_model(provider="openai", model="small-model")
     assert client.model_name == "small-model"
+
+
+def test_release_identity_tracks_configured_manifest(tmp_path, monkeypatch):
+    from analyst.releases import identity, sha
+
+    manifest = tmp_path / "reports.json"
+    manifest.write_text('{"reports": []}')
+    monkeypatch.setenv("REPORT_MANIFEST_PATH", str(manifest))
+    assert identity()["corpus_manifest_sha256"] == sha(manifest.read_bytes())
+
+
+def test_compose_mounts_custom_manifest_for_all_corpus_consumers():
+    import yaml
+
+    from analyst.config import CORE_ROOT
+
+    compose = yaml.safe_load((CORE_ROOT / "compose.yaml").read_text())
+    for name in ["init", "analyst", "evolution"]:
+        mounts = compose["services"][name]["volumes"]
+        manifest = next(
+            m for m in mounts if isinstance(m, dict) and m.get("target") == "/app/data/reports.json"
+        )
+        assert "REPORT_MANIFEST_PATH" in manifest["source"] and manifest["read_only"]

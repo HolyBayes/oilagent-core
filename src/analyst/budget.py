@@ -1,6 +1,7 @@
 import math
 import os
 import time
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 
@@ -117,3 +118,16 @@ def tool_call(name):
     budget = current_budget.get()
     if budget:
         budget.tool(name)
+
+
+@contextmanager
+def request_budget():
+    existing = current_budget.get()
+    budget = existing or Budget()
+    token = current_budget.set(budget)
+    try:
+        budget.check()
+        yield budget
+        budget.check()
+    finally:
+        current_budget.reset(token)

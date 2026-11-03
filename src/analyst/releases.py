@@ -25,7 +25,7 @@ def identity():
         ]
     )
     code = sha(b"".join(str(p.relative_to(CORE_ROOT)).encode() + p.read_bytes() for p in files))
-    corpus = sha((CORE_ROOT / "data/reports.json").read_bytes())
+    corpus = sha(configured_path("REPORT_MANIFEST_PATH", "data/reports.json").read_bytes())
     return {
         "core_source_sha256": code,
         "capability_policy_sha256": sha((CORE_ROOT / "config/capabilities.json").read_bytes()),

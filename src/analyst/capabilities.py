@@ -116,6 +116,25 @@ def install_tool_gates(server, kind):
             if name not in owners:
                 raise ValueError(f"MCP tool has no capability owner: {kind}/{name}")
             guarded = requires_skill(owners[name])(function) if owners[name] else function
+            if kind == "analyst" and name not in {"health", "answer_question"}:
+                from analyst.budget import request_budget
+
+                original = guarded
+
+                if inspect.iscoroutinefunction(original):
+
+                    @wraps(original)
+                    async def budgeted(*args, **kwargs):
+                        with request_budget():
+                            return await original(*args, **kwargs)
+                else:
+
+                    @wraps(original)
+                    def budgeted(*args, **kwargs):
+                        with request_budget():
+                            return original(*args, **kwargs)
+
+                guarded = budgeted
             return register(*args, **kwargs)(guarded)
 
         return decorate

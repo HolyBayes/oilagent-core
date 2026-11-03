@@ -33,6 +33,10 @@ UI: **http://127.0.0.1:8765**. В Skills выполните Review и включ
 
 Основные параметры перечислены в [.env.example](.env.example). System env имеет приоритет.
 
+В Docker `REPORT_MANIFEST_PATH` — путь host-файла manifest, монтируемого read-only в init/Analyst/Evolution. PDF загружаются в Files/Reports. Изменение корпуса требует нового индекса и повторной квалификации выпуска; текущие fixed-кейсы относятся к frozen OPEC/EIA.
+
+`WORKSPACE_PATH`, `RELEASE_PATH`, `RAG_INDEX_PATH`, `REPORTS_PATH`, `EMBEDDING_CACHE_PATH`, `TRACE_PATH`, `SESSION_DB_PATH`, `BRENT_DATA_PATH` задают пути при запуске Python CLI. В Compose внутренние пути фиксированы: host-размещение меняется через `DEPLOY_WORKSPACE`, `USER_FILES_PATH` и `EVOLUTION_REPO_PATH`. Произвольный CSV override через `BRENT_DATA_PATH` в Compose не подключён. Embedding/revision задаются в `config/embedding.json`; горизонты и границы истории являются контрактом, а не env-настройками.
+
 - `EVOLUTION_REPO_PATH`: отдельный Git, по умолчанию `../evolution`; пустой каталог подготавливается автоматически.
 - `USER_FILES_PATH`: публичные отчёты, история и веса; по умолчанию `workspace/files`.
 - `DEPLOY_WORKSPACE`: состояние контейнеров; по умолчанию `workspace/container`.
@@ -53,7 +57,7 @@ RAG: два выпуска OPEC/EIA за октябрь 2025, HyDE + E5/Chroma +
 
 ## Выпуск навыков
 
-Инструкции и методы живут в отдельном `evolution` Git. В `report_rag/query_strategy.py` агент может менять HyDE/MultiQuery, prompt, веса поисковых эмбеддингов и слияние результатов через `read_code` / `propose_code` со slot=`query_strategy`. Candidate не меняет serving. Checks требуют роста без регрессий, затем critic; публикация требует оператора и native review полного пакета. У агента нет shell/merge/enable.
+Инструкции и методы живут в отдельном `evolution` Git. В `report_rag/query_strategy.py` агент может менять HyDE/MultiQuery, prompt, веса поисковых эмбеддингов и слияние результатов через `read_code` / `propose_code` со slot=`query_strategy`. Стартовые seeds core совпадают с поставляемыми методами evolution, включая web-ranking; это явно обновлённый developer baseline. Candidate не меняет serving. Checks требуют роста без регрессий, затем critic; публикация требует оператора и native review полного пакета. У агента нет shell/merge/enable.
 
 Для operator CLI установите зависимости core в Python-окружение: `pip install -r requirements.lock && pip install --no-deps -e .`.
 
@@ -89,3 +93,5 @@ GitHub/GitLab remote пока не настроен. Перед сдачей н�
 Новый MCP-инструмент обязательно получает владельца в `config/capabilities.json`; без него регистрация запрещена. Внутренние методы используют `requires_skill`, Python slots — владельца из `SLOTS`. Проверки работают для sync и async. Служебные bootstrap/fixed evaluation используют внутренний контекст; передать его через MCP или env нельзя.
 
 `code_release enable` активирует содержимое пакета, но не включает навыки: переключатели меняются только явным действием в UI.
+
+`REQUEST_*` ограничивают один вызов `answer_question` или прямого аналитического MCP tool. Вложенный MCP-вызов переиспользует контекст бюджета. Кеш HyDE не расходует LLM-вызовы. Это не общий денежный лимит всей установки: native Main/review и Evolution checks/critic имеют отдельный учёт. Для двух разных моделей заданные цены дают лишь оценку, не финансовую гарантию.

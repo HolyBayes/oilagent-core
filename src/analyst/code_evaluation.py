@@ -10,7 +10,7 @@ import numpy as np
 from analyst.capabilities import trusted_evaluation
 from analyst.code_executor import runner_identity
 from analyst.code_packages import SLOTS, artifact, repository_files, validate_source
-from analyst.config import CORE_ROOT
+from analyst.config import CORE_ROOT, configured_path
 from analyst.method_contracts import validate
 from analyst.method_runtime import code_root, method_overrides, method_pin
 from analyst.releases import identity, sha
@@ -28,7 +28,16 @@ def evaluation_identity():
     return {
         **identity(),
         "runner": runner_identity(),
-        "datasets": {name: sha((CORE_ROOT / "data" / name).read_bytes()) for name in datasets},
+        "datasets": {
+            name: sha(
+                (
+                    configured_path("REPORT_MANIFEST_PATH", "data/reports.json")
+                    if name == "reports.json"
+                    else CORE_ROOT / "data" / name
+                ).read_bytes()
+            )
+            for name in datasets
+        },
     }
 
 

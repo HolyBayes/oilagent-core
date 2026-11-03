@@ -57,6 +57,10 @@ services:
     depends_on: [executor]
     entrypoint: ["python", "scripts/container_init.py"]
     volumes:
+      - type: bind
+        source: "${REPORT_MANIFEST_PATH:-./data/reports.json}"
+        target: /app/data/reports.json
+        read_only: true
       - "${DEPLOY_WORKSPACE:-./workspace/container}/releases:/releases:ro"
       - "${DEPLOY_WORKSPACE:-./workspace/container}/rag:/app/workspace/rag"
       - type: bind
@@ -90,6 +94,10 @@ services:
     command: ["analyst", "--host", "0.0.0.0", "--port", "8011"]
     ports: ["127.0.0.1:${ANALYST_PORT:-8011}:8011"]
     volumes:
+      - type: bind
+        source: "${REPORT_MANIFEST_PATH:-./data/reports.json}"
+        target: /app/data/reports.json
+        read_only: true
       - type: bind
         source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Reports"
         target: /files/OilAgent/Reports
@@ -139,6 +147,10 @@ services:
     command: ["evolution", "--host", "0.0.0.0", "--port", "8012"]
     ports: ["127.0.0.1:${EVOLUTION_PORT:-8012}:8012"]
     volumes:
+      - type: bind
+        source: "${REPORT_MANIFEST_PATH:-./data/reports.json}"
+        target: /app/data/reports.json
+        read_only: true
       - type: bind
         source: "${USER_FILES_PATH:-./workspace/files}/OilAgent/Reports"
         target: /files/OilAgent/Reports

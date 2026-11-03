@@ -1,7 +1,7 @@
 ---
 name: web_research
 description: Find recent oil/gas publications with trusted web search and official RSS, preserving dates and source type.
-version: 0.5.0
+version: 0.5.1
 type: instruction
 always_in_context: false
 os: any
