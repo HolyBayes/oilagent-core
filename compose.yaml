@@ -1,6 +1,9 @@
 x-model-environment: &model-environment
   NATIVE_UI_URL: http://ouroboros:8765
   LLM_PROVIDER: ${LLM_PROVIDER:-gigachat}
+  RAG_HYDE_ENABLED: ${RAG_HYDE_ENABLED:-true}
+  RAG_HYDE_PROVIDER: ${RAG_HYDE_PROVIDER:-gigachat}
+  RAG_HYDE_MODEL: ${RAG_HYDE_MODEL:-GigaChat-2}
   LLM_LOCK_PATH: /provider-lock/gigachat.lock
   REQUEST_TIMEOUT_SEC: ${REQUEST_TIMEOUT_SEC:-120}
   REQUEST_MAX_LLM_CALLS: ${REQUEST_MAX_LLM_CALLS:-4}

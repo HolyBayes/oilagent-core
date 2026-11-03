@@ -288,3 +288,24 @@ def test_prompt_projection_preserves_provenance_and_exact_quotes():
     assert validate_claims(ReportDraft(claims=[claim], abstain=False), [row])[1] == [
         "invalid_citation"
     ]
+
+
+def test_hyde_only_changes_query_vector_not_pdf_evidence(index, monkeypatch):
+    from analyst import hyde
+
+    index.ingest()
+    calls = []
+
+    def generate(schema, messages, **kwargs):
+        calls.append(kwargs)
+        return schema(paragraph="UNTRUSTED invented report 999999"), {}
+
+    monkeypatch.setattr(hyde, "invoke_structured", generate)
+    rows = index.search("EIA Brent", hyde=True, hyde_model="test-lite")
+    assert rows and len(calls) == 1
+    assert all("UNTRUSTED" not in json.dumps(row) for row in rows)
+    assert all(row["publisher"] == "EIA" for row in rows)
+    index.search("EIA Brent", hyde=True, hyde_model="test-lite")
+    assert len(calls) == 1
+    index.search("EIA Brent", hyde=False)
+    assert len(calls) == 1

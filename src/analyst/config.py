@@ -29,15 +29,15 @@ def evolution_repo() -> Path:
     return path
 
 
-def model_ready():
+def model_ready(*, provider=None, model=None):
     load_dotenv(CORE_ROOT / ".env", override=False)
-    provider = os.getenv("LLM_PROVIDER", "gigachat")
+    provider = provider or os.getenv("LLM_PROVIDER", "gigachat")
     if provider == "gigachat":
         return bool(os.getenv("GIGACHAT_CREDENTIALS"))
     if provider == "local":
-        return bool(os.getenv("LLM_MODEL") and os.getenv("LLM_BASE_URL"))
+        return bool((model or os.getenv("LLM_MODEL")) and os.getenv("LLM_BASE_URL"))
     if provider == "openai":
-        return bool(os.getenv("LLM_MODEL") and os.getenv("LLM_API_KEY"))
+        return bool((model or os.getenv("LLM_MODEL")) and os.getenv("LLM_API_KEY"))
     raise ValueError("LLM_PROVIDER must be gigachat, openai or local")
 
 
@@ -57,20 +57,21 @@ def model_timeout():
     return timeout
 
 
-def chat_model():
+def chat_model(*, provider=None, model=None):
     load_dotenv(CORE_ROOT / ".env", override=False)
     raw_limit = os.getenv("LLM_MAX_OUTPUT_TOKENS", "").strip()
     output_limit = None if raw_limit.lower() in {"", "none"} else int(raw_limit)
     if output_limit is not None and output_limit <= 0:
         raise ValueError("LLM_MAX_OUTPUT_TOKENS must be a positive integer or None")
     output_options = {} if output_limit is None else {"max_tokens": output_limit}
-    if os.getenv("LLM_PROVIDER", "gigachat") == "gigachat":
+    provider = provider or os.getenv("LLM_PROVIDER", "gigachat")
+    if provider == "gigachat":
         from langchain_gigachat import GigaChat
 
-        if not model_ready():
+        if not model_ready(provider=provider, model=model):
             raise ValueError("Configure GIGACHAT_CREDENTIALS in local .env")
         return GigaChat(
-            model=os.getenv("GIGACHAT_MODEL", "GigaChat-2"),
+            model=model or os.getenv("GIGACHAT_MODEL", "GigaChat-2"),
             credentials=os.environ["GIGACHAT_CREDENTIALS"],
             scope=os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
             ca_bundle_file=os.getenv("GIGACHAT_CA_BUNDLE_FILE") or None,
@@ -82,8 +83,8 @@ def chat_model():
         )
     from langchain_openai import ChatOpenAI
 
-    model, key = os.getenv("LLM_MODEL"), os.getenv("LLM_API_KEY")
-    if not model_ready():
+    model, key = model or os.getenv("LLM_MODEL"), os.getenv("LLM_API_KEY")
+    if not model_ready(provider=provider, model=model):
         raise ValueError("Configure model and credentials or local endpoint in .env")
     return ChatOpenAI(
         model=model,
@@ -96,18 +97,20 @@ def chat_model():
     )
 
 
-def structured_model(schema, *, include_raw=False):
+def structured_model(schema, *, include_raw=False, provider=None, model=None):
     method = os.getenv("LLM_STRUCTURED_METHOD", "function_calling")
     if method not in {"function_calling", "json_schema", "json_mode"}:
         raise ValueError("Unsupported LLM_STRUCTURED_METHOD")
-    return chat_model().with_structured_output(schema, method=method, include_raw=include_raw)
+    return chat_model(provider=provider, model=model).with_structured_output(
+        schema, method=method, include_raw=include_raw
+    )
 
 
 class StructuredOutputError(ValueError):
     pass
 
 
-def invoke_structured(schema, messages):
+def invoke_structured(schema, messages, *, provider=None, model=None):
     """Keep provider-reported token counts; bound input size without another API call."""
     if sum(len(text) for _, text in messages) > 12000:
         raise ValueError("Structured request exceeds 12000 characters")
@@ -115,11 +118,15 @@ def invoke_structured(schema, messages):
     from analyst.provider_lock import provider_slot
 
     budget = current_budget.get()
-    slot = provider_slot() if os.getenv("LLM_PROVIDER", "gigachat") == "gigachat" else nullcontext()
+    selected_provider = provider or os.getenv("LLM_PROVIDER", "gigachat")
+    slot = provider_slot() if selected_provider == "gigachat" else nullcontext()
     with slot:
         if budget:
             budget.reserve_llm([*messages, ("schema", json.dumps(schema.model_json_schema()))])
-        result = structured_model(schema, include_raw=True).invoke(messages)
+        options = (
+            {} if provider is None and model is None else {"provider": provider, "model": model}
+        )
+        result = structured_model(schema, include_raw=True, **options).invoke(messages)
     usage = dict(result["raw"].usage_metadata or {})
     if budget:
         budget.account(usage)

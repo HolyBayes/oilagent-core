@@ -20,6 +20,7 @@ from analyst.evidence import (
     validate_claims,
 )
 from analyst.forecast import forecast_brent, render_forecast
+from analyst.hyde import hyde_enabled
 from analyst.quotes import latest_quote, render_quote
 from analyst.rag import ReportIndex
 from analyst.releases import active_release, identity
@@ -593,7 +594,7 @@ def retrieve(state: State) -> dict:
         return {"evidence": []}
     try:
         tool_call("reports")
-        kwargs = {"top_k": int(os.getenv("RAG_TOP_K", "4"))}
+        kwargs = {"top_k": int(os.getenv("RAG_TOP_K", "4")), "hyde": hyde_enabled()}
         if state.get("release"):
             kwargs["policy"] = state["release"]["policy"]
         if state["route"].get("publishers"):

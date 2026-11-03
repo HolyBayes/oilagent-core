@@ -199,7 +199,18 @@ class ReportIndex:
         return result
 
     @requires_skill("report_rag")
-    def search(self, query, top_k=4, *, include_context=True, policy=None, publishers=None):
+    def search(
+        self,
+        query,
+        top_k=4,
+        *,
+        include_context=True,
+        policy=None,
+        publishers=None,
+        hyde=False,
+        hyde_model=None,
+    ):
+        """Low-level retrieval; serving entry points enable HyDE, offline evaluators do not."""
         if not 1 <= top_k <= 12:
             raise ValueError("top_k must be between 1 and 12")
         pointer = self.directory / "index.json"
@@ -211,11 +222,16 @@ class ReportIndex:
         collection = self.collection(index["collection"])
         if collection.count() == 0:
             return []
-        vector = (
-            self.model()
-            .encode(["query: " + query], normalize_embeddings=True, show_progress_bar=False)
-            .tolist()
-        )
+        if hyde:
+            from analyst.hyde import query_embedding
+
+            vector = query_embedding(query, self.model(), self.directory, model=hyde_model)
+        else:
+            vector = (
+                self.model()
+                .encode(["query: " + query], normalize_embeddings=True, show_progress_bar=False)
+                .tolist()
+            )
         publishers = publishers or report_publishers(query) or [None]
         if policy is None:
             from analyst.releases import active_release

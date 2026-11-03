@@ -35,3 +35,8 @@ def reviewed_native_skills(monkeypatch):
             for name in ["oilgas_analyst", "oil_forecast", "report_rag", "web_research"]
         },
     )
+
+
+@pytest.fixture(autouse=True)
+def offline_hyde(monkeypatch):
+    monkeypatch.setenv("RAG_HYDE_ENABLED", "false")

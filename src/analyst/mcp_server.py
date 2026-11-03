@@ -18,6 +18,7 @@ from analyst.contracts import RetrievalPolicy
 from analyst.evolution import Evolution
 from analyst.forecast import forecast_brent, render_forecast
 from analyst.graph import answer_question
+from analyst.hyde import hyde_enabled
 from analyst.quotes import latest_quote
 from analyst.rag import ReportIndex
 from analyst.releases import active_release
@@ -142,9 +143,20 @@ def create_server(kind: str, host: str, port: int):
         def search_reports(
             query: Annotated[str, Field(min_length=1, max_length=4000)],
             top_k: Annotated[int, Field(ge=1, le=12)] = 4,
+            hyde: bool | None = None,
+            hyde_model: Annotated[str | None, Field(min_length=1, max_length=200)] = None,
         ) -> list[dict]:
-            """Search PDFs locally with source passages, publication dates and PDF pages."""
-            return ReportIndex().search(query, top_k=top_k)
+            """Search PDF evidence with cached HyDE + hybrid retrieval by default.
+
+            hyde overrides RAG_HYDE_ENABLED; hyde_model overrides RAG_HYDE_MODEL
+            (default GigaChat-2 / Lite). The hypothetical passage is never evidence.
+            """
+            return ReportIndex().search(
+                query,
+                top_k=top_k,
+                hyde=hyde_enabled() if hyde is None else hyde,
+                hyde_model=hyde_model,
+            )
     else:
         backend = Evolution(workspace(), repo=evolution_repo())
 

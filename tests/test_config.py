@@ -149,3 +149,17 @@ def test_structured_call_preserves_token_usage(monkeypatch):
     monkeypatch.setattr(config, "structured_model", lambda *a, **kw: FakeModel())
     result, measured = config.invoke_structured(Route, [("human", "Brent forecast")])
     assert result == parsed and measured == usage
+
+
+def test_explicit_hyde_model_is_independent_of_main(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "local")
+    monkeypatch.setenv("GIGACHAT_MODEL", "GigaChat-2-Max")
+    monkeypatch.setenv("GIGACHAT_CREDENTIALS", "test-only")
+    client = chat_model(provider="gigachat", model="GigaChat-2")
+    assert client.model == "GigaChat-2" and client.verify_ssl_certs is True
+
+
+def test_openai_model_override_does_not_require_main_model(monkeypatch):
+    monkeypatch.setenv("LLM_API_KEY", "test-only")
+    client = chat_model(provider="openai", model="small-model")
+    assert client.model_name == "small-model"

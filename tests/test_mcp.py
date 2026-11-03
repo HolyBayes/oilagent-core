@@ -146,3 +146,40 @@ def test_forecast_asset_contract_and_recorded_direct_result(tmp_path, monkeypatc
         recorded = json.loads((tmp_path / (payload["request_id"] + ".json")).read_text())
         assert recorded["arguments"]["asset"] == "brent"
         assert calls == [(2, "", "2015-01-01", "2025-12-31")]
+
+
+def test_rag_mcp_defaults_and_per_call_hyde_model(monkeypatch):
+    import analyst.mcp_server as module
+
+    calls = []
+
+    class Index:
+        def search(self, query, **kwargs):
+            calls.append((query, kwargs))
+            return []
+
+    monkeypatch.setenv("RAG_HYDE_ENABLED", "true")
+    monkeypatch.setattr(module, "ReportIndex", Index)
+    server = create_server("analyst", "127.0.0.1", 8011)
+    with TestClient(server.streamable_http_app(), base_url="http://127.0.0.1:8011") as client:
+        for args in [
+            {"query": "EIA"},
+            {"query": "EIA", "hyde_model": "small-custom"},
+            {"query": "EIA", "hyde": False},
+        ]:
+            result = client.post(
+                "/mcp",
+                headers={"Accept": "application/json, text/event-stream"},
+                json={
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {"name": "search_reports", "arguments": args},
+                },
+            ).json()["result"]
+            assert not result.get("isError")
+    assert calls == [
+        ("EIA", {"top_k": 4, "hyde": True, "hyde_model": None}),
+        ("EIA", {"top_k": 4, "hyde": True, "hyde_model": "small-custom"}),
+        ("EIA", {"top_k": 4, "hyde": False, "hyde_model": None}),
+    ]

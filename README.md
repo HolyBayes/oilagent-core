@@ -47,7 +47,7 @@ OpenAI/local живьём не проверялись по решению пол
 
 Прогноз: ARIMA и ETS, горизонты 1–6 месяцев, номинальные 80% интервалы, rolling backtest и naive benchmark. Это не торговая рекомендация. Сценарий требует явных цены, объёма добычи, сокращения и эластичностей. Последняя котировка — delayed futures, не real-time spot; Urals feed не подключён.
 
-RAG: два выпуска OPEC/EIA за октябрь 2025, E5/Chroma + BM25, контекст релевантного участка страницы. Фиксированный acceptance — 30/30, включая **13/13 retrieval-кейсов**; дополнительный известный набор — 12/19. Это проверка поиска цитат, а не полноты ответов модели. Сравнение с MultiQuery/HyDE — в [проверках](docs/VALIDATION.md). Naive немного лучше выбранной прогнозной модели на проверенном срезе, покрытие ETS ниже номинального. Web/provider могут быть недоступны; ответ тогда partial или отказ от неподтверждённых выводов.
+RAG: два выпуска OPEC/EIA за октябрь 2025, HyDE + E5/Chroma + BM25, контекст релевантного участка страницы. Фиксированный офлайн acceptance (без генерации HyDE) — 30/30, включая **13/13 retrieval-кейсов**; дополнительный известный набор — 12/19. Это проверка поиска цитат, а не полноты ответов модели. Сравнение с MultiQuery/HyDE — в [проверках](docs/VALIDATION.md). Naive немного лучше выбранной прогнозной модели на проверенном срезе, покрытие ETS ниже номинального. Web/provider могут быть недоступны; ответ тогда partial или отказ от неподтверждённых выводов.
 
 [Архитектура и причины решений](ARCHITECTURE.md) · [Проверки](docs/VALIDATION.md) · [Диалоги](examples/demo_dialogues.md) · [Оригинальное задание](docs/Разработка_AI_агента_«Нефтегазовый_аналитик».docx).
 
@@ -71,6 +71,10 @@ python -m scripts.code_release enable RELEASE_ID --operator NAME
 # Откат также требует restart → review → enable:
 python -m scripts.code_release rollback PREVIOUS_RELEASE_ID --operator NAME
 ```
+
+HyDE использует отдельную модель: `RAG_HYDE_PROVIDER=gigachat`, `RAG_HYDE_MODEL=GigaChat-2` (Lite), независимо от основной LLM. Доступ берётся из соответствующих `GIGACHAT_*` или `LLM_*` параметров. Для `openai/local` задайте также `RAG_HYDE_MODEL` и `LLM_BASE_URL`/`LLM_API_KEY` по провайдеру. После изменения `.env` перезапустите `./run.sh -d`.
+
+MCP: `search_reports(query="…", hyde_model="GigaChat-2")`; без `hyde_model` используется настройка сервиса. `hyde=false` отключает HyDE на один вызов, `RAG_HYDE_ENABLED=false` — по умолчанию и в Main. Один промах кеша добавляет один LLM-запрос в общий бюджет; повторения используют `RAG_INDEX_PATH/hyde.sqlite3`. При ошибке HyDE MCP возвращает ошибку, Main отмечает недоступность RAG. Гипотетический абзац используется только для эмбеддинга: источники и цитаты берутся из PDF.
 
 Stage временно закрывает аналитические вызовы. При обновлении core/executor сначала на старой версии выполните `RAG_INDEX_PATH=workspace/container/rag python -m scripts.qualify_runtime capture --operator NAME`. После обновления: `./run.sh -d executor`, затем `RAG_INDEX_PATH=workspace/container/rag python -m scripts.qualify_runtime qualify RECEIPT_ID --operator NAME`, `./run.sh -d`, review/enable нового release. Это проверяет неизменные skills на новом runtime, без заявления об улучшении. Active pointer для обхода проверки удалять нельзя.
 
