@@ -66,6 +66,9 @@ RAG: два выпуска OPEC/EIA за октябрь 2025, HyDE + E5/Chroma +
 ```bash
 export WORKSPACE_PATH=workspace/container/evolution-runtime
 export RELEASE_PATH=workspace/container/releases
+# Recursive clone оставляет submodules на detached HEAD. Для выпуска изменений
+# сначала убедитесь, что evolution HEAD совпадает с main, и переключитесь на main:
+test "$(git -C ../evolution rev-parse HEAD)" = "$(git -C ../evolution rev-parse main)" && git -C ../evolution switch main
 # Один раз: зафиксировать начальный developer package; команда вернёт RELEASE_ID.
 python -m scripts.code_release seed --operator NAME
 # Для проверенного кандидата вместо seed:
