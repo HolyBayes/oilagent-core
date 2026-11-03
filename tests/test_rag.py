@@ -298,7 +298,11 @@ def test_hyde_only_changes_query_vector_not_pdf_evidence(index, monkeypatch):
 
     def generate(schema, messages, **kwargs):
         calls.append(kwargs)
-        return schema(paragraph="UNTRUSTED invented report 999999"), {}
+        return schema(
+            english_query="EIA",
+            alternative_query="oil",
+            hypothetical_document="UNTRUSTED invented report 999999",
+        ), {}
 
     monkeypatch.setattr(hyde, "invoke_structured", generate)
     rows = index.search("EIA Brent", hyde=True, hyde_model="test-lite")
@@ -309,3 +313,40 @@ def test_hyde_only_changes_query_vector_not_pdf_evidence(index, monkeypatch):
     assert len(calls) == 1
     index.search("EIA Brent", hyde=False)
     assert len(calls) == 1
+
+
+def test_evolved_multiquery_keeps_original_agency_and_pdf_evidence(index, monkeypatch):
+    from analyst import hyde, method_runtime
+
+    index.ingest()
+    original = method_runtime.run
+    phases = []
+
+    def strategy(slot, request, source=None):
+        if slot != "query_strategy":
+            return original(slot, request, source)
+        phases.append(request["phase"])
+        if request["phase"] == "plan":
+            return {"prompt": ""}
+        if request["phase"] == "expand":
+            return {
+                "fusion_k": 60,
+                "searches": [
+                    {
+                        "query": q,
+                        "weight": 1.0,
+                        "probes": [{"text": q, "kind": "query", "weight": 1.0}],
+                    }
+                    for q in [request["query"], "OPEC Brent price"]
+                ],
+            }
+        return list(range(len(request["rows"])))
+
+    monkeypatch.setattr(method_runtime, "run", strategy)
+    monkeypatch.setattr(
+        hyde, "invoke_structured", lambda *a, **kw: pytest.fail("Unexpected LLM call")
+    )
+    rows = index.search("EIA Brent", hyde=True)
+    assert rows and {row["publisher"] for row in rows} == {"EIA"}
+    assert phases == ["plan", "expand", "fuse"]
+    assert all(row["text"] in "EIA forecast Brent price is 52 in 2026." for row in rows)

@@ -30,6 +30,29 @@ def supported(case, rows):
     )
 
 
+def support_score(case, rows):
+    """All required quotes must survive; earlier complete support scores higher."""
+    if not supported(case, rows):
+        return 0.0
+    if case.get("check") == "publisher_coverage":
+        positions = [
+            next(i for i, r in enumerate(rows, 1) if r["publisher"] == p) for p in ["OPEC", "EIA"]
+        ]
+    else:
+        requirements = case.get("requirements") or [
+            {
+                "publisher": case["expected_publisher"],
+                "page": case["expected_page"],
+                "quote": case["supporting_text"],
+            }
+        ]
+        positions = [
+            next(i for i, row in enumerate(rows, 1) if supported({"requirements": [r]}, [row]))
+            for r in requirements
+        ]
+    return sum(1 / p for p in positions) / len(positions)
+
+
 def evaluate(candidate_policy, index=None):
     path = configured_path("EVOLUTION_EVAL_PATH", "data/evolution_eval.json")
     content = path.read_bytes()

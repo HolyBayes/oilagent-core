@@ -171,7 +171,8 @@ def create_server(kind: str, host: str, port: int):
         @server.tool()
         def read_code(slot: str) -> dict:
             """Read a committed method and ABI. Slots: forecast, scenario, chunking,
-            reranking, search_strategy. Source exports run(request); execution is isolated.
+            reranking, query_strategy, search_strategy. Source exports run(request);
+            execution is isolated.
             """
             from analyst.code_packages import snapshot
 

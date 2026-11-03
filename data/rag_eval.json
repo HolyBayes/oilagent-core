@@ -1,0 +1,222 @@
+{
+  "scope": "Fixed seen public OPEC/EIA questions and recorded Lite search probes. Retrieval replay, not live generation or blind accuracy. Changed prompts require matching approved probes.",
+  "prompt": "Produce search representations for this oil/gas question. Preserve agency, publication date, forecast period, geography and units. english_query is a concise English translation; alternative_query uses other relevant English technical terms. hypothetical_document is an English hypothetical report paragraph, at most 90 words, with unknown numeric values represented by [VALUE]. It is only a retrieval probe, never evidence. Do not claim you have read a report or add another year or agency.",
+  "provider": "gigachat",
+  "model": "GigaChat-2",
+  "cases": [
+    {
+      "kind": "retrieval",
+      "case_id": "brent_h1",
+      "question": "Что EIA в октябрьском отчёте 2025 года прогнозировало для цены Brent в первом полугодии 2026 года? Укажи страницу PDF.",
+      "expected_publisher": "EIA",
+      "expected_page": 5,
+      "supporting_text": "$52/b in the first half of 2026",
+      "check": "supporting_passage",
+      "generated": {
+        "english_query": "What did EIA forecast for Brent price in the first half of 2026 in its October 2025 report? Specify the PDF page number.",
+        "alternative_query": "What is the EIA's projection for Brent crude oil price during the first half of 2026 as of October 2025 report? Mention the page number in the PDF.",
+        "hypothetical_document": "В октябрьском отчёте 2025 года EIA прогнозирует, что средняя цена Brent в первом полугодии 2026 года составит [VALUE] долларов за баррель. Источник: страница [PAGE] в отчёте EIA за октябрь 2025 года."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "inventory",
+      "question": "What global oil inventory build does EIA forecast for 2026 in its October 2025 outlook?",
+      "expected_publisher": "EIA",
+      "expected_page": 6,
+      "supporting_text": "2.1 million b/d in 2026",
+      "check": "supporting_passage",
+      "generated": {
+        "english_query": "global oil inventory build EIA October 2025 outlook 2026",
+        "alternative_query": "global oil stockpile increase EIA October 2025 forecast 2026",
+        "hypothetical_document": "In the October 2025 outlook, the EIA forecasts a [VALUE] million-barrel increase in global oil inventories for 2026. This projection reflects [VALUE] percent growth compared to 2025 levels."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_growth",
+      "question": "Какой рост мирового спроса на нефть в 2025 году прогнозирует ОПЕК в отчёте за октябрь 2025?",
+      "expected_publisher": "OPEC",
+      "expected_page": 7,
+      "supporting_text": "1.3 mb/d",
+      "check": "supporting_passage",
+      "generated": {
+        "english_query": "What is the projected growth in global oil demand in 2025 by OPEC in its October 2025 report?",
+        "alternative_query": "Projected increase in worldwide oil demand for 2025 by OPEC October 2025 report",
+        "hypothetical_document": "В отчёте ОПЕК за октябрь 2025 года прогнозируется, что мировой спрос на нефть вырастет на [VALUE] миллионов баррелей в день в 2025 году. Данный прогноз учитывает влияние экономических условий и политики."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "compare",
+      "question": "Compare OPEC and EIA October 2025 forecasts for global oil demand growth in 2025.",
+      "expected_publisher": null,
+      "expected_page": null,
+      "supporting_text": null,
+      "check": "publisher_coverage",
+      "generated": {
+        "english_query": "OPEC and EIA October 2025 forecasts for global oil demand growth in 2025",
+        "alternative_query": "compare OPEC and EIA October 2025 projections for 2025 oil demand growth",
+        "hypothetical_document": "In October 2025, both OPEC and EIA projected global oil demand growth for 2025 at [VALUE] million barrels per day (mbd). However, OPEC's forecast was slightly higher than EIA's estimate, reflecting differing views on economic recovery and geopolitical factors."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_september",
+      "question": "Какую среднюю спотовую цену Brent за сентябрь приводит EIA в выпуске за октябрь 2025?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 5,
+          "quote": "averaged $68 per barrel"
+        }
+      ],
+      "generated": {
+        "english_query": "What is the average spot price of Brent for September that EIA reports in its October 2025 release?",
+        "alternative_query": "What is the September Brent spot price forecast by EIA in its October 2025 report?",
+        "hypothetical_document": "In its October 2025 report, the EIA forecasts an average spot price of Brent for September at [VALUE] dollars per barrel. This projection covers the period from [START_DATE] to [END_DATE] and considers global supply and demand trends."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_q4_stock",
+      "question": "According to EIA October 2025, how quickly will global inventories build in 4Q25?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 5,
+          "quote": "2.6 million barrels per day"
+        }
+      ],
+      "generated": {
+        "english_query": "how quickly will global inventories build in 4Q25 according to EIA October 2025",
+        "alternative_query": "what is the expected inventory buildup rate for Q4 2025 as forecasted by EIA in October 2025 report",
+        "hypothetical_document": "In the October 2025 report, the EIA forecasts a [VALUE] percentage increase in global oil inventories during the fourth quarter of 2025. This projection reflects [VALUE] factors including production levels, demand trends, and geopolitical events."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_supply",
+      "question": "Which countries lead EIA October 2025 non-OPEC+ production growth?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 6,
+          "quote": "United States, Brazil, Canada, and Guyana"
+        }
+      ],
+      "generated": {
+        "english_query": "Which countries lead EIA October 2025 non-OPEC+ production growth?",
+        "alternative_query": "Which nations drive EIA October 2025 non-OPEC+ output expansion?",
+        "hypothetical_document": "In October 2025, the EIA forecasts significant non-OPEC+ production growth, driven primarily by [VALUE] countries, including [VALUE] and [VALUE]. These nations are expected to contribute [VALUE] million barrels per day to the global supply."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "eia_opec_2026",
+      "question": "What increase in OPEC+ crude production does EIA October 2025 expect for 2026?",
+      "requirements": [
+        {
+          "publisher": "EIA",
+          "page": 7,
+          "quote": "0.6 million b/d in 2026"
+        }
+      ],
+      "generated": {
+        "english_query": "What increase in OPEC+ crude production does EIA October 2025 expect for 2026?",
+        "alternative_query": "Expected rise in OPEC+ crude output by EIA October 2025 for 2026",
+        "hypothetical_document": "In its October 2025 report, the EIA forecasts a [VALUE] percent increase in OPEC+ crude production for 2026, driven by [REASON]. This projection assumes [ASSUMPTIONS]."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_basket",
+      "question": "Какой была средняя цена корзины ОПЕК в сентябре по отчёту за октябрь 2025?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 5,
+          "quote": "$70.39/b"
+        }
+      ],
+      "generated": {
+        "english_query": "What was the average price of the OPEC basket in September according to the October 2025 report?",
+        "alternative_query": "What was the OPEC basket average price in September as reported in October 2025?",
+        "hypothetical_document": "In October 2025, the average price of the OPEC basket for September was [VALUE]. This figure reflects market conditions and production trends during that period."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_2026",
+      "question": "Какого уровня достигнет мировой спрос на нефть в 2026 году по прогнозу OPEC от октября 2025?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "to average 106.5 mb/d"
+        }
+      ],
+      "generated": {
+        "english_query": "What level will the global oil demand reach in 2026 according to OPEC's October 2025 forecast?",
+        "alternative_query": "What is the projected global oil demand for 2026 by OPEC's October 2025 forecast?",
+        "hypothetical_document": "In its October 2025 report, OPEC forecasts that global oil demand will reach [VALUE] million barrels per day in 2026. This projection reflects [VALUE]% growth compared to 2025 levels, driven by [REASON]. The forecast considers [FACTORS] and assumes [ASSUMPTIONS]."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_2024",
+      "question": "What global oil demand growth in 2024 does OPEC October 2025 describe?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "a considerable 1.5 mb/d"
+        }
+      ],
+      "generated": {
+        "english_query": "global oil demand growth in 2024 described by OPEC October 2025",
+        "alternative_query": "OPEC October 2025 forecast for 2024 global oil demand growth",
+        "hypothetical_document": "In its October 2025 report, OPEC forecasts a [VALUE] percent increase in global oil demand for 2024, driven by [REASON]. The forecast anticipates [IMPACT] on production and supply dynamics."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "opec_china",
+      "question": "What oil demand growth for China in 2025 does OPEC October 2025 expect?",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "increase of around 180 tb/d"
+        }
+      ],
+      "generated": {
+        "english_query": "What oil demand growth for China in 2025 does OPEC October 2025 expect?",
+        "alternative_query": "What is OPEC's October 2025 forecast for China's 2025 oil demand growth?",
+        "hypothetical_document": "In its October 2025 report, OPEC forecasts that China's oil demand growth in 2025 will be [VALUE] million barrels per day. This projection reflects [VALUE]% increase compared to 2024 levels."
+      }
+    },
+    {
+      "kind": "retrieval",
+      "case_id": "compare_2026",
+      "question": "Compare OPEC and EIA October 2025 forecasts for global oil demand growth in 2026.",
+      "requirements": [
+        {
+          "publisher": "OPEC",
+          "page": 7,
+          "quote": "a healthy 1.4 mb/d"
+        },
+        {
+          "publisher": "EIA",
+          "page": 7,
+          "quote": "1.1 million b/d in both forecast years"
+        }
+      ],
+      "generated": {
+        "english_query": "OPEC and EIA October 2025 forecasts for global oil demand growth in 2026",
+        "alternative_query": "forecast projections for global oil demand growth in 2026 by OPEC and EIA October 2025",
+        "hypothetical_document": "In their October 2025 report, OPEC projects global oil demand growth in 2026 to be [VALUE] million barrels per day, while the EIA forecasts [VALUE] million barrels per day. Both organizations highlight [FACTORS] as key drivers for their respective projections."
+      }
+    }
+  ]
+}

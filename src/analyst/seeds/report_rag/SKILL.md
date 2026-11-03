@@ -1,7 +1,7 @@
 ---
 name: report_rag
 description: Find and compare OPEC/EIA PDF evidence with publication dates, exact passages and page citations.
-version: 0.5.0
+version: 0.5.1
 type: instruction
 always_in_context: false
 os: any
@@ -25,3 +25,5 @@ text/token offsets or candidate passages; methods return source spans or a permu
 of passage indices. Core retains original PDFs, metadata and citation validation.
 Changed chunking builds a separate index identified by the implementation hash.
 For a requested improvement the coordinator uses Evolution read_code/propose_code.
+
+query_strategy.py owns search expansion and result fusion. Its run(request) phases: plan returns a prompt (empty skips LLM), expand returns bounded searches/probes/weights, fuse returns a permutation of candidate indices. Core owns model calls, caches, budgets, embeddings and evidence. Read this slot before proposing HyDE/MultiQuery changes. Fixed evaluation replays approved Lite probes; changed prompts/models need matching operator-owned fixtures and are otherwise unavailable, never silently scored.

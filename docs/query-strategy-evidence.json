@@ -1,0 +1,259 @@
+{
+  "scope": "Isolated executor, real frozen PDF retrieval, approved recorded Lite probes; no LLM calls",
+  "llm_calls": 0,
+  "support_cases": 13,
+  "baseline_supported": 13,
+  "baseline_mean_reciprocal_support_rank": 0.717948717948718,
+  "no_gain": {
+    "passed": false,
+    "gain": 0.0,
+    "regressions": [],
+    "before": [
+      0.5,
+      1.0,
+      1.0,
+      0.75,
+      0.3333333333333333,
+      1.0,
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333,
+      1.0,
+      1.0,
+      1.0,
+      0.75
+    ],
+    "after": [
+      0.5,
+      1.0,
+      1.0,
+      0.75,
+      0.3333333333333333,
+      1.0,
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333,
+      1.0,
+      1.0,
+      1.0,
+      0.75
+    ],
+    "threshold": 0.01
+  },
+  "reverse_fusion": {
+    "passed": false,
+    "gain": -0.3653846153846155,
+    "regressions": [
+      0,
+      1,
+      2,
+      5,
+      9,
+      10,
+      11,
+      12
+    ],
+    "before": [
+      0.5,
+      1.0,
+      1.0,
+      0.75,
+      0.3333333333333333,
+      1.0,
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333,
+      1.0,
+      1.0,
+      1.0,
+      0.75
+    ],
+    "after": [
+      0.3333333333333333,
+      0.25,
+      0.25,
+      0.75,
+      0.5,
+      0.25,
+      0.5,
+      0.5,
+      0.5,
+      0.25,
+      0.25,
+      0.25,
+      0.0
+    ],
+    "threshold": 0.01
+  },
+  "unknown_prompt": "blocked: matching approved probes required",
+  "qualification_release_id": "317a70baab93816bf70ba0b58049dd781c256ef9bead9962c9d63bac6919a1d1",
+  "dataset_sha256": "8f4628cf72f3a7c1ba5cbd1539681c2c33f888a4d7dd99f9c794a975d3a592ad",
+  "evolution_commit": "36ec9bc",
+  "tests_passed": 226,
+  "http": {
+    "passed": 13,
+    "total": 13,
+    "cases": [
+      {
+        "case": "brent_h1",
+        "passed": true
+      },
+      {
+        "case": "inventory",
+        "passed": true
+      },
+      {
+        "case": "opec_growth",
+        "passed": true
+      },
+      {
+        "case": "compare",
+        "passed": true
+      },
+      {
+        "case": "eia_september",
+        "passed": true
+      },
+      {
+        "case": "eia_q4_stock",
+        "passed": true
+      },
+      {
+        "case": "eia_supply",
+        "passed": true
+      },
+      {
+        "case": "eia_opec_2026",
+        "passed": true
+      },
+      {
+        "case": "opec_basket",
+        "passed": true
+      },
+      {
+        "case": "opec_2026",
+        "passed": true
+      },
+      {
+        "case": "opec_2024",
+        "passed": true
+      },
+      {
+        "case": "opec_china",
+        "passed": true
+      },
+      {
+        "case": "compare_2026",
+        "passed": true
+      }
+    ],
+    "evolution_read_code": "36ec9bcc38122d23a15859e59e59041ecc646f5d",
+    "switches_preserved": {
+      "oil_forecast": true,
+      "oilgas_analyst": true,
+      "report_rag": true,
+      "web_research": true
+    },
+    "review_cycles": 2,
+    "llm_calls": 0
+  },
+  "full_synthesis_prompt": [
+    {
+      "case": "brent_h1",
+      "passed": true,
+      "chars": 10800,
+      "omitted": false
+    },
+    {
+      "case": "inventory",
+      "passed": true,
+      "chars": 10052,
+      "omitted": false
+    },
+    {
+      "case": "opec_growth",
+      "passed": true,
+      "chars": 9962,
+      "omitted": false
+    },
+    {
+      "case": "compare",
+      "passed": true,
+      "chars": 11329,
+      "omitted": false
+    },
+    {
+      "case": "eia_september",
+      "passed": true,
+      "chars": 10538,
+      "omitted": false
+    },
+    {
+      "case": "eia_q4_stock",
+      "passed": true,
+      "chars": 9696,
+      "omitted": false
+    },
+    {
+      "case": "eia_supply",
+      "passed": true,
+      "chars": 10953,
+      "omitted": false
+    },
+    {
+      "case": "eia_opec_2026",
+      "passed": true,
+      "chars": 10231,
+      "omitted": false
+    },
+    {
+      "case": "opec_basket",
+      "passed": true,
+      "chars": 8122,
+      "omitted": false
+    },
+    {
+      "case": "opec_2026",
+      "passed": true,
+      "chars": 9707,
+      "omitted": false
+    },
+    {
+      "case": "opec_2024",
+      "passed": true,
+      "chars": 8487,
+      "omitted": false
+    },
+    {
+      "case": "opec_china",
+      "passed": true,
+      "chars": 8488,
+      "omitted": false
+    },
+    {
+      "case": "compare_2026",
+      "passed": true,
+      "chars": 11160,
+      "omitted": false
+    }
+  ],
+  "native_reviews": {
+    "oil_forecast": "reused_exact_review",
+    "oilgas_analyst": {
+      "status": "clean",
+      "executable_review": true,
+      "models": [
+        "gigachat/GigaChat-2 [oilagent-reviewer]"
+      ]
+    },
+    "report_rag": {
+      "status": "clean",
+      "executable_review": true,
+      "models": [
+        "gigachat/GigaChat-2 [oilagent-reviewer]"
+      ]
+    },
+    "web_research": "reused_exact_review"
+  },
+  "native_review_usage": "Not reported by native review response; zero-LLM assertions above apply to replay/HTTP checks only."
+}

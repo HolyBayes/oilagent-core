@@ -246,3 +246,82 @@ def test_package_updates_preserve_disabled_skill_switches(installation):
     with client:
         releases.enable(backend, client, updated, "operator")
     assert before == {name: card["enabled"] for name, card in cards.items()}
+
+
+@pytest.mark.parametrize("tamper", [None, "method", "seed", "dataset", "regression"])
+def test_explicit_query_extension_cannot_change_other_code_or_old_gold(
+    installation, monkeypatch, tamper
+):
+    import copy
+
+    from analyst.code_packages import query_strategy_extension
+    from analyst.config import CORE_ROOT
+    from analyst.evolution import atomic_json
+    from analyst.releases import canonical, sha
+
+    monkeypatch.syspath_prepend(str(CORE_ROOT))
+    from scripts import qualify_runtime as qualifier
+
+    backend, current = installation
+    current["datasets"] = {"old-gold": "v1"}
+    old = repository_files(backend, backend.baseline()["base_sha"])
+    old.pop(artifact("query_strategy"))
+    bundle = {"files": old, "identity": copy.deepcopy(current), "kind": "fixture-legacy"}
+    raw = canonical(bundle)
+    old_id = sha(raw)
+    root = code_root()
+    (root / "bundles").mkdir(parents=True)
+    (root / "bundles" / (old_id + ".json")).write_bytes(raw)
+    atomic_json(root / "active.json", {"release_id": old_id})
+    with pytest.raises(ValueError, match="Missing executable"):
+        releases.read_bundle(old_id)
+    metrics = {
+        slot: ([{"mae": 2.0, "coverage": 0.8, "width": 10.0}] if slot == "forecast" else [1, 0])
+        for slot in releases.SLOTS
+        if slot != "query_strategy"
+    }
+    receipt = {
+        "release_id": old_id,
+        "identity": bundle["identity"],
+        "package_sha256": package_digest(old),
+        "metrics": metrics,
+    }
+    raw = canonical(receipt)
+    receipt_id = sha(raw)
+    (root / "qualifications").mkdir()
+    (root / "qualifications" / (receipt_id + ".json")).write_bytes(raw)
+    files = query_strategy_extension(old)
+    for name, content in files.items():
+        (backend.repo / name).write_text(content)
+    if tamper in {"method", "seed"}:
+        name = artifact("scenario" if tamper == "method" else "query_strategy")
+        (backend.repo / name).write_text(files[name] + "\n")
+    backend.git("add", "--", "ouroboros_skills")
+    backend.git("commit", "-m", "Developer strategy extension fixture")
+    current["core"] = "v2"
+    current["datasets"] = {
+        "old-gold": "v2" if tamper == "dataset" else "v1",
+        "rag_eval.json": "new-replay",
+    }
+    after = copy.deepcopy(metrics)
+    for slot in ["chunking", "reranking"]:
+        after[slot] += [0.5]
+    after["query_strategy"] = [0.5]
+    if tamper == "regression":
+        after["reranking"][0] = 0
+    monkeypatch.setattr(qualifier, "measure", lambda files: after)
+    monkeypatch.setattr(qualifier, "evaluation_identity", lambda: copy.deepcopy(current))
+    if tamper:
+        with pytest.raises(ValueError):
+            qualifier.qualify(backend, receipt_id, "operator", add_query_strategy=True)
+        assert not (root / "prepared.json").exists()
+    else:
+        upgraded = qualifier.qualify(backend, receipt_id, "operator", add_query_strategy=True)
+        new = releases.read_bundle(upgraded)
+        assert new["kind"] == "runtime-extended"
+        assert new["qualification"]["query_strategy"]["gain"] == 0
+        assert new["qualification"]["reranking"]["before"] == [1, 0, 0.5]
+        assert releases.package_hash(new["files"], "report_rag") != releases.package_hash(
+            old, "report_rag"
+        )
+        assert evaluation.active_id() == old_id

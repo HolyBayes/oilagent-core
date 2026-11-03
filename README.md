@@ -53,7 +53,7 @@ RAG: два выпуска OPEC/EIA за октябрь 2025, HyDE + E5/Chroma +
 
 ## Выпуск навыков
 
-Инструкции и методы живут в отдельном `evolution` Git. Candidate не меняет serving. Checks требуют роста без регрессий, затем critic; публикация требует оператора и native review полного пакета. У агента нет shell/merge/enable.
+Инструкции и методы живут в отдельном `evolution` Git. В `report_rag/query_strategy.py` агент может менять HyDE/MultiQuery, prompt, веса поисковых эмбеддингов и слияние результатов через `read_code` / `propose_code` со slot=`query_strategy`. Candidate не меняет serving. Checks требуют роста без регрессий, затем critic; публикация требует оператора и native review полного пакета. У агента нет shell/merge/enable.
 
 Для operator CLI установите зависимости core в Python-окружение: `pip install -r requirements.lock && pip install --no-deps -e .`.
 
@@ -74,9 +74,13 @@ python -m scripts.code_release rollback PREVIOUS_RELEASE_ID --operator NAME
 
 HyDE использует отдельную модель: `RAG_HYDE_PROVIDER=gigachat`, `RAG_HYDE_MODEL=GigaChat-2` (Lite), независимо от основной LLM. Доступ берётся из соответствующих `GIGACHAT_*` или `LLM_*` параметров. Для `openai/local` задайте также `RAG_HYDE_MODEL` и `LLM_BASE_URL`/`LLM_API_KEY` по провайдеру. После изменения `.env` перезапустите `./run.sh -d`.
 
-MCP: `search_reports(query="…", hyde_model="GigaChat-2")`; без `hyde_model` используется настройка сервиса. `hyde=false` отключает HyDE на один вызов, `RAG_HYDE_ENABLED=false` — по умолчанию и в Main. Один промах кеша добавляет один LLM-запрос в общий бюджет; повторения используют `RAG_INDEX_PATH/hyde.sqlite3`. При ошибке HyDE MCP возвращает ошибку, Main отмечает недоступность RAG. Гипотетический абзац используется только для эмбеддинга: источники и цитаты берутся из PDF.
+MCP: `search_reports(query="…", hyde_model="GigaChat-2")`; без `hyde_model` используется настройка сервиса. `hyde=false` отключает HyDE на один вызов, `RAG_HYDE_ENABLED=false` — по умолчанию и в Main. Один промах кеша добавляет один LLM-запрос в общий бюджет; повторения используют `RAG_INDEX_PATH/hyde.sqlite3`. При ошибке HyDE MCP возвращает ошибку, Main отмечает недоступность RAG. Текущая стратегия по умолчанию — HyDE; `hyde=false` пропускает модуль расширения запросов целиком. Гипотетический абзац используется только для эмбеддинга: источники и цитаты берутся из PDF.
+
+Если форма Settings в Docker требует Network Password, задайте `OUROBOROS_REVIEW_MAX_CYCLES=2` в `.env` и выполните `./run.sh -d`. Это число review-попыток для каждого snapshot пакета.
 
 Stage временно закрывает аналитические вызовы. При обновлении core/executor сначала на старой версии выполните `RAG_INDEX_PATH=workspace/container/rag python -m scripts.qualify_runtime capture --operator NAME`. После обновления: `./run.sh -d executor`, затем `RAG_INDEX_PATH=workspace/container/rag python -m scripts.qualify_runtime qualify RECEIPT_ID --operator NAME`, `./run.sh -d`, review/enable нового release. Это проверяет неизменные skills на новом runtime, без заявления об улучшении. Active pointer для обхода проверки удалять нельзя.
+
+Для обновления старой установки с пятью slots сохраните capture до смены кода; после коммита точного developer extension в evolution выполните qualify с `--add-query-strategy`, затем обычные restart/review/enable. Этот флаг допускает только developer seed нового модуля и точные изменения двух инструкций; существующие методы и эталоны менять нельзя.
 
 GitHub/GitLab remote пока не настроен. Перед сдачей нужны публикация, улучшение retrieval и более широкий набор живых проверок Lite.
 

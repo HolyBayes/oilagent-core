@@ -57,3 +57,9 @@ def test_runtime_settings_are_private(tmp_path):
     path = tmp_path / "settings.json"
     private_json(path, {"secret": "test-only"})
     assert path.stat().st_mode & 0o777 == 0o600
+
+
+@pytest.mark.parametrize("configured,expected", [(None, "1"), ("2", "2")])
+def test_native_profile_preserves_explicit_review_cycle_limit(tmp_path, configured, expected):
+    env = {} if configured is None else {"OUROBOROS_REVIEW_MAX_CYCLES": configured}
+    assert settings_profile(env, [], tmp_path)["OUROBOROS_REVIEW_MAX_CYCLES"] == expected

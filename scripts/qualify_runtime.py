@@ -7,7 +7,13 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 
 from analyst.code_evaluation import active_id, compare, evaluation_identity, score
-from analyst.code_packages import SLOTS, artifact, package_digest, repository_files
+from analyst.code_packages import (
+    SLOTS,
+    artifact,
+    package_digest,
+    query_strategy_extension,
+    repository_files,
+)
 from analyst.code_releases import freeze, read_bundle, release_lock
 from analyst.config import CORE_ROOT, evolution_repo, workspace
 from analyst.evolution import Evolution
@@ -48,7 +54,7 @@ def capture(operator):
     return receipt_id
 
 
-def qualify(backend, receipt_id, operator):
+def qualify(backend, receipt_id, operator, *, add_query_strategy=False):
     import re
 
     if not re.fullmatch(r"[0-9a-f]{64}", receipt_id):
@@ -64,19 +70,23 @@ def qualify(backend, receipt_id, operator):
         raise ValueError("Captured runtime differs from the original release")
     files = repository_files(backend, backend.baseline()["base_sha"])
     if (
-        files != old["files"]
-        or package_digest(files) != receipt["package_sha256"]
+        files != (query_strategy_extension(old["files"]) if add_query_strategy else old["files"])
+        or package_digest(old["files"]) != receipt["package_sha256"]
         or backend.git("status", "--porcelain")
     ):
         raise ValueError("Runtime qualification cannot change skill source")
     current = evaluation_identity()
-    if current["datasets"] != receipt["identity"]["datasets"]:
+    datasets = dict(current["datasets"])
+    if add_query_strategy:
+        datasets.pop("rag_eval.json", None)
+    if datasets != receipt["identity"]["datasets"]:
         raise ValueError("Dataset changed; this is not a runtime-only upgrade")
+    kind = "runtime-extended" if add_query_strategy else "runtime-requalified"
     prepared = code_root() / "prepared.json"
     if prepared.exists():
         pending = read_bundle(json.loads(prepared.read_text())["release_id"], historical=True)
         if (
-            pending.get("kind") != "runtime-requalified"
+            pending.get("kind") != kind
             or pending.get("qualification_receipt") != receipt_id
             or pending["files"] != files
             or current == receipt["identity"]
@@ -87,7 +97,14 @@ def qualify(backend, receipt_id, operator):
         prepared.unlink()
         (code_root() / "maintenance.json").unlink(missing_ok=True)
     after = measure(files)
-    comparisons = {slot: compare(slot, receipt["metrics"][slot], after[slot]) for slot in SLOTS}
+    comparisons = {}
+    for slot in SLOTS:
+        before = receipt["metrics"].get(slot)
+        if add_query_strategy and slot == "query_strategy":
+            before = after[slot]
+        elif add_query_strategy and slot in {"reranking", "chunking"}:
+            before = before + after[slot][len(before) :]
+        comparisons[slot] = compare(slot, before, after[slot])
     if any(row["regressions"] for row in comparisons.values()):
         raise ValueError("New runtime regresses on fixed method metrics")
     if current != evaluation_identity():
@@ -95,13 +112,18 @@ def qualify(backend, receipt_id, operator):
     return freeze(
         files,
         {
-            "kind": "runtime-requalified",
+            "kind": kind,
             "source_commit": backend.baseline()["base_sha"],
             "previous_release_id": receipt["release_id"],
             "qualification_receipt": receipt_id,
             "qualification": comparisons,
             "approved_by": operator,
-            "scope": "Same skill bytes under a changed runtime; no improvement claim",
+            "scope": (
+                "Exact developer query-strategy extension; new replay metrics initialized, "
+                "existing metrics must not regress; no improvement claim"
+                if add_query_strategy
+                else "Same skill bytes under a changed runtime; no improvement claim"
+            ),
         },
     )
 
@@ -112,6 +134,7 @@ def main():
     parser.add_argument("action", choices=["capture", "qualify"])
     parser.add_argument("receipt_id", nargs="?")
     parser.add_argument("--operator", required=True)
+    parser.add_argument("--add-query-strategy", action="store_true")
     args = parser.parse_args()
     if not args.operator.strip():
         parser.error("Operator required")
@@ -122,7 +145,9 @@ def main():
         else:
             if not args.receipt_id:
                 parser.error("Receipt required")
-            result = qualify(backend, args.receipt_id, args.operator)
+            result = qualify(
+                backend, args.receipt_id, args.operator, add_query_strategy=args.add_query_strategy
+            )
     print(json.dumps({"action": args.action, "id": result}))
 
 

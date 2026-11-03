@@ -1,11 +1,48 @@
 """Protected output validation; evolved code cannot supply provenance or test targets."""
 
 import math
+from typing import Literal
 
 import numpy as np
+from pydantic import BaseModel, ConfigDict, Field, FiniteFloat
+
+
+class QueryPrompt(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    prompt: str = Field(max_length=2000)
+
+
+class Probe(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    text: str = Field(min_length=1, max_length=4000)
+    kind: Literal["query", "passage"]
+    weight: FiniteFloat = Field(gt=0, le=10)
+
+
+class Search(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    query: str = Field(min_length=1, max_length=4000)
+    probes: list[Probe] = Field(min_length=1, max_length=4)
+    weight: FiniteFloat = Field(gt=0, le=10)
+
+
+class ExpandedQueries(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    searches: list[Search] = Field(min_length=1, max_length=3)
+    fusion_k: int = Field(ge=1, le=200)
 
 
 def validate(slot, request, result):
+    if slot == "query_strategy":
+        phase = request["phase"]
+        if phase == "plan":
+            return QueryPrompt.model_validate(result).model_dump()
+        if phase == "expand":
+            return ExpandedQueries.model_validate(result).model_dump()
+        if phase != "fuse":
+            raise ValueError("Unknown query strategy phase")
+        return validate("reranking", request, result)
+
     if slot == "forecast":
         horizon = request["horizon"]
         if any(

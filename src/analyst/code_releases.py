@@ -24,7 +24,7 @@ def package_hash(files, name):
     return digest.hexdigest()
 
 
-def validate_files(files):
+def validate_files(files, *, historical=False):
     from analyst.skill_evolution import validate_skill
 
     for path, source in files.items():
@@ -36,6 +36,10 @@ def validate_files(files):
         else:
             raise ValueError("Unexpected executable package artifact")
     for slot in SLOTS:
+        if historical and slot == "query_strategy" and artifact(slot) not in files:
+            continue
+        if artifact(slot) not in files:
+            raise ValueError("Missing executable package artifact: " + slot)
         validate_source(slot, files[artifact(slot)])
 
 
@@ -48,7 +52,7 @@ def read_bundle(release_id, *, historical=False):
     bundle = json.loads(raw)
     if not historical and bundle["identity"] != evaluation_identity():
         raise ValueError("Code/executor/data changed; evaluate and release again")
-    validate_files(bundle["files"])
+    validate_files(bundle["files"], historical=historical)
     return {"release_id": release_id, **bundle}
 
 

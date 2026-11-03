@@ -6,6 +6,11 @@ import pytest
 
 from analyst import hyde
 from analyst.budget import Budget, current_budget
+from analyst.seeds.implementations.query_strategy import PROMPT
+
+
+def generate(query, directory, **kwargs):
+    return hyde.generate_probes(query, PROMPT, directory, **kwargs)
 
 
 @pytest.fixture
@@ -17,7 +22,11 @@ def generator(monkeypatch):
 
     def generate(schema, messages, **kwargs):
         calls.append((messages, kwargs))
-        return schema(paragraph="EIA Brent forecast: [VALUE] in 2026."), {}
+        return schema(
+            english_query="Brent",
+            alternative_query="Oil",
+            hypothetical_document="EIA Brent forecast: [VALUE] in 2026.",
+        ), {}
 
     monkeypatch.setattr(hyde, "invoke_structured", generate)
     return calls
@@ -27,31 +36,31 @@ def test_default_enable_and_cache_isolated_by_query_and_model(tmp_path, monkeypa
     monkeypatch.delenv("RAG_HYDE_ENABLED", raising=False)
     assert hyde.hyde_enabled()
     for _ in range(2):
-        hyde.hypothetical_passage("EIA Brent 2026", tmp_path)
+        generate("EIA Brent 2026", tmp_path)
     assert len(generator) == 1
     assert generator[0][1] == {"provider": "gigachat", "model": "GigaChat-2"}
-    hyde.hypothetical_passage("EIA Brent 2026", tmp_path, model="another-model")
-    hyde.hypothetical_passage("OPEC Brent 2026", tmp_path)
+    generate("EIA Brent 2026", tmp_path, model="another-model")
+    generate("OPEC Brent 2026", tmp_path)
     assert len(generator) == 3
 
 
 def test_concurrent_requests_generate_once(tmp_path, generator):
     with ThreadPoolExecutor(max_workers=4) as pool:
-        results = list(pool.map(lambda _: hyde.hypothetical_passage("EIA", tmp_path), range(4)))
-    assert len(set(results)) == 1 and len(generator) == 1
+        results = list(pool.map(lambda _: generate("EIA", tmp_path), range(4)))
+    assert len({str(r) for r in results}) == 1 and len(generator) == 1
 
 
 def test_failed_generation_is_not_cached(tmp_path, monkeypatch, generator):
-    generate = hyde.invoke_structured
+    original = hyde.invoke_structured
 
     def fail(*args, **kwargs):
         raise RuntimeError("provider unavailable")
 
     monkeypatch.setattr(hyde, "invoke_structured", fail)
     with pytest.raises(RuntimeError):
-        hyde.hypothetical_passage("EIA", tmp_path)
-    monkeypatch.setattr(hyde, "invoke_structured", generate)
-    hyde.hypothetical_passage("EIA", tmp_path)
+        generate("EIA", tmp_path)
+    monkeypatch.setattr(hyde, "invoke_structured", original)
+    generate("EIA", tmp_path)
     assert len(generator) == 1
 
 
@@ -62,7 +71,13 @@ def test_hyde_embedding_combines_question_and_passage(tmp_path, generator):
         calls.extend(texts)
         return np.array([[1.0, 0.0], [0.0, 1.0]])
 
-    vector = hyde.query_embedding("EIA 2026", SimpleNamespace(encode=encode), tmp_path)
+    vector = hyde.weighted_embedding(
+        [
+            {"text": "EIA 2026", "kind": "query", "weight": 1},
+            {"text": "EIA probe", "kind": "passage", "weight": 1},
+        ],
+        SimpleNamespace(encode=encode),
+    )
     assert np.allclose(vector, [[2**-0.5, 2**-0.5]])
     assert calls[0] == "query: EIA 2026" and calls[1].startswith("passage: EIA")
 
@@ -76,7 +91,9 @@ def test_independent_model_uses_common_budget(monkeypatch, tmp_path):
         def invoke(self, messages):
             return {
                 "raw": SimpleNamespace(usage_metadata={"input_tokens": 4, "output_tokens": 2}),
-                "parsed": hyde.HypotheticalPassage(paragraph="[VALUE]"),
+                "parsed": hyde.SearchRepresentations(
+                    english_query="EIA", alternative_query="oil", hypothetical_document="[VALUE]"
+                ),
                 "parsing_error": None,
             }
 
@@ -92,8 +109,8 @@ def test_independent_model_uses_common_budget(monkeypatch, tmp_path):
     budget = Budget()
     token = current_budget.set(budget)
     try:
-        hyde.hypothetical_passage("EIA", tmp_path)
-        hyde.hypothetical_passage("EIA", tmp_path)
+        generate("EIA", tmp_path)
+        generate("EIA", tmp_path)
     finally:
         current_budget.reset(token)
     assert budget.llm_calls == 1 and budget.input_tokens == 4 and budget.output_tokens == 2

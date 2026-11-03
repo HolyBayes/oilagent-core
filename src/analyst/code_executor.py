@@ -27,7 +27,7 @@ def run_many(source, inputs):
     if budget is not None:
         budget["calls"] += 1
         timeout = min(timeout, budget["deadline"] - time.monotonic())
-        if budget["calls"] > 64 or timeout < 0.1:
+        if budget["calls"] > budget.get("max_calls", 64) or timeout < 0.1:
             raise TimeoutError("Protected method evaluation budget exhausted")
     with httpx.Client(trust_env=False, timeout=timeout + 10) as client:
         response = client.post(

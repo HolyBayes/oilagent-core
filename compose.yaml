@@ -173,6 +173,7 @@ services:
       evolution: {condition: service_healthy}
     environment:
       <<: *model-environment
+      OUROBOROS_REVIEW_MAX_CYCLES: ${OUROBOROS_REVIEW_MAX_CYCLES:-1}
       ANALYST_MCP_TOKEN: ${ANALYST_MCP_TOKEN:?Set ANALYST_MCP_TOKEN in .env}
       EVOLUTION_MCP_TOKEN: ${EVOLUTION_MCP_TOKEN:?Set EVOLUTION_MCP_TOKEN in .env}
       RELEASE_PATH: /releases

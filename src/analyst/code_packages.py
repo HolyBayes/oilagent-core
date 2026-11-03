@@ -10,6 +10,7 @@ SLOTS = {
     "scenario": "oil_forecast",
     "chunking": "report_rag",
     "reranking": "report_rag",
+    "query_strategy": "report_rag",
     "search_strategy": "web_research",
 }
 
@@ -89,3 +90,49 @@ def repository_files(backend, sha):
     if sum(len(v.encode()) for v in files.values()) > 512000:
         raise ValueError("Skill package exceeds 512000 bytes")
     return files
+
+
+def query_strategy_extension(files):
+    """Exact operator migration from a five-method package; never a candidate bypass."""
+    if artifact("query_strategy") in files:
+        raise ValueError("Query strategy already exists")
+    result = dict(files)
+    result[artifact("query_strategy")] = seed_source("query_strategy")
+    path = "ouroboros_skills/report_rag/SKILL.md"
+    old = result[path]
+    match = re.search(r"(?m)^version: (\d+)\.(\d+)\.(\d+)[ \t]*$", old)
+    if not match:
+        raise ValueError("Existing skill version required")
+    result[path] = (
+        old[: match.start()]
+        + (f"version: {match[1]}.{match[2]}.{int(match[3]) + 1}")
+        + old[match.end() :]
+    )
+    result[path] += (
+        "\nquery_strategy.py owns search expansion and result fusion. Its run(request) phases: "
+        "plan returns a prompt (empty skips LLM), expand returns bounded searches/probes/weights, "
+        "fuse returns a permutation of candidate indices. Core owns model calls, caches, "
+        "budgets, embeddings and evidence. Read this slot before proposing "
+        "HyDE/MultiQuery changes. "
+        "Fixed evaluation replays approved Lite probes; changed prompts/models need matching "
+        "operator-owned fixtures and are otherwise unavailable, never silently scored.\n"
+    )
+    coordinator = "ouroboros_skills/oilgas_analyst/SKILL.md"
+    old = result[coordinator]
+    match = re.search(r"(?m)^version: (\d+)\.(\d+)\.(\d+)[ \t]*$", old)
+    if not match:
+        raise ValueError("Existing coordinator version required")
+    updated = (
+        old[: match.start()]
+        + (f"version: {match[1]}.{match[2]}.{int(match[3]) + 1}")
+        + old[match.end() :]
+    )
+    marker = "scenario, chunking, reranking and search_strategy."
+    result[coordinator] = (
+        updated.replace(
+            marker, "scenario, chunking, reranking, query_strategy and search_strategy."
+        )
+        if marker in updated
+        else updated + "\nquery_strategy is the report_rag search expansion/fusion slot.\n"
+    )
+    return result

@@ -1,6 +1,6 @@
 # Проверки
 
-- Pytest: 213 тестов проходят, включая regression test стартовых MCP schemas. Unit tests исполняют только точные developer seeds; кандидаты запускаются отдельным executor.
+- Pytest: 226 тестов проходят, включая regression test стартовых MCP schemas. Unit tests исполняют только точные developer seeds; кандидаты запускаются отдельным executor.
 - Последний fixed acceptance в рабочем контейнере: 30/30; реальные retrieval-кейсы — 13/13 вместо 8/13. Дополнительный известный набор: 12/19 вместо 5/19, без регрессий. Это не точность ответов модели. [Результаты RAG](rag-evidence.json).
 - Чистый bootstrap: прошёл с отдельной копией исходников и пустыми данными, с кешированными Docker layers. PDF/веса скачаны заново. Проверены init и индекс, не полный новый UI с review: [cold-start-evidence.json](cold-start-evidence.json).
 - Пять native UI gateway задач на Lite: report/web/hybrid answered, forecast forecasted, out_of_scope. Каждая имеет реальный Analyst trace; модели проверены по native call records. [Результаты](native-lite-delivery-evidence.json), [диалоги](../examples/demo_dialogues.md).
@@ -48,3 +48,5 @@ python scripts/benchmark_rag.py             # Только кеш, без LLM.
 ```
 
 Скриптам нужны пути WORKSPACE_PATH, RELEASE_PATH, RAG_INDEX_PATH работающей установки и доступ к локальному executor. Данные и эталоны при исправлении не менялись.
+
+Query strategy проверена отдельным executor на реальных PDF с 13 записанными генерациями Lite: 13/13 наборов цитат, средний reciprocal support rank 0.718. Кандидат без прироста и ухудшенное слияние отклонены; незнакомый prompt остановлен без LLM-вызова. Это replay полного поиска, не проверка новых генераций. Активированный HTTP MCP: 13/13, полный synthesis prompt: 13/13. Native review двух изменённых пакетов на Lite — clean; остальные reviews переиспользованы. Переключатели навыков сохранены. [Результаты](query-strategy-evidence.json).

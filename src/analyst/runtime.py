@@ -58,7 +58,7 @@ def settings_profile(env, model_keys, skill_source):
             "OUROBOROS_MAX_WORKERS": 3,
             "OUROBOROS_MAX_ROUNDS": 8,
             "OUROBOROS_TASK_ABS_CEILING_SEC": 300,
-            "OUROBOROS_REVIEW_MAX_CYCLES": "1",
+            "OUROBOROS_REVIEW_MAX_CYCLES": env.get("OUROBOROS_REVIEW_MAX_CYCLES") or "1",
             "TOTAL_BUDGET": 2.0,
             "OUROBOROS_PER_TASK_COST_USD": 0.5,
             "OUROBOROS_POST_TASK_EVOLUTION": "false",

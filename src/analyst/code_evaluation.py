@@ -19,6 +19,7 @@ from analyst.releases import identity, sha
 def evaluation_identity():
     datasets = [
         "code_eval.json",
+        "rag_eval.json",
         "evolution_eval.json",
         "reports.json",
         "brent_daily.csv",
@@ -60,9 +61,9 @@ def score(slot, source, cases):
             return values
         finally:
             method_overrides.reset(token)
-    if slot in {"reranking", "chunking"}:
+    if slot in {"reranking", "chunking", "query_strategy"}:
         from analyst.evidence import fit_context
-        from analyst.quality import supported
+        from analyst.quality import support_score, supported
         from analyst.rag import ReportIndex
 
         token = method_overrides.set({slot: source})
@@ -70,11 +71,42 @@ def score(slot, source, cases):
             index = ReportIndex()
             if slot == "chunking":
                 index.ingest()
-            gold = json.loads((CORE_ROOT / "data/evolution_eval.json").read_text())
-            return [
-                int(supported(case, fit_context(index.search(case["question"]), case["question"])))
-                for case in gold
-            ]
+            from analyst.hyde import replay_probes
+
+            dataset = json.loads((CORE_ROOT / "data/rag_eval.json").read_text())
+            by_question = {c["question"]: c["generated"] for c in dataset["cases"]}
+
+            def replay(query, prompt, provider, model):
+                if (prompt, provider, model) != (
+                    dataset["prompt"],
+                    dataset["provider"],
+                    dataset["model"],
+                ) or query not in by_question:
+                    raise ValueError("No approved probe fixture for this query/prompt/model")
+                return by_question[query]
+
+            values = []
+            if slot != "query_strategy":
+                gold = json.loads((CORE_ROOT / "data/evolution_eval.json").read_text())
+                values = [
+                    int(supported(c, fit_context(index.search(c["question"]), c["question"])))
+                    for c in gold
+                ]
+            replay_token = replay_probes.set(replay)
+            try:
+                values.extend(
+                    support_score(
+                        c,
+                        fit_context(
+                            index.search(c["question"], hyde=True, hyde_model=dataset["model"]),
+                            c["question"],
+                        ),
+                    )
+                    for c in dataset["cases"]
+                )
+            finally:
+                replay_probes.reset(replay_token)
+            return values
         finally:
             method_overrides.reset(token)
     requests = [{k: v for k, v in c.items() if k != "expected_first"} for c in cases[slot]]
@@ -152,7 +184,9 @@ def evaluate(backend, state, current):
             )
     from analyst.code_executor import execution_budget
 
-    budget = execution_budget.set({"calls": 0, "deadline": time.monotonic() + 300})
+    budget = execution_budget.set(
+        {"calls": 0, "deadline": time.monotonic() + 300, "max_calls": 320}
+    )
     token = method_pin.set(baseline_sources)
     try:
         before = score(slot, baseline_sources[slot], cases)

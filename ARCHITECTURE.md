@@ -18,7 +18,7 @@ flowchart LR
 ## Разделение
 
 - **core Git**: MCP, данные, контракты, проверка цитат, backtest, evaluator и release controls.
-- **evolution Git**: четыре `SKILL.md`; forecast/scenario в `oil_forecast`, chunking/reranking в `report_rag`, search_strategy в `web_research`; retrieval/source policies.
+- **evolution Git**: четыре `SKILL.md`; forecast/scenario в `oil_forecast`, chunking/reranking/query_strategy в `report_rag`, search_strategy в `web_research`; retrieval/source policies.
 - **workspace**: единственное Files-хранилище Reports/Prices/Models, индексы, traces, диалоги и immutable bundles. В Git не входит.
 
 Методы экспортируют `run(request)`, получают только разрешённые данные. Core восстанавливает метаданные по исходным индексам и проверяет результаты; методы не могут подставить произвольные ссылки. Python из evolution не импортируется в MCP.
@@ -29,13 +29,13 @@ Executor не имеет host mounts, Docker socket и модельных сек
 
 Фактические вопросы: report-first через `answer_question`; достаточные отчётные данные основные, web используется для пробелов и свежести. Свежие новости, котировки и новые расчёты допускают прямые инструменты. Источник, дата публикации и время получения различаются.
 
-E5/Chroma выбраны для локального multilingual retrieval. PDF чанки сохраняют report/date/page и offsets. Web ограничен списком доверенных доменов; используется DDGS и RSS EIA без платного поискового ключа. Claims проверяются по исходным цитатам/числам; это структурная, а не полная смысловая проверка.
+По умолчанию HyDE + E5/Chroma/BM25. `query_strategy.py` задаёт prompt, поисковые запросы, веса эмбеддингов и слияние; поддерживается MultiQuery. Core вызывает отдельную Lite, кеширует генерации и исполняет ограниченный план. PDF чанки сохраняют report/date/page и offsets. Web ограничен списком доверенных доменов; используется DDGS и RSS EIA без платного поискового ключа. Claims проверяются по исходным цитатам/числам; это структурная, а не полная смысловая проверка.
 
 ARIMA(1,1,0) и damped ETS работают на log месячной цены. Core передаёт исторические префиксы, отдельно калибрует и оценивает интервалы по горизонту, сравнивает с naive. Модель выбирается на calibration, не на test. Supply-cut — условная чувствительность по явным пользовательским эластичностям.
 
 ## Самоулучшение
 
-Кандидат меняет policy, инструкции или один из пяти фиксированных Python slots. Fixed paired checks требуют прироста без индивидуальных регрессий; тесты и эталоны остаются в core. Это не blind holdout. После PASS нужен critic; затем оператор stage, native restart/review и enable.
+Кандидат меняет policy, инструкции или один из шести фиксированных Python slots. Fixed paired checks требуют прироста без индивидуальных регрессий; тесты и эталоны остаются в core. RAG checks прогоняют весь retrieval-пайплайн с 13 записанными генерациями Lite: проверяют все нужные цитаты и средний reciprocal rank их позиций. Для chunking/reranking дополнительно сохраняются 19 прежних проверок. Изменённый prompt требует подходящих operator-owned записей; без них проверка недоступна, LLM автоматически не вызывается. Это не blind holdout. После PASS нужен critic; затем оператор stage, native restart/review и enable.
 
 Инструкции и Python выпускаются одним snapshot. На переходе admission закрыт. Запрос закрепляет методы одной версии; chunking выбирает собственный индекс по хешу. Rollback восстанавливает skill files отдельным коммитом и переключает pointer. У разработчика остаётся право явного изменения baseline; это не считается доказанным самоулучшением.
 

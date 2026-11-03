@@ -65,6 +65,7 @@ class ReportIndex:
         with method_session():
             self.chunk_source = source_for("chunking")
             self.rank_source = source_for("reranking")
+            self.query_source = source_for("query_strategy")
         self.chunk_digest = validate_source("chunking", self.chunk_source)
         self.directory = directory or configured_path("RAG_INDEX_PATH", "workspace/rag")
         if directory is None and self.chunk_source != seed_source("chunking"):
@@ -209,6 +210,7 @@ class ReportIndex:
         publishers=None,
         hyde=False,
         hyde_model=None,
+        _query_vector=None,
     ):
         """Low-level retrieval; serving entry points enable HyDE, offline evaluators do not."""
         if not 1 <= top_k <= 12:
@@ -223,15 +225,24 @@ class ReportIndex:
         if collection.count() == 0:
             return []
         if hyde:
-            from analyst.hyde import query_embedding
+            from analyst.hyde import strategy_search
 
-            vector = query_embedding(query, self.model(), self.directory, model=hyde_model)
-        else:
-            vector = (
-                self.model()
-                .encode(["query: " + query], normalize_embeddings=True, show_progress_bar=False)
-                .tolist()
+            return strategy_search(
+                self,
+                query,
+                top_k=top_k,
+                include_context=include_context,
+                policy=policy,
+                publishers=publishers,
+                model=hyde_model,
             )
+        vector = (
+            _query_vector
+            if _query_vector is not None
+            else self.model()
+            .encode(["query: " + query], normalize_embeddings=True, show_progress_bar=False)
+            .tolist()
+        )
         publishers = publishers or report_publishers(query) or [None]
         if policy is None:
             from analyst.releases import active_release
