@@ -7,4 +7,8 @@ if [ ! -f workspace/container.env ]; then
 fi
 export LOCAL_UID="$(id -u)"
 export LOCAL_GID="$(id -g)"
+if [ -f workspace/submodules.compose.json ]; then
+    exec docker compose -f compose.yaml -f workspace/submodules.compose.json \
+        --env-file .env --env-file workspace/container.env "$@"
+fi
 exec docker compose --env-file .env --env-file workspace/container.env "$@"

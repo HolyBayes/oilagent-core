@@ -1,4 +1,6 @@
-# OilAgent
+# OilAgent Core
+
+[Главная страница и recursive clone](https://github.com/HolyBayes/oilagent) · [Evolution](https://github.com/HolyBayes/oilagent-evolution)
 
 Нефтегазовый аналитик: Ouroboros UI → Analyst MCP → LangGraph. Отчёты OPEC/EIA, web-поиск, прогноз Brent (ARIMA/ETS), сценарии сокращения добычи. Отдельный Evolution MCP предлагает изменения навыков и Python-методов.
 
@@ -86,7 +88,7 @@ Stage временно закрывает аналитические вызов�
 
 Для обновления старой установки с пятью slots сохраните capture до смены кода; после коммита точного developer extension в evolution выполните qualify с `--add-query-strategy`, затем обычные restart/review/enable. Этот флаг допускает только developer seed нового модуля и точные изменения двух инструкций; существующие методы и эталоны менять нельзя.
 
-GitHub/GitLab remote пока не настроен. Перед сдачей нужны публикация, улучшение retrieval и более широкий набор живых проверок Lite.
+Совместимые версии core/evolution зафиксированы submodules в [oilagent](https://github.com/HolyBayes/oilagent). Дальнейшая работа: расширение корпуса и независимая проверка качества.
 
 Переключатель Skills управляет доступом к методам в backend, включая прямые MCP-вызовы, `answer_question` и subagents. Состояние проверяется при вызове; при недоступном UI или устаревшем review выполнение запрещено. Обновление пакета не включает выключенные навыки.
 

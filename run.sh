@@ -34,6 +34,9 @@ if any((deploy/name).is_dir() and not (deploy/name).is_symlink()
     subprocess.run(['docker','compose','stop'],check=True,
                    env={**os.environ, 'RUNNER_IMAGE':'oilagent-executor:local'})
 prepare_storage(Path.cwd(),deploy,files)
+from scripts.prepare_submodules import prepare
+prepare(os.getenv('EVOLUTION_REPO_PATH') or (values.get('EVOLUTION_REPO_PATH') or '../evolution').strip(chr(34)+chr(39)),
+        Path('workspace/submodules.compose.json'))
 ca=os.getenv('GIGACHAT_CA_BUNDLE_FILE') or values.get('GIGACHAT_CA_BUNDLE_FILE','').strip('"\'')
 container_ca=''
 if ca:
