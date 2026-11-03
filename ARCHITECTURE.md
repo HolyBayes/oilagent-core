@@ -1,24 +1,42 @@
 # Архитектура
 
-Ouroboros управляет Main, скиллами, специалистами и native review.
-Analyst MCP/LangGraph выполняет аналитику; Evolution MCP готовит изменения, оператор выпускает их.
+Оба MCP-сервера находятся в `core`. Репозиторий `evolution` хранит инструкции,
+Python-алгоритмы инструментов и policies, которые агент может предлагать изменить.
+Название **Evolution MCP** обозначает сервис работы с этим Git, а не его расположение.
+
+## Выполнение запроса
 
 ```mermaid
 flowchart LR
-  UI[Ouroboros Main / специалисты] --> MCP[Analyst MCP / LangGraph]
-  MCP --> DATA[PDF / web / история цен]
-  MCP --> RUN[Python executor]
-  UI --> EVO[Evolution MCP / кандидат Git]
-  EVO --> CHECK[Проверки / critic]
-  CHECK --> OP[Оператор / native review]
-  OP --> REL[Snapshot скиллов и методов]
-  REL --> RUN
-  REL --> UI
+  UI["Ouroboros Main / специалисты"]
+  subgraph CORE["core — серверы и исполнение"]
+    MCP["Analyst MCP"] --> GRAPH["LangGraph: поиск / расчёт / проверка ответа"]
+    GRAPH -->|"данные и вызов метода"| QUEUE["Isolated Python execution queue"]
+  end
+  UI -->|"вызов инструмента"| MCP
+  DATA["PDF / web / история цен"] --> GRAPH
+  SNAP["workspace: активный проверенный snapshot"] -.->|"инструкции"| UI
+  SNAP -.->|"код методов"| QUEUE
 ```
+
+## Изменение методов и скиллов
+
+```mermaid
+flowchart LR
+  UI["Ouroboros Main"] --> MCP["core: Evolution MCP"]
+  MCP -->|"предлагает изменения"| GIT["evolution Git: кандидат SKILL.md / Python / policy"]
+  GIT --> CHECK["core: оценка кандидата и critic"]
+  CHECK --> OWNER["Оператор: stage / native review / enable"]
+  OWNER --> SNAP["workspace: активный проверенный snapshot"]
+```
+
+Например, `search_reports` зарегистрирован в `core`, а `query_strategy.py`,
+`chunking.py` и `reranking.py` находятся в `evolution`. Их рабочая версия берётся
+из выпущенного snapshot. Изменения кандидата не попадают в исполнение автоматически.
 
 | Часть | Ответственность |
 |---|---|
-| `core` | MCP, LLM/сеть/кеш, данные, контракты, оценка и выпуск |
+| `core` | Analyst MCP и Evolution MCP, LangGraph, очередь исполнения, LLM/сеть/кеш, контракты, оценка и выпуск |
 | `evolution` | `SKILL.md`, forecast/scenario, chunking/reranking/query_strategy, search_strategy и policies |
 | `workspace` | Files/Reports/Prices/Models, индексы, диалоги, traces и snapshots; вне Git |
 

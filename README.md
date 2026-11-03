@@ -1,6 +1,6 @@
 # OilAgent Core
 
-MCP, LangGraph и изолированный Python executor для [OilAgent](https://github.com/HolyBayes/oilagent).
+Analyst MCP, Evolution MCP, LangGraph и Isolated Python execution queue для [OilAgent](https://github.com/HolyBayes/oilagent).
 [Архитектура](ARCHITECTURE.md) · [Проверки](docs/VALIDATION.md) · [Диалоги](examples/demo_dialogues.md)
 
 ## Запуск
