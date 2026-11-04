@@ -25,12 +25,12 @@ python -m scripts.eval_reports --split holdout
 
 | Скрипт | Назначение |
 |---|---|
-| [index_reports.py](index_reports.py) | Индексация PDF; `--download` скачивает корпус, `--query "…"` выполняет поиск |
+| [index_reports.py](index_reports.py) | Загрузка и индексация PDF отчетов; `--download` скачивает корпус, `--query "…"` выполняет поиск |
 | [search_web.py](search_web.py) | Web-поиск без API-ключа и LLM: `python -m scripts.search_web "запрос"`; `--historical` снимает фильтр свежести |
-| [eval_reports.py](eval_reports.py) | Проверка retrieval на `development` или `holdout`; `--baseline` отключает вводный контекст страницы |
+| [eval_reports.py](eval_reports.py) | Проверка reports retrieval на `development` или `holdout`; `--baseline` отключает вводный контекст страницы |
 | [eval_acceptance.py](eval_acceptance.py) | Фиксированные проверки retrieval, маршрутизации и доказательств; без LLM, не заменяют живую проверку ответов |
-| [benchmark_rag.py](benchmark_rag.py) | Сравнение вариантов поиска, MultiQuery и HyDE на фиксированных вопросах; по умолчанию использует кеш |
-| [replay.py](replay.py) | Повторная проверка доказательств сохранённого ответа: `python -m scripts.replay REQUEST_ID`; без сети, инструментов и LLM |
+| [benchmark_rag.py](benchmark_rag.py) | Сравнение разных вариантов RAG поиска, MultiQuery и HyDE на фиксированных вопросах; по умолчанию использует кеш |
+| [replay.py](replay.py) | Проверка фактологической обоснованности сохранённого ответа (регуляркой): `python -m scripts.replay REQUEST_ID`; без сети, инструментов и LLM |
 
 `benchmark_rag --generate` вызывает настроенную LLM для отсутствующих в кеше вариантов
 запросов; `--generate --only-generate` только заполняет кеш. Результат сравнения —
@@ -45,8 +45,8 @@ python -m scripts.eval_reports --split holdout
 | Скрипт | Что проверяет | Вызовы LLM |
 |---|---|---|
 | [check_executor.py](check_executor.py) | Изоляцию и ограничения работающего executor | Нет |
-| [check_cold_start.py](check_cold_start.py) | Инициализацию в отдельном временном Docker-проекте; нужны Docker и сеть | Нет |
-| [smoke_ouroboros.py](smoke_ouroboros.py) | Настоящий MCPManager Ouroboros и два временных HTTP MCP-сервиса; нужен закреплённый upstream | Только с `--live` |
+| [check_cold_start.py](check_cold_start.py) | Работу агента с пустым evolution в отдельном временном Docker-проекте; нужны Docker и сеть | Нет |
+| [smoke_ouroboros.py](smoke_ouroboros.py) | Проверка совместимости MCP-сервисов репозитория с MCPManager Ouroboros; авторизацию MCP; работу evolution и forecasting MCP; нужен закреплённый upstream | Только с `--live` |
 | [check_tool_schema.py](check_tool_schema.py) | Совместимость схем Evolution MCP с GigaChat function calling | Только с `--live` |
 | [check_forecast_route.py](check_forecast_route.py) | Каталог Analyst MCP; с `--live` — выбор forecast моделью и расчёт | Только с `--live` |
 | [check_skill_workflow.py](check_skill_workflow.py) | Навыки и цепочку кандидата через in-process MCP; отдельное состояние в `workspace/skill-probes/` | Только с `--live` |
