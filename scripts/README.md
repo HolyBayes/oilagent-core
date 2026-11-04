@@ -49,10 +49,10 @@ python -m scripts.eval_reports --split holdout
 | [smoke_ouroboros.py](smoke_ouroboros.py) | Проверка совместимости MCP-сервисов репозитория с MCPManager Ouroboros; авторизацию MCP; работу evolution и forecasting MCP; нужен закреплённый upstream | Только с `--live` |
 | [check_tool_schema.py](check_tool_schema.py) | Совместимость схем Evolution MCP с GigaChat function calling | Только с `--live` |
 | [check_forecast_route.py](check_forecast_route.py) | Каталог Analyst MCP; с `--live` — выбор forecast моделью и расчёт | Только с `--live` |
-| [check_skill_workflow.py](check_skill_workflow.py) | Навыки и цепочку кандидата через in-process MCP; отдельное состояние в `workspace/skill-probes/` | Только с `--live` |
-| [check_code_workflow.py](check_code_workflow.py) | Создание Python-кандидата через Evolution MCP, checks и critic; без активации | Обязателен `--live` |
+| [check_skill_workflow.py](check_skill_workflow.py) | Проверка, что при явной инструкции вызывается нужный тул и создается новый скилл; отдельное состояние в `workspace/skill-probes/` | Только с `--live` |
+| [check_code_workflow.py](check_code_workflow.py) | Проверяет цепочку «модель пишет Python-кандидата → Evolution MCP проверяет его → critic оценивает». | Обязателен `--live` |
 | [check_delivery.py](check_delivery.py) | Пять сценариев через работающий Analyst MCP | Да, сразу при запуске |
-| [check_native_delivery.py](check_native_delivery.py) | Сценарии через задачи в работающем UI на порту 8765 | Да, сразу при запуске |
+| [check_native_delivery.py](check_native_delivery.py) | Сценарии через API Ouroboros | Да, сразу при запуске |
 
 Например: `python -m scripts.check_executor`.
 HTTP-проверки требуют запущенных сервисов, корректных портов и MCP-токенов;
