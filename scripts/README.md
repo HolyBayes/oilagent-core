@@ -68,7 +68,7 @@ HTTP-проверки требуют запущенных сервисов, ко
 
 | Скрипт | Назначение |
 |---|---|
-| [code_release.py](code_release.py) | Выпуск пакета кода: `seed`, `stage`, `review`, `enable`, `rollback`, `abort`, `status` |
+| [code_release.py](code_release.py) | Выпуск пакета кода (из Evolution в workspace): `seed`, `stage`, `review`, `enable`, `rollback`, `abort`, `status` |
 | [skill_release.py](skill_release.py) | Выпуск инструкций навыка: `stage`, `review`, `enable`, `rollback` |
 | [release.py](release.py) | Отдельный выпуск retrieval-policy: `approve`, `rollback`, `status` |
 | [qualify_runtime.py](qualify_runtime.py) | `capture` до изменения runtime и `qualify` после него: сравнение на фиксированной оценке |
