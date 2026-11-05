@@ -69,14 +69,11 @@ HTTP-проверки требуют запущенных сервисов, ко
 | Скрипт | Назначение |
 |---|---|
 | [code_release.py](code_release.py) | Выпуск пакета кода (из Evolution в workspace): `seed`, `stage`, `review`, `enable`, `rollback`, `abort`, `status` |
-| [skill_release.py](skill_release.py) | Выпуск инструкций навыка: `stage`, `review`, `enable`, `rollback` |
-| [release.py](release.py) | Отдельный выпуск retrieval-policy: `approve`, `rollback`, `status` |
-| [qualify_runtime.py](qualify_runtime.py) | `capture` до изменения runtime и `qualify` после него: сравнение на фиксированной оценке |
+| [skill_release.py](skill_release.py) | deprecated. То же самое, но тест отдельного SKILL.md. Выпуск инструкций навыка: `stage`, `review`, `enable`, `rollback` |
+| [release.py](release.py) | Проверка обновления retrieval-policy (`retrieval.json`): `approve`, `rollback`, `status` |
+| [qualify_runtime.py](qualify_runtime.py) | Проверка на отсутствие регрессии при обновлении core (runtime) |
 
-Эти команды меняют состояние выпуска. Порядок действий и параметры — в
-[README Core](../README.md#выпуск-навыков), флаги — через `--help` соответствующей команды.
-Native review может вызвать LLM. Stage закрывает аналитические вызовы до активации;
-одного успешного checks/critic недостаточно для выпуска.
+Эти команды меняют состояние выпуска. Порядок действий и параметры — в [README Core](../README.md#выпуск-навыков), флаги — через `--help` соответствующей команды. Native review может вызвать LLM. Stage закрывает аналитические вызовы до активации; одного успешного checks/critic недостаточно для выпуска.
 
 ## Служебные модули
 
@@ -84,8 +81,8 @@ Native review может вызвать LLM. Stage закрывает анали
 
 | Модуль | Назначение |
 |---|---|
-| [bootstrap.py](bootstrap.py) | Получает закреплённый upstream Ouroboros, создаёт `.env`, если его нет, и подготавливает Evolution Git |
-| [prepare_storage.py](prepare_storage.py) | Переносит прежнее файловое хранилище в общую структуру UI Files |
+| [bootstrap.py](bootstrap.py) | Базовая настройка окружения. Получает закреплённый upstream Ouroboros, создаёт `.env`, если его нет, и подготавливает Evolution Git |
+| [prepare_storage.py](prepare_storage.py) | Переносит старое файловое хранилище в общую структуру UI Files |
 | [prepare_submodules.py](prepare_submodules.py) | Готовит Compose mounts Git-метаданных Evolution при установке через submodules |
 | [container_init.py](container_init.py) | Инициализирует Evolution Git и индекс PDF внутри контейнера, без LLM |
 | [container_native.py](container_native.py) | Готовит приватные настройки контейнера и запускает native Ouroboros |
