@@ -31,19 +31,17 @@ def measure(files):
         method_pin.reset(token)
 
 
-def capture(operator):
-    bundle = read_bundle(active_id())
-    current = evaluation_identity()
-    metrics = measure(bundle["files"])
-    if evaluation_identity() != current:
-        raise ValueError("Runtime changed during measurement")
+def save_receipt(bundle, metrics, operator, **metadata):
+    if not operator.strip():
+        raise ValueError("Operator required")
     receipt = {
         "release_id": bundle["release_id"],
-        "identity": current,
+        "identity": bundle["identity"],
         "package_sha256": package_digest(bundle["files"]),
         "metrics": metrics,
         "operator": operator,
         "at": datetime.now(timezone.utc).isoformat(),
+        **metadata,
     }
     raw = canonical(receipt)
     receipt_id = sha(raw)
@@ -52,6 +50,34 @@ def capture(operator):
     path.write_bytes(raw)
     path.chmod(0o444)
     return receipt_id
+
+
+def capture(operator):
+    bundle = read_bundle(active_id())
+    current = evaluation_identity()
+    metrics = measure(bundle["files"])
+    if evaluation_identity() != current:
+        raise ValueError("Runtime changed during measurement")
+    return save_receipt(bundle, metrics, operator)
+
+
+def recover(operator):
+    """Recover an old baseline from recorded release metrics, never from the new runtime."""
+    bundle = read_bundle(active_id(), historical=True)
+    if bundle.get("kind") not in {"runtime-requalified", "runtime-extended"}:
+        raise ValueError("No released qualification metrics; restore the old runtime and capture")
+    qualification = bundle.get("qualification", {})
+    if set(qualification) != set(SLOTS):
+        raise ValueError("Released qualification must cover every method")
+    metrics = {}
+    for slot, row in qualification.items():
+        if (
+            row.get("regressions") != []
+            or compare(slot, row["before"], row["after"])["regressions"]
+        ):
+            raise ValueError("Released qualification contains regressions")
+        metrics[slot] = row["after"]
+    return save_receipt(bundle, metrics, operator, recovered_from_release=bundle["release_id"])
 
 
 def qualify(backend, receipt_id, operator, *, add_query_strategy=False):
@@ -131,7 +157,7 @@ def qualify(backend, receipt_id, operator, *, add_query_strategy=False):
 def main():
     load_dotenv(CORE_ROOT / ".env", override=False)
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["capture", "qualify"])
+    parser.add_argument("action", choices=["capture", "recover", "qualify"])
     parser.add_argument("receipt_id", nargs="?")
     parser.add_argument("--operator", required=True)
     parser.add_argument("--add-query-strategy", action="store_true")
@@ -142,6 +168,8 @@ def main():
     with release_lock(), backend.lock():
         if args.action == "capture":
             result = capture(args.operator)
+        elif args.action == "recover":
+            result = recover(args.operator)
         else:
             if not args.receipt_id:
                 parser.error("Receipt required")

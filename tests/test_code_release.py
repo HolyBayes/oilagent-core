@@ -228,6 +228,113 @@ def test_runtime_qualification_cannot_smuggle_changed_methods(installation, monk
         qualifier.qualify(backend, receipt, "operator")
 
 
+def test_recover_uses_released_metrics_after_old_runtime_is_lost(installation, monkeypatch):
+    from analyst.config import CORE_ROOT
+
+    monkeypatch.syspath_prepend(str(CORE_ROOT))
+    from scripts import qualify_runtime as qualifier
+
+    backend, current = installation
+    current["datasets"] = {"fixed": "v1"}
+    activate_seed(backend)
+    metrics = {
+        slot: ([{"mae": 2.0, "coverage": 0.8, "width": 10.0}] if slot == "forecast" else [1, 0])
+        for slot in releases.SLOTS
+    }
+    monkeypatch.setattr(qualifier, "evaluation_identity", lambda: dict(current))
+    monkeypatch.setattr(qualifier, "measure", lambda files: metrics)
+    receipt = qualifier.capture("operator")
+    current["core"] = "v2"
+    qualified = qualifier.qualify(backend, receipt, "operator")
+    client, _ = native_client(qualified)
+    with client:
+        releases.enable(backend, client, qualified, "operator")
+    old_identity = releases.read_bundle(qualified)["identity"]
+    current["core"] = "v3"
+    with pytest.raises(ValueError, match="changed"):
+        qualifier.capture("operator")
+
+    def no_measurement(files):
+        raise AssertionError("Recovery must not pretend to measure the lost runtime")
+
+    monkeypatch.setattr(qualifier, "measure", no_measurement)
+    recovered = qualifier.recover("operator")
+    recorded = json.loads((code_root() / "qualifications" / (recovered + ".json")).read_text())
+    assert recorded["metrics"] == metrics
+    assert recorded["identity"] == old_identity
+    assert recorded["recovered_from_release"] == qualified
+    assert evaluation.active_id() == qualified
+    assert not (code_root() / "prepared.json").exists()
+
+    current["datasets"] = {"fixed": "changed"}
+    with pytest.raises(ValueError, match="Dataset changed"):
+        qualifier.qualify(backend, recovered, "operator")
+    current["datasets"] = {"fixed": "v1"}
+    monkeypatch.setattr(qualifier, "measure", lambda files: {**metrics, "scenario": [0, 0]})
+    with pytest.raises(ValueError, match="regresses"):
+        qualifier.qualify(backend, recovered, "operator")
+    monkeypatch.setattr(qualifier, "measure", lambda files: metrics)
+    staged = qualifier.qualify(backend, recovered, "operator")
+    assert evaluation.active_id() == qualified
+    assert releases.read_bundle(staged)["previous_release_id"] == qualified
+    assert (
+        releases.read_bundle(staged)["files"]
+        == releases.read_bundle(qualified, historical=True)["files"]
+    )
+
+
+def test_recover_refuses_missing_metrics_or_corrupt_release(installation, monkeypatch):
+    from analyst.config import CORE_ROOT
+
+    monkeypatch.syspath_prepend(str(CORE_ROOT))
+    from scripts import qualify_runtime as qualifier
+
+    backend, current = installation
+    release_id = activate_seed(backend)
+    current["core"] = "v2"
+    with pytest.raises(ValueError, match="No released qualification metrics"):
+        qualifier.recover("operator")
+    bundle = code_root() / "bundles" / (release_id + ".json")
+    bundle.chmod(0o600)
+    bundle.write_text(bundle.read_text() + "\n")
+    with pytest.raises(ValueError, match="integrity"):
+        qualifier.recover("operator")
+
+
+@pytest.mark.parametrize("failure", ["incomplete", "regressed", "empty"])
+def test_recover_rejects_invalid_recorded_metrics(installation, monkeypatch, failure):
+    from analyst.config import CORE_ROOT
+
+    monkeypatch.syspath_prepend(str(CORE_ROOT))
+    from scripts import qualify_runtime as qualifier
+
+    backend, _ = installation
+    initial = activate_seed(backend)
+    metrics = {
+        slot: ([{"mae": 2.0, "coverage": 0.8, "width": 10.0}] if slot == "forecast" else [1])
+        for slot in releases.SLOTS
+    }
+    qualification = {
+        slot: evaluation.compare(slot, values, values) for slot, values in metrics.items()
+    }
+    if failure == "incomplete":
+        qualification.pop("scenario")
+    elif failure == "regressed":
+        qualification["scenario"]["after"] = [0]
+    else:
+        qualification["scenario"]["after"] = []
+    staged = releases.freeze(
+        releases.read_bundle(initial)["files"],
+        {"kind": "runtime-requalified", "qualification": qualification},
+    )
+    client, _ = native_client(staged)
+    with client:
+        releases.enable(backend, client, staged, "operator")
+    with pytest.raises(ValueError):
+        qualifier.recover("operator")
+    assert not (code_root() / "qualifications").exists()
+
+
 def test_package_updates_preserve_disabled_skill_switches(installation):
     backend, _ = installation
     initial = activate_seed(backend)
