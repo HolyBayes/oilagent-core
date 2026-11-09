@@ -48,7 +48,7 @@ analyst/
 ├── method_contracts.py   # Проверка результатов изменяемых методов на стороне core.
 ├── code_executor.py      # HTTP-клиент изолированного executor.
 │
-└── seeds/                # Начальные версии для подготовки Evolution Git.
+└── seeds/                # Начальные версии скиллов для подготовки Evolution Git.
     ├── web_sources.json  # Начальная конфигурация web-источников.
     ├── oilgas_analyst/
     │   └── SKILL.md      # Общий аналитик и инструкции по самоулучшению.

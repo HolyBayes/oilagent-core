@@ -97,5 +97,12 @@ python -m scripts.code_release enable RELEASE_ID --operator NAME
 `./run.sh -d` и review/enable возвращённого release. Пути — как выше.
 Не удаляйте active pointer для обхода проверки.
 
+Если старый executor уже недоступен и `init` сообщает `Code/executor/data changed`,
+выполните `python -m scripts.qualify_runtime recover --operator NAME` с теми же путями.
+Команда восстанавливает `RECEIPT_ID` из метрик последней выпущенной квалификации,
+не измеряя старый runtime заново. Далее выполните `qualify` и обычные review/enable.
+Без сохранённых метрик восстановление запрещено: нужен прежний runtime для `capture`.
+Образы Python закреплены по digest; их обновление требует той же квалификации.
+
 Если review исчерпал попытки после сбоя, настройте `OUROBOROS_REVIEW_MAX_CYCLES` в `.env`.
 Это также позволяет изменить лимит, когда Docker UI отклоняет сохранение Settings без Network Password.

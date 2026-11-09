@@ -23,12 +23,28 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  UI["Ouroboros Main"] --> MCP["core: Evolution MCP"]
-  MCP -->|"предлагает изменения"| GIT["evolution Git: кандидат SKILL.md / Python / policy"]
-  GIT --> CHECK["core: оценка кандидата и critic"]
-  CHECK --> OWNER["Оператор: stage / native review / enable"]
-  OWNER --> SNAP["workspace: активный проверенный snapshot"]
+  SKILL["Ouroboros Main: инструкции активного скилла"] -->|"предложение изменения"| MCP["core: Evolution MCP"]
+  MCP --> GIT["evolution Git: кандидат SKILL.md / Python"]
+  GIT --> CHECK["Автоматические checks: качество и регрессии"]
+  CHECK -->|"checks прошли"| CRITIC["Наш LLM-critic: diff, обоснование и checks"]
+  CRITIC -->|"одобрение"| STAGE["Оператор: stage → snapshot в workspace"]
+  STAGE -->|"перезапуск Ouroboros"| REVIEW["Ouroboros native review: точный пакет скилла"]
+  REVIEW -->|"одобрение и операторский enable"| ACTIVE["workspace: активный snapshot"]
+  ACTIVE -->|"инструкции для следующих запросов"| SKILL
+  ACTIVE -->|"Python-методы"| EXEC["Isolated Python execution queue"]
 ```
+
+Скилл задаёт инструкции Main-агенту; вызовы Evolution MCP выполняет агент.
+Кандидат хранится в `evolution`, а проверки и наш critic реализованы в `core`.
+Critic использует LLM из конфигурации core и оценивает diff вместе с результатами checks.
+Затем оператор через `analyst.code_releases` подготавливает snapshot в `workspace`.
+После перезапуска встроенный native review Ouroboros проверяет точное содержимое
+пакета. Только операторский `enable` делает snapshot активным; переключатели Skills сохраняются.
+Отказ checks или любого ревью не допускает кандидата к активации.
+
+Это цикл выпуска инструкций и Python-методов. У отдельной retrieval-policy другой
+путь: кандидат → checks → critic → операторский `scripts.release approve`, без native review.
+Команды выпуска пакета — в [README](README.md#выпуск-навыков).
 
 Например, `search_reports` зарегистрирован в `core`, а `query_strategy.py`,
 `chunking.py` и `reranking.py` находятся в `evolution`. Их рабочая версия берётся
